@@ -2,7 +2,7 @@
 
 This repository is a place for members to work on prototypes and proof of concept projects.
 
-### How to use
+### Usage
 1. Create a new branch in the repo. 
     * Follow the same standards as the `firmware_v3` repo.  
 2. On the new branch, change directory into `/Projects`. 
