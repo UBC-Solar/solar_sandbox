@@ -1,0 +1,30 @@
+# CAN_msgs.yaml
+CAN_Messages:
+  - id: 0x701
+    extended_id: false
+    name: voltagesensorsdata
+    length_bytes: 8
+    tx_ecu: AMB
+    rx_ecus:
+      - TEL
+    signals:
+      - name: voltsensor1
+        bit_start: 0
+        bit_length: 32
+        byte_order: "big_endian"
+        datatype: float
+        factor: 0.0
+        offset: 0.0
+        min: 0.0
+        max: 0.0
+        unit: "V"
+      - name: voltsensor2
+        bit_start: 32
+        bit_length: 32
+        byte_order: "big_endian"
+        datatype: float
+        factor: 0.0
+        offset: 0.0
+        min: 0.0
+        max: 0.0
+        unit: "V"
