@@ -151,3 +151,93 @@ int main() {
 
     return 0;
 }
+
+
+
+
+
+
+
+
+// In an Autogened file....
+typedef struct {
+	uint16_t throttle_adc_reading;
+	bool pedal_adc_out_of_range;
+	bool regen_enabled;
+	bool cruise_control_enabled;
+	bool mech_brake_pressed;
+	bool mdi_comm_fault;
+} CAL_msg_mcb_diagnostics_0x404;
+
+
+typedef struct {
+	float current_sensor1;
+	float current_sensor2;
+} CAL_msg_amb_current_0x702;
+
+
+// Yo define CAL_FIXED_POINT if you want to do this
+
+
+// Instead of the Set and Send style code in the MCB:
+CAL_msg_mcb_diagnostics_0x404 diagnostic_msg = {0};
+
+diagnostic_msg.throttle_adc_reading = my_throttle;
+diagnostic_msg.pedal_adc_out_of_range = <SOME_LOGIC>;
+diagnostic_msg.regen_enabled = <SOME_LOGIC>;
+diagnostic_msg.cruise_control_enabled = <SOME_LOGIC>;
+diagnostic_msg.mech_brake_pressed = <SOME_LOGIC>;
+diagnostic_msg.mdi_comm_fault = <SOME_LOGIC>;
+
+CAL_Tx_mcb_diagnostics_0x404(&diagnostic_msg) {
+    // Convert CAL_msg specifc struct to raw NUM BYTES
+    // You already know the length
+    uint8_t mcb_data[CAL_MCB_DIAGNOSTICS_DLC] = {0};
+
+    // Convert signals to bytes
+    SET_BIT     
+
+    CAL_package_bool(mcb_data, diagnostic_msg.pedal_adc_out_of_range, 0, 1);
+    CAL_package_uint16(mcb_data, diagnostic_msg.throttle_adc_reading, 1, );
+
+
+    #ifndef CAL_FIXED_POINT
+        do normal float conversion
+        
+    cal_config->CAN_Tx(&CAL_mcb_diagnostics_0x404_header, mcb_data);
+}
+
+
+
+
+
+// Some Autogened File
+typedef struct {
+	uint8_t* data;
+	uint32_t id;
+} CAL_MsgTypeDef;
+
+// In DID main code:
+CAL_MsgTypeDef* did_rx_msg = CAL_Rx_GetMessage();
+
+switch(did_rx_msg.id)
+{
+		case CAL_MSG_MCB_DIAGNOSTICS_ID:
+			CAL_msg_mcb_diagnostics_0x404* mcb_diagnostic_msg = CAL_parse_mcb_diagnostics(did_rx_msg.data);
+
+        case CAL_MSG_AMB_CURRENT_ID:
+			CAL_msg_amb_current_0x702* amb_current_msg = CAL_parse_amb_current(did_rx_msg.data);
+            SET_CYCLIC_DATA( data_array_current, temp_array_current.float_value );
+			// Some cyclic data logic (which can actually be a feature in CAL!)
+}
+
+1. get CAL data struct
+2. Filter by ID
+3. call CAL parse function on that ID message    (example hash map to relate ID to )
+
+
+
+
+CAL_MsgTypeDef* CAL_Rx_GetMessage() {
+
+}
