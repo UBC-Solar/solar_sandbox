@@ -1,4 +1,5 @@
-from utils.FileUtils import _this_file_path
+# from utils.FileUtils import _this_file_path
+from FileUtils import _this_file_path
 from yaml import safe_load, YAMLError
 import os
 

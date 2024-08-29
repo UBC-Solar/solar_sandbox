@@ -34,8 +34,11 @@ int main(void)
     status = brightside_voltage_sensors_data_unpack(&unpacked_data2, &packed_data[0], BRIGHTSIDE_VOLTAGE_SENSORS_DATA_LENGTH);
     printf("data1: %f\n", unpacked_data.volt_sensor1);
     printf("data2: %f\n", unpacked_data.volt_sensor2);
-    printf("brightside_voltage_sensors_data_unpack: %d\n", status);
+    // printf("brightside_voltage_sensors_data_unpack: %d\n", status);
 
 
     return 0;
 }
+
+
+void CAL_Tx_
