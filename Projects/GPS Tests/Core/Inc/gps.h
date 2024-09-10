@@ -11,6 +11,8 @@
 #include "i2c.h"
 #include <stdbool.h>
 
-bool GPS_wait_for_fix();
+#define GPS_MESSAGE_LEN 1000
+
+bool read_i2c_gps_module(uint8_t *receive_buffer);
 
 #endif /* GPS_H */

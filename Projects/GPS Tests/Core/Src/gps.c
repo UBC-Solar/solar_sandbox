@@ -8,17 +8,23 @@
 #include "gps.h"
 
 #define GPS_DEVICE_ADDRESS ((0x42)<<1)
+#define GPS_I2C_TIMEOUT    (1000)
 
 /**
  * @brief Continually tries to get a fix. Only returns once a fix is obtained
- * @return void
-*/
-bool GPS_wait_for_fix()
+ * @param receive_buffer The buffer to store the received data
+ * @return bool True if a fix was obtained, false otherwise
+ */
+bool read_i2c_gps_module(uint8_t* receive_buffer)
 {
 	bool status = false;
-    if(HAL_I2C_IsDeviceReady(&hi2c1, GPS_DEVICE_ADDRESS, 1, 1000) == HAL_OK)
+    if(HAL_I2C_IsDeviceReady(&hi2c1, GPS_DEVICE_ADDRESS, 1, GPS_I2C_TIMEOUT) == HAL_OK)
     {
-    	status = true;
+        if(HAL_I2C_Master_Receive(&hi2c1, GPS_DEVICE_ADDRESS, receive_buffer, GPS_MESSAGE_LEN, GPS_I2C_TIMEOUT) == HAL_OK)
+        {
+            // Set status to true if i2c read was successful
+            status = true;
+        }
     }
 
     return status;

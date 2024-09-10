@@ -101,16 +101,23 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
     HAL_Delay(500);
-    if (GPS_wait_for_fix() == true)
+
+    uint8_t msg[20] = "New GPS read\r\n\n";
+    HAL_UART_Transmit(&huart2, msg, 20, 100);
+
+    uint8_t data[GPS_MESSAGE_LEN];
+    memset(data, 0, GPS_MESSAGE_LEN);
+
+    if (read_i2c_gps_module(data) == true)
     {
-    	uint8_t data_msg[20] = "GPS connected\n";
-        HAL_UART_Transmit(&huart2, data_msg, 20, 100);
+      HAL_UART_Transmit(&huart2, data, GPS_MESSAGE_LEN, 100);
     }
     else
     {
-    	uint8_t data_msg[20] = "GPS not connected\n";
-        HAL_UART_Transmit(&huart2, data_msg, 20, 100);
+      strncpy(data, "GPS not connected\r\n", GPS_MESSAGE_LEN);
+      HAL_UART_Transmit(&huart2, data, GPS_MESSAGE_LEN, 100);
     }
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
   }
