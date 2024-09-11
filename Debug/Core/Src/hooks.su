@@ -1,0 +1,2 @@
+../Core/Src/hooks.c:15:6:vApplicationIdleHook	16	static
+../Core/Src/hooks.c:30:7:calculateCPULoad	16	static
