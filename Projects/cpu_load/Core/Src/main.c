@@ -43,6 +43,8 @@
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim10;
 
+UART_HandleTypeDef huart2;
+
 osThreadId blink01Handle;
 /* USER CODE BEGIN PV */
 
@@ -52,9 +54,23 @@ osThreadId blink01Handle;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM10_Init(void);
+static void MX_USART2_UART_Init(void);
 void StartBlink01(void const * argument);
 
 /* USER CODE BEGIN PFP */
+
+
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+
+PUTCHAR_PROTOTYPE
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+  return ch;
+}
 
 /* USER CODE END PFP */
 
@@ -93,6 +109,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM10_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   HAL_TIM_Base_Start(&htim10);
@@ -197,9 +214,9 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 80 - 1;
+  htim10.Init.Prescaler = 0;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 65535;
+  htim10.Init.Period = 4199;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -209,6 +226,39 @@ static void MX_TIM10_Init(void)
   /* USER CODE BEGIN TIM10_Init 2 */
 
   /* USER CODE END TIM10_Init 2 */
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 
@@ -225,6 +275,7 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
@@ -254,11 +305,49 @@ static void MX_GPIO_Init(void)
 void StartBlink01(void const * argument)
 {
   /* USER CODE BEGIN 5 */
+
+  // TaskStatus_t structure to hold the task information
+  TaskStatus_t xTaskDetails;
+
+  // Retrieve task information for the current task (blink01)
+//  vTaskGetInfo(NULL, &xTaskDetails, pdTRUE, eInvalid);
+//
+//  // Print task information
+//  printf("Task Name: %s\n\r", xTaskDetails.pcTaskName);
+//  printf("Task Handle: %p\n\r", xTaskDetails.xHandle);
+//  printf("Task Priority: %u\n\r", (unsigned int)xTaskDetails.uxCurrentPriority);
+//  printf("Task Stack High Water Mark: %u\n\r", (unsigned int)xTaskDetails.usStackHighWaterMark);
+//  printf("Task State: ");
+
+//  switch (xTaskDetails.eCurrentState)
+//  {
+//    case eReady:
+//        printf("Ready\n");
+//        break;
+//    case eRunning:
+//        printf("Running\n");
+//        break;
+//    case eBlocked:
+//        printf("Blocked\n");
+//        break;
+//    case eSuspended:
+//        printf("Suspended\n");
+//        break;
+//    case eDeleted:
+//        printf("Deleted\n");
+//        break;
+//    default:
+//        printf("Unknown\n");
+//        break;
+//  }
+
   /* Infinite loop */
   for(;;)
   {
-	HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    osDelay(1);
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    osDelay(1000);  // Delay to slow down toggling for easier observation
+    vTaskGetInfo(NULL, &xTaskDetails, pdTRUE, eInvalid);
+    printf("Task Run Time: %lu\n\r", xTaskDetails.ulRunTimeCounter);
   }
   /* USER CODE END 5 */
 }
