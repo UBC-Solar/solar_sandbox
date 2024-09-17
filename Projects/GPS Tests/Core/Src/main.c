@@ -46,7 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+bool g_gps_read_okay = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,6 +57,22 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/**
+  * @brief  Master Rx Transfer completed callback.
+  * @param  hi2c Pointer to a I2C_HandleTypeDef structure that contains
+  *                the configuration information for the specified I2C.
+  * @retval None
+  */
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+  /* Prevent unused argument(s) compilation warning */
+  if(hi2c->Instance == I2C1)
+  {
+    g_gps_read_okay = true;
+  }
+}
+
 
 /* USER CODE END 0 */
 
@@ -110,15 +126,20 @@ int main(void)
     uint8_t data[GPS_MESSAGE_LEN];
     memset(data, 0, GPS_MESSAGE_LEN);
 
-    if (read_i2c_gps_module(data) == true)
+    read_i2c_gps_module(data);
+
+    HAL_Delay(500);
+
+    // If the GPS read was successful, print the data
+    if(g_gps_read_okay)
     {
       HAL_UART_Transmit(&huart2, data, GPS_MESSAGE_LEN, 100);
     }
     else
     {
       strncpy(data, "GPS not connected\r\n", GPS_MESSAGE_LEN);
-      HAL_UART_Transmit(&huart2, data, GPS_MESSAGE_LEN, 100);
     }
+  
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
   }
   /* USER CODE END 3 */
