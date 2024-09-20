@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-
+#include "cpu_load.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -112,7 +112,6 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start(&htim10);
 
   /* USER CODE END 2 */
 
@@ -304,51 +303,30 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartBlink01 */
 void StartBlink01(void const * argument)
 {
-  /* USER CODE BEGIN 5 */
+	  uint32_t startTestTime = HAL_GetTick();
+	  uint32_t testDuration = 10000; // 10 seconds
 
-  // TaskStatus_t structure to hold the task information
-  TaskStatus_t xTaskDetails;
+	  /* Infinite loop */
+	  for(;;)
+	  {
+	    // Run the task for 5 seconds (simulate busy time)
+	    for (int i = 0; i < 5; i++) {
+	        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // Toggle LED
+	        HAL_Delay(1000);  // 1 second delay (task running)
+	    }
 
-  // Retrieve task information for the current task (blink01)
-//  vTaskGetInfo(NULL, &xTaskDetails, pdTRUE, eInvalid);
-//
-//  // Print task information
-//  printf("Task Name: %s\n\r", xTaskDetails.pcTaskName);
-//  printf("Task Handle: %p\n\r", xTaskDetails.xHandle);
-//  printf("Task Priority: %u\n\r", (unsigned int)xTaskDetails.uxCurrentPriority);
-//  printf("Task Stack High Water Mark: %u\n\r", (unsigned int)xTaskDetails.usStackHighWaterMark);
-//  printf("Task State: ");
+	    // Idle time for 5 seconds
+	    for (int i = 0; i < 5; i++) {
+	        osDelay(1000);  // Let system go idle for 5 seconds
+	    }
 
-//  switch (xTaskDetails.eCurrentState)
-//  {
-//    case eReady:
-//        printf("Ready\n");
-//        break;
-//    case eRunning:
-//        printf("Running\n");
-//        break;
-//    case eBlocked:
-//        printf("Blocked\n");
-//        break;
-//    case eSuspended:
-//        printf("Suspended\n");
-//        break;
-//    case eDeleted:
-//        printf("Deleted\n");
-//        break;
-//    default:
-//        printf("Unknown\n");
-//        break;
-//  }
-
-  /* Infinite loop */
-  for(;;)
-  {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    osDelay(1000);  // Delay to slow down toggling for easier observation
-    vTaskGetInfo(NULL, &xTaskDetails, pdTRUE, eInvalid);
-    printf("Task Run Time: %lu\n\r", xTaskDetails.ulRunTimeCounter);
-  }
+	    // Calculate CPU load after the 10 second test period
+	    if (HAL_GetTick() - startTestTime >= testDuration) {
+	        float cpuLoad = calculateCPULoad();
+	        printf("CPU Load: %.2f%%\n\r", cpuLoad);  // Output the calculated CPU load
+	        startTestTime = HAL_GetTick();  // Restart the test period
+	    }
+	  }
   /* USER CODE END 5 */
 }
 

@@ -21,6 +21,7 @@
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:2350:13:uxTaskGetNumberOfTasks	1
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:2358:7:pcTaskGetName	3
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:2505:14:uxTaskGetSystemState	4
+../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:2579:15:xTaskGetIdleTaskHandle	2
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:2609:12:xTaskCatchUpTicks	2
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:2707:12:xTaskIncrementTick	11
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:2989:6:vTaskSwitchContext	5
@@ -59,4 +60,5 @@
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:5026:7:vTaskNotifyGiveFromISR	7
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:5112:13:xTaskNotifyStateClear	3
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:5143:11:ulTaskNotifyValueClear	2
+../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:5169:11:ulTaskGetIdleRunTimeCounter	1
 ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c:5177:13:prvAddCurrentTaskToDelayedList	6

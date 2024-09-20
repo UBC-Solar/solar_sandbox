@@ -1,3 +1,4 @@
+"./Core/Src/cpu_load.o"
 "./Core/Src/freertos.o"
 "./Core/Src/hooks.o"
 "./Core/Src/main.o"

@@ -150,6 +150,26 @@ standard names. */
 
 /* USER CODE BEGIN Defines */
 /* Section where parameter definitions can be added (for instance, to override default ones in FreeRTOS.h) */
+
+extern void taskSwitchedIn(void);
+extern void taskSwitchedOut(void);
+
+#define traceTASK_SWITCHED_IN() taskSwitchedIn()
+#define traceTASK_SWITCHED_OUT() taskSwitchedOut()
+
 /* USER CODE END Defines */
 
 #endif /* FREERTOS_CONFIG_H */
+
+
+
+
+
+
+
+
+
+
+
+
+
