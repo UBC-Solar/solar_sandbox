@@ -1,0 +1,5 @@
+C:/DEV/ubc_solar/solar_sandbox/Projects/cmake_build_proof_of_concept/CMakeFiles/cmake_build_proof_of_concept.dir
+C:/DEV/ubc_solar/solar_sandbox/Projects/cmake_build_proof_of_concept/CMakeFiles/edit_cache.dir
+C:/DEV/ubc_solar/solar_sandbox/Projects/cmake_build_proof_of_concept/CMakeFiles/rebuild_cache.dir
+C:/DEV/ubc_solar/solar_sandbox/Projects/cmake_build_proof_of_concept/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+C:/DEV/ubc_solar/solar_sandbox/Projects/cmake_build_proof_of_concept/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
