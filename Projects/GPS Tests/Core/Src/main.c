@@ -134,10 +134,12 @@ int main(void)
     if(g_gps_read_okay)
     {
       HAL_UART_Transmit(&huart2, data, GPS_MESSAGE_LEN, 100);
+      g_gps_read_okay = false;
     }
     else
     {
       strncpy(data, "GPS not connected\r\n", GPS_MESSAGE_LEN);
+      HAL_UART_Transmit(&huart2, data, GPS_MESSAGE_LEN, 100);
     }
   
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
