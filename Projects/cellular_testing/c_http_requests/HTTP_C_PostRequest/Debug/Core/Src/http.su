@@ -1,0 +1,2 @@
+../Core/Src/http.c:12:7:postFormat	56	static
+../Core/Src/http.c:44:10:getContentLength	40	static
