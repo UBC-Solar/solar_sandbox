@@ -112,6 +112,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_TIM_Base_Start(&htim10);
 
   /* USER CODE END 2 */
 
@@ -213,9 +214,9 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 0;
+  htim10.Init.Prescaler = 16000 - 1;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 4199;
+  htim10.Init.Period = 65536 - 1;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -303,7 +304,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartBlink01 */
 void StartBlink01(void const * argument)
 {
-	  uint32_t startTestTime = HAL_GetTick();
+	  uint32_t startTestTime = __HAL_TIM_GET_COUNTER(&htim10);
 	  uint32_t testDuration = 10000; // 10 seconds
 
 	  /* Infinite loop */
@@ -316,15 +317,13 @@ void StartBlink01(void const * argument)
 	    }
 
 	    // Idle time for 5 seconds
-	    for (int i = 0; i < 5; i++) {
-	        osDelay(1000);  // Let system go idle for 5 seconds
-	    }
+	    osDelay(5000);
 
 	    // Calculate CPU load after the 10 second test period
-	    if (HAL_GetTick() - startTestTime >= testDuration) {
-	        float cpuLoad = calculateCPULoad();
-	        printf("CPU Load: %.2f%%\n\r", cpuLoad);  // Output the calculated CPU load
-	        startTestTime = HAL_GetTick();  // Restart the test period
+	    if (__HAL_TIM_GET_COUNTER(&htim10) - startTestTime >= testDuration) {
+	        float cpuLoad = calculateCPULoad(3000);
+//	        printf("CPU Load: %.2f%%\n\r", cpuLoad);  // Output the calculated CPU load
+//	        startTestTime = __HAL_TIM_GET_COUNTER(&htim10);  // Restart the test period
 	    }
 	  }
   /* USER CODE END 5 */

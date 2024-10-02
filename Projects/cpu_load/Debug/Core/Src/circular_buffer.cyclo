@@ -1,0 +1,2 @@
+../Core/Src/circular_buffer.c:12:5:circ_bbuf_push	1
+../Core/Src/circular_buffer.c:21:5:circ_bbuf_pop	1

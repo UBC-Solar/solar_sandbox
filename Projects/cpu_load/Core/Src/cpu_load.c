@@ -5,18 +5,20 @@
  *      Author: diego
  */
 
-// static uint32_t idleRunTime =0;
-
 #include "cpu_load.h"
+#include "circular_buffer.h"
 
 #define FLOAT_TO_PERCENTAGE 100.0f
 
-
+static uint16_t idleRunTime = 0;
+static uint16_t idle_switched_in = 0;
+static uint16_t window_start_time = 0;
+static uint16_t total_run_time = 0;
 
 void taskSwitchedIn(){
 	TaskHandle_t idleTaskHandle = xTaskGetIdleTaskHandle();
 	if(xTaskGetCurrentTaskHandle() == idleTaskHandle){
-		HAL_TIM_Base_Start(&htim10);
+		idle_switched_in = __HAL_TIM_GET_COUNTER(&htim10);
 	}
 }
 
@@ -24,17 +26,26 @@ void taskSwitchedIn(){
 void taskSwitchedOut(){
 	TaskHandle_t idleTaskHandle = xTaskGetIdleTaskHandle();
 	if(xTaskGetCurrentTaskHandle() == idleTaskHandle){
-		HAL_TIM_Base_Stop(&htim10);
+		idleRunTime += __HAL_TIM_GET_COUNTER(&htim10) - idle_switched_in;
 	}
 }
 
+void resetWindow(){
+	idleRunTime = 0;
+	window_start_time = __HAL_TIM_GET_COUNTER(&htim10);
+}
 
-float calculateCPULoad(){
+float calculateCPULoad(uint16_t window_size_ms){
 
-	uint32_t totalRunTime = HAL_GetTick();
-	uint32_t idleRunTime = __HAL_TIM_GET_COUNTER(&htim10);
+	total_run_time = __HAL_TIM_GET_COUNTER(&htim10) - window_start_time;
 
-	float cpu_load = (1.0f - ((float)idleRunTime / (float)totalRunTime)) * FLOAT_TO_PERCENTAGE;
+	if(total_run_time >= window_size_ms){
+		float cpu_load = (1.0f - ((float)idleRunTime / total_run_time)) * FLOAT_TO_PERCENTAGE;
+		resetWindow();
 
-	return cpu_load;
+		return cpu_load;
+	}
+	else{
+		return -1;
+	}
 }

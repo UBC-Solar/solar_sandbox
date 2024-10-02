@@ -11,12 +11,10 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "stm32f4xx.h"
+#include <stdint.h>
 
 extern TIM_HandleTypeDef htim10;
 
-void taskSwitchedIn(void);
-void taskSwitchedOut(void);
-float calculateCPULoad(void);
-
+float calculateCPULoad(uint16_t);
 
 #endif /* INC_CPU_LOAD_H_ */
