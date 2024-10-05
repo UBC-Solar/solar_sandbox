@@ -1,5 +1,10 @@
+
+
+import machine
+
 import urequests
 import ujson
+import ubinascii
 from machine import UART
 import utime
 
@@ -44,10 +49,25 @@ def generate_can_message():
     can_msg["message24"] = b'\x01\x23\x45\x67\x89\xAB\xCD\xEF\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E'
 
     return can_msg
-
+try:
+    uart = UART(1, 9600)
+    uart.init(9600, bits=8, parity=None, stop=1)
+except Exception as exc:
+    raise RuntimeError("UART cannot be initialised") from exc
 
 while True:
-    can_msg = generate_can_message()  # Create a random CAN message
+  #  can_msg = generate_can_message()  # Create a random CAN message
+    utime.sleep_ms(1000)
+    print("waiting for uart to read")
+    message = uart.read(4)
+
+
+    print(message)
+    if message is None:
+        continue
+    can_msg = dict()
+    can_msg["value"] =  message
+
     can_msg_json = ujson.dumps(can_msg)
 
     try:
