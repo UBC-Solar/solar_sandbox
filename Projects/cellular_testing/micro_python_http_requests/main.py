@@ -1,10 +1,8 @@
 
 
-import machine
-
 import urequests
 import ujson
-import ubinascii
+
 from machine import UART
 import utime
 
@@ -57,27 +55,33 @@ except Exception as exc:
 
 while True:
   #  can_msg = generate_can_message()  # Create a random CAN message
-    utime.sleep_ms(1000)
+
     print("waiting for uart to read")
-    message = uart.read(4)
-
-
-    print(message)
-    if message is None:
-        continue
     can_msg = dict()
-    can_msg["value"] =  message
+    i = 0
+    while i < 50:
+        message = uart.read(22)
+
+
+        if message is None:
+           continue
+        else:
+            print(message)
+            i = i+1
+            can_msg[i] = message
+
 
     can_msg_json = ujson.dumps(can_msg)
 
     try:
         # Make the POST request with error handling
-        print("CAN message JSON:", can_msg_json)
+        #print("CAN message JSON:", can_msg_json)
         print(utime.localtime())
         response = urequests.post(server_url, json=can_msg_json)
-        print("Server Response:", response.text)
+        #print("Server Response:", response.text)
+        print("post response receieved")
         print(utime.localtime())
     except Exception as e:
         print("Error sending POST request:", e)
 
-    utime.sleep_ms(10000)
+    utime.sleep_ms(1000)
