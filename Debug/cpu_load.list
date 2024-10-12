@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000091d8  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00014ba3  00000000  00000000  00009208  2**0
+ 12 .debug_info   00014be8  00000000  00000000  00009208  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000030a1  00000000  00000000  0001ddab  2**0
+ 13 .debug_abbrev 00003098  00000000  00000000  0001ddf0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000011e8  00000000  00000000  00020e50  2**3
+ 14 .debug_aranges 000011e0  00000000  00000000  00020e88  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000ddc  00000000  00000000  00022038  2**0
+ 15 .debug_rnglists 00000dd6  00000000  00000000  00022068  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00018204  00000000  00000000  00022e14  2**0
+ 16 .debug_macro  0001820a  00000000  00000000  00022e3e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00014b55  00000000  00000000  0003b018  2**0
+ 17 .debug_line   00014b41  00000000  00000000  0003b048  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00098b4f  00000000  00000000  0004fb6d  2**0
+ 18 .debug_str    00098b99  00000000  00000000  0004fb89  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000e86bc  2**0
+ 19 .comment      00000043  00000000  00000000  000e8722  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000059e8  00000000  00000000  000e8700  2**2
+ 20 .debug_frame  000059c0  00000000  00000000  000e8768  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000055  00000000  00000000  000ee0e8  2**0
+ 21 .debug_line_str 00000055  00000000  00000000  000ee128  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1201,10 +1201,10 @@ Disassembly of section .text:
  8000ea6:	bf00      	nop
 
 08000ea8 <taskSwitchedIn>:
-static uint16_t idleRunTime = 0;
-static uint16_t idle_switched_in = 0;
-static uint16_t window_start_time = 0;
-static uint16_t total_run_time = 0;
+    .head = 0,
+    .tail = 0,
+    .num_entries = 0,
+};
 
 void taskSwitchedIn(){
  8000ea8:	b580      	push	{r7, lr}
@@ -1236,7 +1236,6 @@ void taskSwitchedIn(){
  8000ed8:	200001f6 	.word	0x200001f6
 
 08000edc <taskSwitchedOut>:
-
 
 void taskSwitchedOut(){
  8000edc:	b580      	push	{r7, lr}
@@ -1277,10 +1276,6 @@ void taskSwitchedOut(){
  8000f20:	200001f4 	.word	0x200001f4
 
 08000f24 <resetWindow>:
-
-}
-
-
 
 void resetWindow(){
  8000f24:	b480      	push	{r7}

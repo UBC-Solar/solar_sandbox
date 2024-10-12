@@ -7,52 +7,25 @@
 
 #include "circular_buffer.h"
 
-#define MAX_LEN 20
+bool circ_buf_full(circ_buf_t *p_circ_bbuf_t, uint8_t maxlen) {
+    return (p_circ_bbuf_t->num_entries == maxlen);
+}
 
-// Declare a circular buffer with a fixed-size array
-static uint8_t buffer[MAX_LEN];
-
-circ_bbuf_t circ_bbuf = {
-    .pBuffer = buffer,
-    .head = 0,
-    .tail = 0,
-    .num_entries = 0,
-    .maxlen = MAX_LEN
-};
-
-bool circ_bbuf_empty(circ_bbuf_t *p_circ_bbuf_t) {
+bool circ_buf_empty(circ_buf_t *p_circ_bbuf_t) {
     return (p_circ_bbuf_t->num_entries == 0);
 }
 
-bool circ_bbuf_full(circ_bbuf_t *p_circ_bbuf_t) {
-    return (p_circ_bbuf_t->num_entries == p_circ_bbuf_t->maxlen);
-}
-
-
-int circ_bbuf_push(circ_bbuf_t *pBuffer, uint8_t data) {
-    if (pBuffer->num_entries >= pBuffer->maxlen) {
+int circ_buf_enqueue(circ_buf_t *pBuffer, float data, uint8_t maxlen) {
+    if (circ_buf_full(pBuffer, maxlen)) {
         // Buffer is full; overwrite the oldest entry
-        pBuffer->tail = (pBuffer->tail + 1) % pBuffer->maxlen;
+        pBuffer->tail = (pBuffer->tail + 1) % maxlen;
     } else {
         pBuffer->num_entries++;
     }
 
     // Insert the data and move the head
     pBuffer->pBuffer[pBuffer->head] = data;
-    pBuffer->head = (pBuffer->head + 1) % pBuffer->maxlen;
-
-    return 0;  // Success
-}
-
-int circ_bbuf_pop(circ_bbuf_t *pBuffer, uint8_t *data) {
-    if (circ_bbuf_empty(pBuffer)) {
-        return -1;  // Buffer is empty
-    }
-
-    // Retrieve data from the tail and move the tail forward
-    *data = pBuffer->pBuffer[pBuffer->tail];
-    pBuffer->tail = (pBuffer->tail + 1) % pBuffer->maxlen;
-    pBuffer->num_entries--;
+    pBuffer->head = (pBuffer->head + 1) % maxlen;
 
     return 0;  // Success
 }

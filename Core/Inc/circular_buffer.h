@@ -14,14 +14,11 @@
 typedef struct {
     float *pBuffer;
     int head, tail, num_entries;
-    int maxlen;
-} circ_bbuf_t;
+} circ_buf_t;
 
+int circ_buf_enqueue(circ_buf_t *pBuffer, float data, uint8_t maxlen);
+int circ_buf_empty(circ_buf_t *p_circ_bbuf_t);
 
-int circ_bbuf_push(circ_bbuf_t *pBuffer, uint8_t data);
-int circ_bbuf_pop(circ_bbuf_t *pBuffer, uint8_t *data);
-bool circ_bbuf_empty(circ_bbuf_t *p_circ_bbuf_t);
-bool circ_bbuf_full(circ_bbuf_t *p_circ_bbuf_t);
 
 #endif /* INC_CIRCULAR_BUFFER_H_ */
 

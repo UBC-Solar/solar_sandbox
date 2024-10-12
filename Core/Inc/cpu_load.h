@@ -15,6 +15,6 @@
 
 extern TIM_HandleTypeDef htim10;
 
-float calculateCPULoad(uint16_t);
+float getAverageCPULoad();
 
 #endif /* INC_CPU_LOAD_H_ */
