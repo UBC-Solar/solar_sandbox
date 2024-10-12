@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-
+#include "cpu_load.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -214,9 +214,9 @@ static void MX_TIM10_Init(void)
 
   /* USER CODE END TIM10_Init 1 */
   htim10.Instance = TIM10;
-  htim10.Init.Prescaler = 0;
+  htim10.Init.Prescaler = 16000 - 1;
   htim10.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim10.Init.Period = 4199;
+  htim10.Init.Period = 65536 - 1;
   htim10.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim10.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim10) != HAL_OK)
@@ -304,51 +304,28 @@ static void MX_GPIO_Init(void)
 /* USER CODE END Header_StartBlink01 */
 void StartBlink01(void const * argument)
 {
-  /* USER CODE BEGIN 5 */
+	  uint32_t startTestTime = __HAL_TIM_GET_COUNTER(&htim10);
+	  uint32_t testDuration = 10000; // 10 seconds
 
-  // TaskStatus_t structure to hold the task information
-  TaskStatus_t xTaskDetails;
+	  /* Infinite loop */
+	  for(;;)
+	  {
+	    // Run the task for 5 seconds (simulate busy time)
+	    for (int i = 0; i < 5; i++) {
+	        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // Toggle LED
+	        HAL_Delay(1000);  // 1 second delay (task running)
+	    }
 
-  // Retrieve task information for the current task (blink01)
-//  vTaskGetInfo(NULL, &xTaskDetails, pdTRUE, eInvalid);
-//
-//  // Print task information
-//  printf("Task Name: %s\n\r", xTaskDetails.pcTaskName);
-//  printf("Task Handle: %p\n\r", xTaskDetails.xHandle);
-//  printf("Task Priority: %u\n\r", (unsigned int)xTaskDetails.uxCurrentPriority);
-//  printf("Task Stack High Water Mark: %u\n\r", (unsigned int)xTaskDetails.usStackHighWaterMark);
-//  printf("Task State: ");
+	    // Idle time for 5 seconds
+	    osDelay(5000);
 
-//  switch (xTaskDetails.eCurrentState)
-//  {
-//    case eReady:
-//        printf("Ready\n");
-//        break;
-//    case eRunning:
-//        printf("Running\n");
-//        break;
-//    case eBlocked:
-//        printf("Blocked\n");
-//        break;
-//    case eSuspended:
-//        printf("Suspended\n");
-//        break;
-//    case eDeleted:
-//        printf("Deleted\n");
-//        break;
-//    default:
-//        printf("Unknown\n");
-//        break;
-//  }
-
-  /* Infinite loop */
-  for(;;)
-  {
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    osDelay(1000);  // Delay to slow down toggling for easier observation
-    vTaskGetInfo(NULL, &xTaskDetails, pdTRUE, eInvalid);
-    printf("Task Run Time: %lu\n\r", xTaskDetails.ulRunTimeCounter);
-  }
+	    // Calculate CPU load after the 10 second test period
+	    if (__HAL_TIM_GET_COUNTER(&htim10) - startTestTime >= testDuration) {
+	        float cpuLoad = calculateCPULoad(3000);
+//	        printf("CPU Load: %.2f%%\n\r", cpuLoad);  // Output the calculated CPU load
+//	        startTestTime = __HAL_TIM_GET_COUNTER(&htim10);  // Restart the test period
+	    }
+	  }
   /* USER CODE END 5 */
 }
 

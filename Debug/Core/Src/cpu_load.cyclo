@@ -1,0 +1,5 @@
+../Core/Src/cpu_load.c:18:6:taskSwitchedIn	2
+../Core/Src/cpu_load.c:26:6:taskSwitchedOut	2
+../Core/Src/cpu_load.c:33:6:CPULoadConfig	1
+../Core/Src/cpu_load.c:39:6:resetWindow	1
+../Core/Src/cpu_load.c:44:7:calculateCPULoad	2

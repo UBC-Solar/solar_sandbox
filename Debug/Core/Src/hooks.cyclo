@@ -1,2 +1,0 @@
-../Core/Src/hooks.c:15:6:vApplicationIdleHook	2
-../Core/Src/hooks.c:30:7:calculateCPULoad	1
