@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -57,6 +58,31 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 uint8_t tx_data[10240];
 int complete = 1;
+int indx = 49;
+
+void HAL_UART_TxHalfCpltCallback(UART_HandleTypeDef *huart)
+{
+    for(uint32_t i = 0; i < 5120; i++)
+	  {
+		tx_data[i] = indx;
+	  }
+	  indx++;
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  for(uint32_t i = 5120; i < 10240; i++)
+	{
+    	tx_data[i] = indx;
+	}
+    indx++;
+
+	if(indx >= 60)
+	{
+		HAL_UART_DMAStop(&huart2);
+	}
+	complete = 1;
+}
 /* USER CODE END 0 */
 
 /**
@@ -67,7 +93,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-memset(tx_data, 'A', sizeof(tx_data));
+  // memset(tx_data, 'A', sizeof(tx_data));
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -88,28 +114,43 @@ memset(tx_data, 'A', sizeof(tx_data));
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
- /*
- for(uint32_t i = 0; i < 10240; i++) 
- {
+  for(uint32_t i = 0; i < 10240; i++)
+  {
     tx_data[i] = i&(0xff);
- }
- */
+  }
+
+  HAL_UART_Transmit_DMA(&huart2, tx_data, 10240);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-    if(complete == 1) 
+    /*
+    Interrupt Method
+
+    if(complete == 1)
     {
       HAL_UART_Transmit_IT(&huart2, tx_data, 10240);
+      complete = 0;
     }
+    */
+
+   /*
+   if(complete == 1)
+    {
+      HAL_UART_Transmit_DMA(&huart2, tx_data, 10240);
+      complete = 0;
+    }
+   */
     
     HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    HAL_Delay(500);
+    HAL_Delay(1000);
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -154,10 +195,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart2)
-{
-	complete = 1;
-}
+
 /* USER CODE END 4 */
 
 /**
