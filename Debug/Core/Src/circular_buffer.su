@@ -1,2 +1,3 @@
 ../Core/Src/circular_buffer.c:10:6:circ_buf_full	16	static
-../Core/Src/circular_buffer.c:14:5:circ_buf_enqueue	24	static
+../Core/Src/circular_buffer.c:14:6:CIRC_BUF_empty	16	static
+../Core/Src/circular_buffer.c:18:5:CIRC_BUF_enqueue	24	static

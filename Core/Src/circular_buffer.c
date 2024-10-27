@@ -11,21 +11,21 @@ bool circ_buf_full(circ_buf_t *p_circ_bbuf_t, uint8_t maxlen) {
     return (p_circ_bbuf_t->num_entries == maxlen);
 }
 
-bool circ_buf_empty(circ_buf_t *p_circ_bbuf_t) {
+bool CIRC_BUF_empty(circ_buf_t *p_circ_bbuf_t) {
     return (p_circ_bbuf_t->num_entries == 0);
 }
 
-int circ_buf_enqueue(circ_buf_t *pBuffer, float data, uint8_t maxlen) {
-    if (circ_buf_full(pBuffer, maxlen)) {
+int CIRC_BUF_enqueue(circ_buf_t *p_circ_buf_t, float data, uint8_t maxlen) {
+    if (circ_buf_full(p_circ_buf_t, maxlen)) {
         // Buffer is full; overwrite the oldest entry
-        pBuffer->tail = (pBuffer->tail + 1) % maxlen;
+    	p_circ_buf_t->tail = (p_circ_buf_t->tail + 1) % maxlen;
     } else {
-        pBuffer->num_entries++;
+    	p_circ_buf_t->num_entries++;
     }
 
     // Insert the data and move the head
-    pBuffer->pBuffer[pBuffer->head] = data;
-    pBuffer->head = (pBuffer->head + 1) % maxlen;
+    p_circ_buf_t->pBuffer[p_circ_buf_t->head] = data;
+    p_circ_buf_t->head = (p_circ_buf_t->head + 1) % maxlen;
 
     return 0;  // Success
 }

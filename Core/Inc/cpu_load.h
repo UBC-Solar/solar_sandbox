@@ -15,6 +15,7 @@
 
 extern TIM_HandleTypeDef htim10;
 
-float getAverageCPULoad();
+float CPU_LOAD_buf_init(uint8_t window_size, uint8_t frequency_ms);
+float CPU_LOAD_average();
 
 #endif /* INC_CPU_LOAD_H_ */

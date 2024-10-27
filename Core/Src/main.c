@@ -310,20 +310,18 @@ void StartBlink01(void const * argument)
 	  /* Infinite loop */
 	  for(;;)
 	  {
-	    // Run the task for 5 seconds (simulate busy time)
 	    for (int i = 0; i < 5; i++) {
 	        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);  // Toggle LED
-	        HAL_Delay(1000);  // 1 second delay (task running)
+	        osDelay(1000);
+	        CPU_LOAD_buf_init(5, 1000);
 	    }
 
 	    // Idle time for 5 seconds
-	    osDelay(5000);
+	    HAL_Delay(5000);
 
 	    // Calculate CPU load after the 10 second test period
 	    if (__HAL_TIM_GET_COUNTER(&htim10) - startTestTime >= testDuration) {
-	        float cpuLoad = calculateCPULoad(3000);
-//	        printf("CPU Load: %.2f%%\n\r", cpuLoad);  // Output the calculated CPU load
-//	        startTestTime = __HAL_TIM_GET_COUNTER(&htim10);  // Restart the test period
+	    	float cpu_average = CPU_LOAD_average();
 	    }
 	  }
   /* USER CODE END 5 */
