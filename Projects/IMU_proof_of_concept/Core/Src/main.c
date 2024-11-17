@@ -72,7 +72,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	uint8_t buf[16];
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -107,6 +107,8 @@ int main(void)
     /* USER CODE END WHILE */
 	  HAL_GPIO_TogglePin (GPIOA, GPIO_PIN_5);
 	  HAL_Delay (200);
+	  strcpy((char*)buf, "IMU DATA: \n");
+	  HAL_UART_TRANSMIT(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
     /* USER CODE BEGIN 3 */
   }  /* USER CODE END 3 */
 }
