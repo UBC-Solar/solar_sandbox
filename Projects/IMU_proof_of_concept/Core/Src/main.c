@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "stdio.h"
+#include "string.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -46,7 +48,9 @@ DMA_HandleTypeDef hdma_i2c1_rx;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+static const uint8_t IMU_ADDRESS = 0x6B << 1; //use 8 bits for the address
+static const uint8_t OUTX_L_A = 0x29; //Linear Acceleration x-axis register address
+static const uint8_t CTRL_1 = 0x10; //Address of CTRL1 register
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -72,7 +76,10 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	uint8_t buf[16];
+	HAL_StatusTypeDef ret;
+	uint8_t buf[300];
+	uint8_t val;
+	float x_acc;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -104,11 +111,32 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  buf[0] = 0x10; //CTRL-1 Register Address
+	  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK){
+		  strcpy((char*)buf, "Error Tx \r\n");
+	  }
+	  else{
+		  buf[0] = 0x74; //CTRL 1 Register Value to be set
+		  if(HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS, CTRL_1, 1, buf, 1, HAL_MAX_DELAY) != HAL_OK){
+			  strcpy((char*)buf, "Error CTRL1 \r\n");
+		  }
+
+		  else{
+			  buf[0] = OUTX_L_A; // Register address to read
+			  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
+			      strcpy((char*)buf, "Error 2NDTX \r\n");
+			  } else if (HAL_I2C_Master_Receive(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
+			      strcpy((char*)buf, "Error Rx \r\n");
+			  }
+			  else{
+				  sprintf((char*)buf, "IMU Data: %u \r\n", val);
+				  HAL_UART_Transmit(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
+			  }
+		  }
+	  }
     /* USER CODE END WHILE */
 	  HAL_GPIO_TogglePin (GPIOA, GPIO_PIN_5);
-	  HAL_Delay (200);
-	  strcpy((char*)buf, "IMU DATA: \n");
-	  HAL_UART_TRANSMIT(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
+	  HAL_Delay (1000);
     /* USER CODE BEGIN 3 */
   }  /* USER CODE END 3 */
 }
