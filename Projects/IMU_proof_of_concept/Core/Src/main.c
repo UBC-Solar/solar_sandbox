@@ -48,9 +48,13 @@ DMA_HandleTypeDef hdma_i2c1_rx;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-static const uint8_t IMU_ADDRESS = 0x6B << 1; //use 8 bits for the address
-static const uint8_t OUTX_L_A = 0x29; //Linear Acceleration x-axis register address
-static const uint8_t CTRL_1 = 0x10; //Address of CTRL1 register
+static const uint8_t IMU_ADDRESS_WRITE = 0xD6; //use 8 bits for the address
+static const uint8_t IMU_ADDRESS_READ = 0xD7; //use 8 bits for the address
+static const uint16_t IMU_ADDRESS = 0x6B << 1;
+
+static const uint8_t OUTX_L_A = 0x28; //Linear Acceleration x-axis register address
+static const uint8_t OUTX_H_A = 0x29; //Linear Acceleration x-axis register address
+static const uint16_t CTRL_1 = 0x10; //Address of CTRL1 register
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,7 +81,7 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 	HAL_StatusTypeDef ret;
-	uint8_t buf[300];
+	uint8_t buf[50];
 	uint8_t val;
 	float x_acc;
   /* USER CODE END 1 */
@@ -111,32 +115,47 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  buf[0] = 0x10; //CTRL-1 Register Address
-	  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK){
-		  strcpy((char*)buf, "Error Tx \r\n");
-	  }
-	  else{
-		  buf[0] = 0x74; //CTRL 1 Register Value to be set
-		  if(HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS, CTRL_1, 1, buf, 1, HAL_MAX_DELAY) != HAL_OK){
-			  strcpy((char*)buf, "Error CTRL1 \r\n");
-		  }
+//	  buf[0] = 0x10; //CTRL-1 Register Address
+//	  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK){
+//		  strcpy((char*)buf, "Error Tx \r\n");
+//	  }
+//	  else{
+//		  buf[0] = 0x74; //CTRL 1 Register Value to be set
+//		  if(HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS_WRITE, CTRL_1, 1, buf, 1, HAL_MAX_DELAY) != HAL_OK){
+//			  strcpy((char*)buf, "Error CTRL1 \r\n");
+//		  }
+//
+//		  else{
+//			  buf[0] = OUTX_L_A; // Register address to read
+//			  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
+//			      strcpy((char*)buf, "Error 2NDTX \r\n");
+//			  } else if (HAL_I2C_Master_Receive(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
+//			      strcpy((char*)buf, "Error Rx \r\n");
+//			  }
+//			  else{
+//				  sprintf((char*)buf, "IMU Data: %u \r\n", val);
+//				  HAL_UART_Transmit(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
+//			  }
+//		  }
+//	  }
 
-		  else{
-			  buf[0] = OUTX_L_A; // Register address to read
-			  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
-			      strcpy((char*)buf, "Error 2NDTX \r\n");
-			  } else if (HAL_I2C_Master_Receive(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
-			      strcpy((char*)buf, "Error Rx \r\n");
-			  }
-			  else{
-				  sprintf((char*)buf, "IMU Data: %u \r\n", val);
-				  HAL_UART_Transmit(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
-			  }
-		  }
-	  }
     /* USER CODE END WHILE */
 	  HAL_GPIO_TogglePin (GPIOA, GPIO_PIN_5);
-	  HAL_Delay (1000);
+	  HAL_Delay (200);
+
+	  buf[0] = 0x74; //CTRL 1 Register Value to be set
+
+
+	  if (HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS_WRITE, CTRL_1, 1, buf, 1, 100) != HAL_OK){
+		  strcpy((char*)buf, "Error Tx \r\n");
+	  }
+
+	  if (HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS_READ, OUTX_L_A, 1, buf, 1, 100) != HAL_OK){
+		  strcpy((char*)buf, "Error Rx \r\n");
+	  }
+
+	  HAL_UART_Transmit(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
+
     /* USER CODE BEGIN 3 */
   }  /* USER CODE END 3 */
 }
