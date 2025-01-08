@@ -1,0 +1,14 @@
+CAN_Messages:
+  - id: 0x100
+    extended_id: false
+    name: MotorDiagnostics
+    sender: MDI
+    receivers:
+      - MCB
+      - TEL
+    signals:
+      - name: vehicle_speed
+        datatype: float
+        unit: m/s
+      - name: drive_state
+        datatype: uint8_t
