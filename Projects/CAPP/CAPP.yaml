@@ -12,3 +12,18 @@ CAN_Messages:
         unit: m/s
       - name: drive_state
         datatype: uint8_t
+        unit: N/A
+  - id: 0x101
+    extended_id: false
+    name: MCBDiagnostics
+    sender: MCB
+    receivers:
+      - MCB
+      - TEL
+    signals:
+      - name: vehicle_speed
+        datatype: float
+        unit: m/s
+      - name: drive_state
+        datatype: uint8_t
+        unit: N/A
