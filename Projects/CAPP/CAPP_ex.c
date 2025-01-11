@@ -4,36 +4,63 @@
 
 // Includes
 #include <stdint.h>
+#include <stdbool.h>
 #include "CAPP.h"
 
-// Local copies
-CAPP_MotorDiagnostics_t CAPP_MotorDiagnostics;
+#define MASK(bits) ((1ULL << (bits)) - 1)
 
-float extract_float(uint8_t* data, uint8_t start_byte) 
+uint8_t CAPP_parse_uint8_t(uint8_t* buffer, uint8_t buf_len, uint8_t start_bit)
 {
    union {
-      uint8_t bytes[4];
-      float value;
-   } converter;
+      uint8_t bytes[8];
+      uint64_t value;
+   } buffer_u;
 
-   for (int i = 0; i < 4; i++) {
-      converter.bytes[i] = data[start_byte + i];
+   union {
+      uint8_t bytes[1];
+      uint8_t value;
+   } data;
+
+   for (uint8_t i = 0; i < buf_len; i++) {
+      buffer_u.bytes[i] = buffer[i];
    }
 
-   return converter.value;
-}
+   buffer_u.value = (buffer_u.value >> start_bit) & (MASK(8));
 
-void CAPP_Parse_CAPP_MotorDiagnostics(uint8_t* CAN_data)
-{
-   CAPP_MotorDiagnostics.vehicle_speed = extract_float(CAN_data, 0);
-}
-
-
-void CAPP_Rx_CAN_Message(uint8_t CAN_ID, uint8_t* CAN_data)
-{
-   switch (CAN_ID) 
-   {
-      case(CAPP_MOTORDIAGNOSTICS_CAN_ID):
-         CAPP_Parse_MotorDiagnostics(CAN_data);
+   for (int i = 0; i < 1; i++) {
+      data.bytes[i] = buffer_u.bytes[i];
    }
+
+   return data.value;
+}
+
+void CAPP_package_uint8_t(uint8_t* buffer, uint8_t buf_len, uint8_t start_bit, uint8_t value)
+{
+   union {
+      uint8_t bytes[8];
+      uint64_t value;
+   } buffer_u;
+
+   union {
+      uint64_t buffer;
+      uint8_t value;
+   } data = {0};
+
+   for (uint8_t i = 0; i < buf_len; i++) {
+      buffer_u.bytes[i] = buffer[i];
+   }
+
+   data.value = value;
+
+   buffer_u.value = buffer_u.value | ((data.buffer << start_bit));
+
+   for (int i = 0; i < 8; i++) {
+      buffer[i] = buffer_u.bytes[i];
+   }
+}
+
+
+void CAPP_Parse_MotorDiagnostics(MotorDiagnostics_t* MotorDiagnostics, uint8_t* CAN_data)
+{
+   MotorDiagnostics->vehicle_speed = parse_float(CAN_data, 0);
 }

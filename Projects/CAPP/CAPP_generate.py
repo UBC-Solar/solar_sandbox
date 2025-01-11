@@ -142,21 +142,6 @@ def write_CAN_Message_parser(file, CAN_message):
 
     file.write(parser)
 
-def write_CAN_parser(file, CAN_messages):
-    parser = ""
-    parser += "void CAPP_Rx_CAN_Message(uint8_t CAN_ID, uint8_t* data)\n"
-    parser += "{\n"
-    parser += "   switch(CAN_ID)\n"
-    parser += "   {\n"
-    for CAN_message in CAN_messages:
-        parser += f"      case({CAN_message.name.upper()}_CAN_ID):\n"
-        parser += f"         CAPP_Parse_{CAN_message.name}(data);\n"
-        parser += f"         break;\n"
-    parser += "   }\n"
-    parser += "}\n"
-    
-    file.write(parser)
-
 # Generate struct typedefs
 with open(project_path + "CAPP.c", "w") as CAPP_c:
     write_common_header(CAPP_c)
@@ -165,8 +150,6 @@ with open(project_path + "CAPP.c", "w") as CAPP_c:
 
     for CAN_message in CAN_messages:
         write_CAN_Message_parser(CAPP_c, CAN_message)
-
-    write_CAN_parser(CAPP_c, CAN_messages)
 
 
 
