@@ -1,5 +1,6 @@
 import yaml
 from git import Repo
+import textwrap
 
 class CAN_Message:
     def __init__(self, id, name, sender, receivers, signals):
@@ -16,21 +17,19 @@ class CAN_Signal:
         self.datatype = datatype
         self.unit = unit
 
-# Supported datatypes and their size in bytes
-supported_datatypes = {"uint8_t": 1, 
-                       "int8_t": 1, 
-                       "uint16_t": 2,
-                       "int16_t": 2, 
-                       "uint32_t": 4, 
-                       "int32_t": 4, 
-                       "uint64_t": 8, 
-                       "int64_t": 8, 
-                       "float": 4, 
-                       "double": 8
+# Supported datatypes and their size in bits
+supported_datatypes = {"bool": 1,
+                       "uint8_t": 8,
+                       "int8_t": 8,
+                       "uint16_t": 16,
+                       "int16_t": 16,
+                       "uint32_t": 32,
+                       "int32_t": 32,
+                       "uint64_t": 64,
+                       "int64_t": 64,
+                       "float": 32,
+                       "double": 64
                     }
-
-
-
 
 # Specify the path to your repository (or use '.' for the current directory)
 repo_path = '.'
@@ -83,38 +82,73 @@ def write_common_header(file):
 def write_CAPP_c_header(file, CAN_messages):
     header = ""
     header += "#include <stdint.h>\n"
+    header += "#include <stdbool.h>\n"
     header += "#include \"CAPP.h\"\n\n"
 
     header += "// Local variables\n"
 
-    for CAN_message in CAN_messages:
-        header += f"{CAN_message.name}_t {CAN_message.name} = {{0}};\n"
-    
     header += "\n"
 
     file.write(header)
 
-def write_CAPP_extract_functions(file):
-    extract_functions = ""
+def write_CAPP_parse_package_functions(file):
+    code = ""
 
     for datatype in supported_datatypes:
-        extract_functions += f"""{datatype} extract_{datatype}(uint8_t* data, uint8_t start_byte)
-{{
-   union {{
-      uint8_t bytes[{supported_datatypes[datatype]}];
-      {datatype} value;
-   }} converter;
+        code += f"""\
+        {datatype} CAPP_parse_{datatype}(uint8_t* buffer, uint8_t buf_len, uint8_t start_bit)
+        {{
+           union {{
+              uint8_t bytes[8];
+              uint64_t value;
+           }} buffer_u;
 
-   for (int i = 0; i < {supported_datatypes[datatype]}; i++) {{
-      converter.bytes[i] = data[start_byte + i];
-   }}
+           union {{
+              uint8_t bytes[1];
+              {datatype} value;
+           }} data;
 
-   return converter.value;
-}}
+           for (uint8_t i = 0; i < buf_len; i++) {{
+              buffer_u.bytes[i] = buffer[i];
+           }}
 
+           buffer_u.value = (buffer_u.value >> start_bit) & (MASK({supported_datatypes[datatype]}));
+
+           for (int i = 0; i < {supported_datatypes[datatype] * 8}; i++) {{
+              data.bytes[i] = buffer_u.bytes[i];
+           }}
+
+           return data.value;
+        }}
+        \n
+        void CAPP_package_{datatype}(uint8_t* buffer, uint8_t buf_len, uint8_t start_bit, {datatype} value)
+        {{
+           union {{
+              uint8_t bytes[8];
+              uint64_t value;
+           }} buffer_u;
+
+           union {{
+              uint64_t buffer;
+              {datatype} value;
+           }} data = {{0}};
+        
+           for (uint8_t i = 0; i < buf_len; i++) {{
+              buffer_u.bytes[i] = buffer[i];
+           }}
+        
+           data.value = value;
+
+           buffer_u.value = buffer_u.value | ((data.buffer << start_bit));
+        
+           for (int i = 0; i < 8; i++) {{
+              buffer[i] = buffer_u.bytes[i];
+           }}
+        }}
+        \n
 """
 
-    file.write(extract_functions)
+    file.write(textwrap.dedent(code))
 
 
 def write_CAN_message_struct(file, CAN_message):
@@ -131,22 +165,22 @@ def write_CAN_message_struct(file, CAN_message):
 
 
 def write_CAN_Message_parser(file, CAN_message):
-    parser = ""
-    parser += f"void CAPP_Parse_{CAN_message.name}(uint8_t* data)\n"
-    parser += "{\n"
-    start_byte = 0
+    code = ""
+    code += f"void CAPP_Parse_{CAN_message.name}(uint8_t* data)\n"
+    code += "{\n"
+    start_bit = 0
     for signal in CAN_message.signals:
-        parser += f"   {CAN_message.name}.signal = extract_{signal.datatype}(data, {start_byte});\n"
-        start_byte += supported_datatypes[signal.datatype]
-    parser += "}\n\n"
+        code += f"   {CAN_message.name}.{signal} = CAPP_parse_{signal.datatype}(data, {start_bit});\n"
+        start_bit += supported_datatypes[signal.datatype]
+    code += "}\n\n"
 
-    file.write(parser)
+    file.write(code)
 
 # Generate struct typedefs
 with open(project_path + "CAPP.c", "w") as CAPP_c:
     write_common_header(CAPP_c)
     write_CAPP_c_header(CAPP_c, CAN_messages)
-    write_CAPP_extract_functions(CAPP_c)
+    write_CAPP_parse_package_functions(CAPP_c)
 
     for CAN_message in CAN_messages:
         write_CAN_Message_parser(CAPP_c, CAN_message)
