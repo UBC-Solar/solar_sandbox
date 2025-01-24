@@ -140,7 +140,7 @@ int main(void)
 	  //ret2 = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTX_L_A, 1, &buf[0], 1, HAL_MAX_DELAY);
 //	  int16_t Accel_X = (int16_t)(Accel_X | buf[1]);
 
-	  if (ret == HAL_OK) {
+	  if (ret != HAL_OK) {
 		  sprintf((char*)debug_buf, "Error reading accel: %d\r\n", ret);
 		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
 	  }
