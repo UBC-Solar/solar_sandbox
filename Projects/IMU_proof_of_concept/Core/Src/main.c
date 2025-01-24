@@ -18,12 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stdio.h"
-#include "string.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,13 +48,14 @@ DMA_HandleTypeDef hdma_i2c1_rx;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-static const uint8_t IMU_ADDRESS_WRITE = 0xD6; //use 8 bits for the address
-static const uint8_t IMU_ADDRESS_READ = 0xD7; //use 8 bits for the address
-static const uint16_t IMU_ADDRESS = 0x6B << 1;
+#define IMU_ADDRESS (0x6B << 1)
 
-static const uint8_t OUTX_L_A = 0x28; //Linear Acceleration x-axis register address
-static const uint8_t OUTX_H_A = 0x29; //Linear Acceleration x-axis register address
-static const uint16_t CTRL_1 = 0x10; //Address of CTRL1 register
+#define OUTX_L_A 0x28 //Linear Acceleration x-axis register address
+#define OUTX_H_A 0x29 //Linear Acceleration x-axis register address
+#define CTRL_1 0x10 //Address of CTRL1 register
+
+#define NUM_ACCEL_BYTES 2
+#define NUM_GYRO_BYTES 2
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,10 +81,17 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	int8_t buf[2];
+	int8_t debug_buf[100];
 	HAL_StatusTypeDef ret;
-	uint8_t buf[50];
-	uint8_t val;
-	float x_acc;
+
+//	struct  {
+//	  float x;
+//	  float y;
+//	  float z;
+//	};
+
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -115,48 +123,35 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  buf[0] = 0x10; //CTRL-1 Register Address
-//	  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK){
-//		  strcpy((char*)buf, "Error Tx \r\n");
-//	  }
-//	  else{
-//		  buf[0] = 0x74; //CTRL 1 Register Value to be set
-//		  if(HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS_WRITE, CTRL_1, 1, buf, 1, HAL_MAX_DELAY) != HAL_OK){
-//			  strcpy((char*)buf, "Error CTRL1 \r\n");
-//		  }
-//
-//		  else{
-//			  buf[0] = OUTX_L_A; // Register address to read
-//			  if (HAL_I2C_Master_Transmit(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
-//			      strcpy((char*)buf, "Error 2NDTX \r\n");
-//			  } else if (HAL_I2C_Master_Receive(&hi2c1, IMU_ADDRESS, buf, 1, HAL_MAX_DELAY) != HAL_OK) {
-//			      strcpy((char*)buf, "Error Rx \r\n");
-//			  }
-//			  else{
-//				  sprintf((char*)buf, "IMU Data: %u \r\n", val);
-//				  HAL_UART_Transmit(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
-//			  }
-//		  }
-//	  }
-
     /* USER CODE END WHILE */
-	  HAL_GPIO_TogglePin (GPIOA, GPIO_PIN_5);
-	  HAL_Delay (200);
-
-	  buf[0] = 0x74; //CTRL 1 Register Value to be set
-
-
-	  if (HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS_WRITE, CTRL_1, 1, buf, 1, 100) != HAL_OK){
-		  strcpy((char*)buf, "Error Tx \r\n");
-	  }
-
-	  if (HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS_READ, OUTX_L_A, 1, buf, 1, 100) != HAL_OK){
-		  strcpy((char*)buf, "Error Rx \r\n");
-	  }
-
-	  HAL_UART_Transmit(&huart2, buf, strlen((char*)buf), HAL_MAX_DELAY);
 
     /* USER CODE BEGIN 3 */
+    // Read OUTX_L_A and OUTX_H_A
+	  // Write to CTRL1 register
+		buf[0] = 0x74; // Set ODR to 30 Hz, normal mode
+		ret = HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS, CTRL_1, 1, buf, 1, HAL_MAX_DELAY);
+		if (ret != HAL_OK) {
+		  sprintf((char*)debug_buf, "Error writing CTRL1: %d\r\n", ret);
+		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
+		}
+
+	  ret = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTX_L_A, 1, buf, 2, HAL_MAX_DELAY);
+//	  int16_t Accel_X = (int16_t)(buf[1] << 8 | buf[0]);
+	  //ret2 = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTX_L_A, 1, &buf[0], 1, HAL_MAX_DELAY);
+//	  int16_t Accel_X = (int16_t)(Accel_X | buf[1]);
+
+	  if (ret == HAL_OK) {
+		  sprintf((char*)debug_buf, "Error reading accel: %d\r\n", ret);
+		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
+	  }
+
+
+	  else {
+		  int16_t Accel_X_RAW = (int16_t)(buf[1] << 8 | buf[0]);
+		  float accel_x = Accel_X_RAW * 0.061; // Convert to mg
+		  sprintf((char*)debug_buf, "Accel X: %.2f mg\r\n", accel_x);
+		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
+	  }
   }  /* USER CODE END 3 */
 }
 
