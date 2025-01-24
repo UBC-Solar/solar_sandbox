@@ -50,8 +50,12 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 #define IMU_ADDRESS (0x6B << 1)
 
-#define OUTX_L_A 0x28 //Linear Acceleration x-axis register address
-#define OUTX_H_A 0x29 //Linear Acceleration x-axis register address
+#define OUTX_L_A 0x28 //Linear Acceleration x-axis register address lower 8 bits
+#define OUTX_H_A 0x29 //Linear Acceleration x-axis register address upper 8 bits
+#define OUTY_L_A 0x2A //Linear Acceleration x-axis register address
+#define OUTY_H_A 0x2B //Linear Acceleration x-axis register address
+#define OUTZ_L_A 0x2C //Linear Acceleration x-axis register address
+#define OUTZ_H_A 0x2D //Linear Acceleration x-axis register address
 #define CTRL_1 0x10 //Address of CTRL1 register
 
 #define NUM_ACCEL_BYTES 2
@@ -81,9 +85,13 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	int8_t buf[2];
-	int8_t debug_buf[100];
-	HAL_StatusTypeDef ret;
+	int8_t bufx[2];
+	int8_t bufy[2];
+	int8_t bufz[2];
+	int8_t debug_buf[200];
+	HAL_StatusTypeDef retx;
+	HAL_StatusTypeDef rety;
+	HAL_StatusTypeDef retz;
 
 //	struct  {
 //	  float x;
@@ -128,28 +136,34 @@ int main(void)
     /* USER CODE BEGIN 3 */
     // Read OUTX_L_A and OUTX_H_A
 	  // Write to CTRL1 register
-		buf[0] = 0x74; // Set ODR to 30 Hz, normal mode
-		ret = HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS, CTRL_1, 1, buf, 1, HAL_MAX_DELAY);
-		if (ret != HAL_OK) {
-		  sprintf((char*)debug_buf, "Error writing CTRL1: %d\r\n", ret);
+	  	bufx[0] = 0x74; // Set ODR to 30 Hz, normal mode
+		retx = HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS, CTRL_1, 1, bufx, 1, HAL_MAX_DELAY);
+
+		if (retx != HAL_OK) {
+		  sprintf((char*)debug_buf, "Error writing CTRL1: %d\r\n", retx);
 		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
 		}
 
-	  ret = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTX_L_A, 1, buf, 2, HAL_MAX_DELAY);
-//	  int16_t Accel_X = (int16_t)(buf[1] << 8 | buf[0]);
-	  //ret2 = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTX_L_A, 1, &buf[0], 1, HAL_MAX_DELAY);
-//	  int16_t Accel_X = (int16_t)(Accel_X | buf[1]);
+	  retx = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTX_L_A, 1, bufx, 2, HAL_MAX_DELAY);
+	  rety = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTY_L_A, 1, bufy, 2, HAL_MAX_DELAY);
+	  retz = HAL_I2C_Mem_Read(&hi2c1, IMU_ADDRESS, OUTZ_L_A, 1, bufz, 2, HAL_MAX_DELAY);
 
-	  if (ret != HAL_OK) {
-		  sprintf((char*)debug_buf, "Error reading accel: %d\r\n", ret);
+	  if (retx != HAL_OK || rety != HAL_OK || retz != HAL_OK) {
+		  sprintf((char*)debug_buf, "Error reading accel: %d\r\n", retx);
 		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
 	  }
 
 
 	  else {
-		  int16_t Accel_X_RAW = (int16_t)(buf[1] << 8 | buf[0]);
+		  int16_t Accel_X_RAW = (int16_t)(bufx[1] << 8 | bufx[0]);
+		  int16_t Accel_Y_RAW = (int16_t)(bufy[1] << 8 | bufy[0]);
+		  int16_t Accel_Z_RAW = (int16_t)(bufz[1] << 8 | bufz[0]);
+
 		  float accel_x = Accel_X_RAW * 0.061; // Convert to mg
-		  sprintf((char*)debug_buf, "Accel X: %.2f mg\r\n", accel_x);
+		  float accel_y = Accel_Y_RAW * 0.061; // Convert to mg
+		  float accel_z = Accel_Z_RAW * 0.061; // Convert to mg
+
+		  sprintf((char*)debug_buf, "Accel X: %.2f mg\t Accel Y: %.2f mg\t Accel Z: %.2f mg\r\n", accel_x, accel_y, accel_z);
 		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
 	  }
   }  /* USER CODE END 3 */
