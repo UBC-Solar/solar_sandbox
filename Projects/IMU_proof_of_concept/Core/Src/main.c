@@ -57,6 +57,8 @@ UART_HandleTypeDef huart2;
 #define OUTZ_L_A 0x2C //Linear Acceleration x-axis register address
 #define OUTZ_H_A 0x2D //Linear Acceleration x-axis register address
 #define CTRL_1 0x10 //Address of CTRL1 register
+#define CTRL_8 0x17 //Address of CTRL8 register
+
 
 #define NUM_ACCEL_BYTES 2
 #define NUM_GYRO_BYTES 2
@@ -138,9 +140,15 @@ int main(void)
 	  // Write to CTRL1 register
 	  	bufx[0] = 0x74; // Set ODR to 30 Hz, normal mode
 		retx = HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS, CTRL_1, 1, bufx, 1, HAL_MAX_DELAY);
+		bufy[0] = 0x03; // Set the range to +-16g
+		rety = HAL_I2C_Mem_Write(&hi2c1, IMU_ADDRESS, CTRL_8, 1, bufy, 1, HAL_MAX_DELAY);
 
 		if (retx != HAL_OK) {
 		  sprintf((char*)debug_buf, "Error writing CTRL1: %d\r\n", retx);
+		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
+		}
+		if (rety != HAL_OK) {
+		  sprintf((char*)debug_buf, "Error writing CTRL8: %d\r\n", rety);
 		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
 		}
 
@@ -159,9 +167,9 @@ int main(void)
 		  int16_t Accel_Y_RAW = (int16_t)(bufy[1] << 8 | bufy[0]);
 		  int16_t Accel_Z_RAW = (int16_t)(bufz[1] << 8 | bufz[0]);
 
-		  float accel_x = Accel_X_RAW * 0.061; // Convert to mg
-		  float accel_y = Accel_Y_RAW * 0.061; // Convert to mg
-		  float accel_z = Accel_Z_RAW * 0.061; // Convert to mg
+		  float accel_x = Accel_X_RAW * 0.488; // Convert to mg
+		  float accel_y = Accel_Y_RAW * 0.488; // Convert to mg
+		  float accel_z = Accel_Z_RAW * 0.488; // Convert to mg
 
 		  sprintf((char*)debug_buf, "Accel X: %.2f mg\t Accel Y: %.2f mg\t Accel Z: %.2f mg\r\n", accel_x, accel_y, accel_z);
 		  HAL_UART_Transmit(&huart2, debug_buf, strlen((char*)debug_buf), HAL_MAX_DELAY);
