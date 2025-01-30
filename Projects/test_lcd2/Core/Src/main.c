@@ -249,6 +249,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    ClearLCD(NHD); // clear LCD
+    HAL_Delay(1000);
+    DispPic(NHD); // Show Image
+    HAL_Delay(3000);
     LCD_WriteCommand(0xA5); // Turn all points ON
     HAL_Delay(1000);
     LCD_WriteCommand(0xA4); // Revert to Normal Display
