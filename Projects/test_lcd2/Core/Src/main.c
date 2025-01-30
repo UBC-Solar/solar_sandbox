@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -119,53 +120,28 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void delay_nop() {
-    __asm__ volatile (
-        "mov r0, #250  \n"   // Load counter with 250
-        "1: nop         \n"   // Execute NOP
-        "   subs r0, r0, #1 \n" // Decrement counter
-        "   bne 1b      \n"   // Branch if not zero (loop back)
-        :                     // No output operands
-        :                     // No input operands
-        : "r0"                // Clobbers register r0
-    );
-}
 
-void SPI_Write(uint8_t data) {
-    for (uint8_t i = 0; i < 8; i++) {
-        // Write the MSB first
-        HAL_GPIO_WritePin(SI_GPIO_Port, SI_Pin, (((data & 0x80) == 0x80) ? GPIO_PIN_SET : GPIO_PIN_RESET));
-        delay_nop();
-        data = data << 1; // Shift to the next bit
-        
-        // Clock pulse
-        HAL_GPIO_WritePin(SCK_GPIO_Port, SCK_Pin, GPIO_PIN_RESET);
-        delay_nop();
-        HAL_GPIO_WritePin(SCK_GPIO_Port, SCK_Pin, GPIO_PIN_SET);
-        delay_nop();
-        HAL_GPIO_WritePin(SCK_GPIO_Port, SCK_Pin, GPIO_PIN_RESET);
-
-        data <<= 1; // Shift to the next bit
-    }
-}
 
 void LCD_WriteCommand(uint8_t cmd) {
-    HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET); // CS = 0 to select
+    // HAL_GPIO_WritePin(CS, CS_Pin, GPIO_PIN_RESET); // CS = 0 to select
     HAL_GPIO_WritePin(A0_GPIO_Port, A0_Pin, GPIO_PIN_RESET); // A0 = 0 for command
 
     // TODO: Send `cmd` over SPI (not implemented yet)
-    SPI_Write(cmd); // Send command manuall
+    uint8_t cmd_arr[1] = {cmd};
+    HAL_SPI_Transmit(&hspi2, &cmd_arr[0], 1, 10);
 
-    HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); // CS = 0 to select
+    // HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); // CS = 0 to select
 }
 
 void LCD_WriteData(uint8_t data) {
-    HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET); // CS = 0 to select
+    // HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_RESET); // CS = 0 to select
     HAL_GPIO_WritePin(A0_GPIO_Port, A0_Pin, GPIO_PIN_SET); // A0 = A0 = 1 for data
 
-    SPI_Write(data); // Send command manually
+    uint8_t data_arr[1] = {data};
+    HAL_SPI_Transmit(&hspi2, &data_arr[0], 1, 10);
+    // SPI_Write(data); // Send command manually
 
-    HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); // CS = 0 to select
+    // HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); // CS = 0 to select
 }
 
 void init_LCD()
@@ -255,6 +231,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
     HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_RESET); 
@@ -262,7 +239,7 @@ int main(void)
     HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_SET); 
     HAL_Delay(100);
 
-    HAL_Delay(10);
+    HAL_Delay(100);
     init_LCD();
 
   /* USER CODE END 2 */
@@ -272,14 +249,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    // ClearLCD(NHD); // clear LCD
-    // HAL_Delay(1000);
-    // DispPic(NHD); // Show Image
-    // HAL_Delay(3000);
-    HAL_Delay(1000);
     LCD_WriteCommand(0xA5); // Turn all points ON
     HAL_Delay(1000);
     LCD_WriteCommand(0xA4); // Revert to Normal Display
+    HAL_Delay(1000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
