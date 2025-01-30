@@ -249,6 +249,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+    /* USER CODE BEGIN 3 */
     ClearLCD(NHD); // clear LCD
     HAL_Delay(1000);
     DispPic(NHD); // Show Image
@@ -257,7 +258,6 @@ int main(void)
     HAL_Delay(1000);
     LCD_WriteCommand(0xA4); // Revert to Normal Display
     HAL_Delay(1000);
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
