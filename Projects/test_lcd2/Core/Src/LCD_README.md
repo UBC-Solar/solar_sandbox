@@ -8,6 +8,18 @@ This README explains how to use the LCD library. This is intended for use on the
 * [LCD Screen ](https://newhavendisplay.com/content/specs/NHD-C12864A1Z-FSW-FBW-HTT.pdf)
 * [LCD ST7565P Controller Datasheet](https://support.newhavendisplay.com/hc/en-us/article_attachments/4414878945687)
 
+## Additions
+* Adds the weight of extra logic to program the LCD screen
+* Adds a **1024 byte buffer** to quickly handle LCD operations!
+
+## Initialization
+Call the `LCD_init()` function once with a **pointer** to your SPI handle. This will likely occur in your `main.c` code. To initialize the SPI peripheral correctly set these fields as follows:
+![alt text](image.png)
+![alt text](image-1.png)
+
+Possible differences
+* Since the DRD does not have a 32kHz crystal oscillator you will likely have a different baudrate. The default baudrate **should** work, however, when debugging consider this problem.
+
 ## How to Add a Field
 There are 2 parts to adding a field onto the LCD screen.
 1. Adding the fields heading/name.

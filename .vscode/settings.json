@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "lcd.h": "c",
-        "spi.h": "c"
+        "spi.h": "c",
+        "stdio.h": "c",
+        "main.h": "c"
     }
 }

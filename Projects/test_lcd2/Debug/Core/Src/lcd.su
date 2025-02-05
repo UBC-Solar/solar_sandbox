@@ -1,8 +1,8 @@
 ../Core/Src/lcd.c:15:6:print_fields	8	static
 ../Core/Src/lcd.c:22:6:LCD_display_data_field_0	32	static
 ../Core/Src/lcd.c:33:6:LCD_display_data_field_1	24	static
-../Core/Src/lcd.c:50:6:LCD_write_command	24	static
-../Core/Src/lcd.c:67:6:LCD_write_data	24	static
-../Core/Src/lcd.c:84:6:LCD_init	8	static
-../Core/Src/lcd.c:97:6:LCD_print	16	static
-../Core/Src/lcd.c:105:6:LCD_clear	8	static
+../Core/Src/lcd.c:52:6:LCD_write_command	24	static
+../Core/Src/lcd.c:69:6:LCD_write_data	24	static
+../Core/Src/lcd.c:86:6:LCD_init	16	static
+../Core/Src/lcd.c:100:6:LCD_print	16	static
+../Core/Src/lcd.c:108:6:LCD_clear	8	static

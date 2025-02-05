@@ -242,7 +242,7 @@ int main(void)
 
     HAL_Delay(100);
     // init_LCD();
-    LCD_init();
+    LCD_init(&hspi2);
     // HAL_Delay(100);
     // LCD_clear();
     // LCD_WriteCommand(0xA5); // Turn all points ON

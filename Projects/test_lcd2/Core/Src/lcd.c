@@ -2,9 +2,9 @@
  * References the library: https://github.com/mberntsen/STM32-Libraries
  */
 
+#include "spi.h"
 #include "lcd.h"
 #include "main.h"
-#include "spi.h"
 #include <stdio.h>
 
 /** START FIELD DISPLAYING FUNCTION DEFINITIONS */
@@ -42,6 +42,8 @@ void LCD_display_data_field_1(float throttle_percent)
 
 /** BASE LOGIC FOR LCD USAGE */
 
+static SPI_HandleTypeDef* sg_spi_handle;
+
 /**
  * @brief Sends specificed command to LCD screen via SPI
  * 
@@ -53,7 +55,7 @@ void LCD_write_command(uint8_t cmd) {
 
     // TODO: Send `cmd` over SPI (not implemented yet)
     uint8_t cmd_arr[1] = {cmd};
-    HAL_SPI_Transmit(&hspi2, &cmd_arr[0], 1, 10);
+    HAL_SPI_Transmit(sg_spi_handle, &cmd_arr[0], 1, 10);
 
     // HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); // CS = 0 to select
 }
@@ -69,7 +71,7 @@ void LCD_write_data(uint8_t data) {
     HAL_GPIO_WritePin(A0_GPIO_Port, A0_Pin, GPIO_PIN_SET); // A0 = A0 = 1 for data
 
     uint8_t data_arr[1] = {data};
-    HAL_SPI_Transmit(&hspi2, &data_arr[0], 1, 10);
+    HAL_SPI_Transmit(sg_spi_handle, &data_arr[0], 1, 10);
     // SPI_Write(data); // Send command manually
 
     // HAL_GPIO_WritePin(CS_GPIO_Port, CS_Pin, GPIO_PIN_SET); // CS = 0 to select
@@ -81,8 +83,9 @@ void LCD_write_data(uint8_t data) {
  * 
  *        Also prints all the field names to get ready to display their data.
  */
-void LCD_init()
+void LCD_init(SPI_HandleTypeDef* hspi)
 {
+    sg_spi_handle = hspi;
     ST7565_begin();
     print_fields();
 }
