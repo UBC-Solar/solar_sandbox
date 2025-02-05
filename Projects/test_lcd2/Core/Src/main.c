@@ -264,8 +264,8 @@ int main(void)
     LCD_display_data_field_0(v1);
     LCD_display_data_field_1(v2);
 
-    ++v1;
-    v2 = v2 + 1.0;
+    // ++v1;
+    // v2 = v2 + 1.0;
     HAL_Delay(500);
     // ClearLCD(NHD); // clear LCD
     // HAL_Delay(1000);

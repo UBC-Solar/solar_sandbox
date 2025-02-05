@@ -29,6 +29,7 @@ void LCD_display_data_field_1(float throttle_percent);
 /** END DISPLAY FIELDS */
 
 void LCD_init();
+void LCD_print(uint8_t x, uint8_t line, char *c);
 
 // Functions for ST7565 library to use
 void LCD_write_command(uint8_t cmd);

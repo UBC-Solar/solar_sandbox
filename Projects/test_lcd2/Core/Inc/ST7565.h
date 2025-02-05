@@ -74,8 +74,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
   void ST7565_st7565_init(void);
   void ST7565_begin();
-  void ST7565_st7565_command(uint8_t c);
-  void ST7565_st7565_data(uint8_t c);
   void ST7565_st7565_set_brightness(uint8_t val);
   void ST7565_clear_display(void);
   void ST7565_clear();

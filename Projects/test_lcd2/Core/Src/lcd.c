@@ -99,3 +99,11 @@ void LCD_print(uint8_t x, uint8_t line, char *c) {
     ST7565_display();
 }
 
+/**
+ * @brief Clears the LCD display
+ */
+void LCD_clear()
+{
+    ST7565_clear_display();
+}
+

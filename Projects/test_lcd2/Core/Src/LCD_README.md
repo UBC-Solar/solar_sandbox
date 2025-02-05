@@ -1,6 +1,13 @@
 # USAGE
 This README explains how to use the LCD library. This is intended for use on the DRD.
 
+## Useful Links
+* [DRD Altium Link](https://ubc-solar.365.altium.com/designs/A1D09E3F-0EB6-42A4-A897-C945D50A3C55?variant=[No+Variations]&activeDocumentId=E_PAS_DRD.SchDoc(1)&activeView=SCH&location=[1,95.68,26.62,35.19]#design)
+* [LCD Basic Arduino Functionality GitHub Link](https://github.com/NewhavenDisplay/NHD-C12864A1Z_Example/blob/main/NHD-C12864A1Z/NHD-C12864A1Z.ino#L197)
+* [LCD Printing Library GitHub Link](https://github.com/mberntsen/STM32-Libraries/blob/master/ST7565/src/ST7565.c)
+* [LCD Screen ](https://newhavendisplay.com/content/specs/NHD-C12864A1Z-FSW-FBW-HTT.pdf)
+* [LCD ST7565P Controller Datasheet](https://support.newhavendisplay.com/hc/en-us/article_attachments/4414878945687)
+
 ## How to Add a Field
 There are 2 parts to adding a field onto the LCD screen.
 1. Adding the fields heading/name.
@@ -43,3 +50,6 @@ void LCD_display_data_field_0(uint32_t speed)
 ```
 
 Now you are done! You can use the `LCD_display_data_field_x` function you made wherever in your code to update the LCD screen data!
+
+## Library Functionality
+There are extra functions we can add to the library, however, they are removed to make the file simple to read. Please see this [link](https://github.com/mberntsen/STM32-Libraries/blob/master/ST7565/src/ST7565.c) for the original library code.
