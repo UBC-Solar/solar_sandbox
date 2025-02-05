@@ -61,7 +61,7 @@ main-build: test_lcd2.elf secondary-outputs
 
 # Tool invocations
 test_lcd2.elf test_lcd2.map: $(OBJS) $(USER_OBJS) /home/aarjav/Documents/UBC/solar_sandbox/Projects/test_lcd2/STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "test_lcd2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/aarjav/Documents/UBC/solar_sandbox/Projects/test_lcd2/STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test_lcd2.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "test_lcd2.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/aarjav/Documents/UBC/solar_sandbox/Projects/test_lcd2/STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test_lcd2.map" -Wl,--gc-sections -static -u_printf_float --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -251,16 +251,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  char c[] = "SOLAR";
-  LCD_print(0, 0, c);     // Line = page = 0.
+
+
+    int v1 = 1;
+    float v2 = 1.1;
+
+
   while (1)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
+    LCD_display_data_field1(v1);
+    LCD_display_data_field2(v2);
+
+    ++v1;
+    v2 = v2 + 1.0;
+    HAL_Delay(500);
     // ClearLCD(NHD); // clear LCD
     // HAL_Delay(1000);
     // DispPic(NHD); // Show Image
-    // HAL_Delay(3000);
     // LCD_WriteCommand(0xA5); // Turn all points ON
     // HAL_Delay(1000);
     // LCD_WriteCommand(0xA4); // Revert to Normal Display

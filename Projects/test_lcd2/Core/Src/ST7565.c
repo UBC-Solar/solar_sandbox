@@ -415,7 +415,7 @@ void ST7565_display(void) {
     ST7565_st7565_command(CMD_RMW);
     HAL_Delay(1);//DelayuS(100);
     
-    for(; col < maxcol; col++) {
+    for(; col <= maxcol; col++) {
       //uart_putw_dec(col);
       //uart_putchar(' ');
       ST7565_st7565_data(st7565_buffer[(128*p)+col]);

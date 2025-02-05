@@ -1,5 +1,8 @@
-../Core/Src/lcd.c:9:6:LCD_write_command	1
-../Core/Src/lcd.c:20:6:LCD_write_data	1
-../Core/Src/lcd.c:31:6:LCD_init	1
-../Core/Src/lcd.c:36:6:LCD_print	1
-../Core/Src/lcd.c:41:6:LCD_clear	1
+../Core/Src/lcd.c:10:6:LCD_write_command	1
+../Core/Src/lcd.c:21:6:LCD_write_data	1
+../Core/Src/lcd.c:32:6:LCD_display_data_field1	1
+../Core/Src/lcd.c:42:6:LCD_display_data_field2	1
+../Core/Src/lcd.c:51:6:print_fields	1
+../Core/Src/lcd.c:57:6:LCD_init	1
+../Core/Src/lcd.c:64:6:LCD_print	1
+../Core/Src/lcd.c:69:6:LCD_clear	1
