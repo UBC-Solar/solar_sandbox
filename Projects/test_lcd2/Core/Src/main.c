@@ -261,8 +261,8 @@ int main(void)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-    LCD_display_data_field1(v1);
-    LCD_display_data_field2(v2);
+    LCD_display_data_field_0(v1);
+    LCD_display_data_field_1(v2);
 
     ++v1;
     v2 = v2 + 1.0;
