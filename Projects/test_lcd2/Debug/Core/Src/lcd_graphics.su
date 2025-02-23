@@ -1,0 +1,13 @@
+../Core/Src/lcd_graphics.c:53:13:glcd_pixel	24	static
+../Core/Src/lcd_graphics.c:82:13:glcd_clear_bounding_box	24	static
+../Core/Src/lcd_graphics.c:97:13:glcd_refresh	16	static
+../Core/Src/lcd_graphics.c:145:13:draw_rectangle	32	static
+../Core/Src/lcd_graphics.c:167:23:draw_text	40	static
+../Core/Src/lcd_graphics.c:199:23:draw_char	32	static
+../Core/Src/lcd_graphics.c:265:6:LCD_display_speed	40	static
+../Core/Src/lcd_graphics.c:300:6:LCD_display_drive_state	32	static
+../Core/Src/lcd_graphics.c:327:6:LCD_display_SOC	40	static
+../Core/Src/lcd_graphics.c:350:6:LCD_display_power_bar	72	static
+../Core/Src/lcd_graphics.c:397:6:LCD_write_command	24	static
+../Core/Src/lcd_graphics.c:411:6:LCD_write_data	24	static
+../Core/Src/lcd_graphics.c:425:6:LCD_init	16	static

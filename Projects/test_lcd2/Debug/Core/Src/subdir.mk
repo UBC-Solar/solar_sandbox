@@ -6,10 +6,12 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Core/Src/ST7565.c \
+../Core/Src/font_verdana.c \
 ../Core/Src/glcdfont.c \
 ../Core/Src/gpio.c \
 ../Core/Src/graphics.c \
 ../Core/Src/lcd.c \
+../Core/Src/lcd_graphics.c \
 ../Core/Src/main.c \
 ../Core/Src/spi.c \
 ../Core/Src/st7565.c \
@@ -22,10 +24,12 @@ C_SRCS += \
 
 OBJS += \
 ./Core/Src/ST7565.o \
+./Core/Src/font_verdana.o \
 ./Core/Src/glcdfont.o \
 ./Core/Src/gpio.o \
 ./Core/Src/graphics.o \
 ./Core/Src/lcd.o \
+./Core/Src/lcd_graphics.o \
 ./Core/Src/main.o \
 ./Core/Src/spi.o \
 ./Core/Src/st7565.o \
@@ -38,10 +42,12 @@ OBJS += \
 
 C_DEPS += \
 ./Core/Src/ST7565.d \
+./Core/Src/font_verdana.d \
 ./Core/Src/glcdfont.d \
 ./Core/Src/gpio.d \
 ./Core/Src/graphics.d \
 ./Core/Src/lcd.d \
+./Core/Src/lcd_graphics.d \
 ./Core/Src/main.d \
 ./Core/Src/spi.d \
 ./Core/Src/st7565.d \
@@ -60,7 +66,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/ST7565.cyclo ./Core/Src/ST7565.d ./Core/Src/ST7565.o ./Core/Src/ST7565.su ./Core/Src/glcdfont.cyclo ./Core/Src/glcdfont.d ./Core/Src/glcdfont.o ./Core/Src/glcdfont.su ./Core/Src/gpio.cyclo ./Core/Src/gpio.d ./Core/Src/gpio.o ./Core/Src/gpio.su ./Core/Src/graphics.cyclo ./Core/Src/graphics.d ./Core/Src/graphics.o ./Core/Src/graphics.su ./Core/Src/lcd.cyclo ./Core/Src/lcd.d ./Core/Src/lcd.o ./Core/Src/lcd.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/spi.cyclo ./Core/Src/spi.d ./Core/Src/spi.o ./Core/Src/spi.su ./Core/Src/st7565.cyclo ./Core/Src/st7565.d ./Core/Src/st7565.o ./Core/Src/st7565.su ./Core/Src/stm32f1xx_hal_msp.cyclo ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.cyclo ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.cyclo ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su ./Core/Src/usart.cyclo ./Core/Src/usart.d ./Core/Src/usart.o ./Core/Src/usart.su
+	-$(RM) ./Core/Src/ST7565.cyclo ./Core/Src/ST7565.d ./Core/Src/ST7565.o ./Core/Src/ST7565.su ./Core/Src/font_verdana.cyclo ./Core/Src/font_verdana.d ./Core/Src/font_verdana.o ./Core/Src/font_verdana.su ./Core/Src/glcdfont.cyclo ./Core/Src/glcdfont.d ./Core/Src/glcdfont.o ./Core/Src/glcdfont.su ./Core/Src/gpio.cyclo ./Core/Src/gpio.d ./Core/Src/gpio.o ./Core/Src/gpio.su ./Core/Src/graphics.cyclo ./Core/Src/graphics.d ./Core/Src/graphics.o ./Core/Src/graphics.su ./Core/Src/lcd.cyclo ./Core/Src/lcd.d ./Core/Src/lcd.o ./Core/Src/lcd.su ./Core/Src/lcd_graphics.cyclo ./Core/Src/lcd_graphics.d ./Core/Src/lcd_graphics.o ./Core/Src/lcd_graphics.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/spi.cyclo ./Core/Src/spi.d ./Core/Src/spi.o ./Core/Src/spi.su ./Core/Src/st7565.cyclo ./Core/Src/st7565.d ./Core/Src/st7565.o ./Core/Src/st7565.su ./Core/Src/stm32f1xx_hal_msp.cyclo ./Core/Src/stm32f1xx_hal_msp.d ./Core/Src/stm32f1xx_hal_msp.o ./Core/Src/stm32f1xx_hal_msp.su ./Core/Src/stm32f1xx_it.cyclo ./Core/Src/stm32f1xx_it.d ./Core/Src/stm32f1xx_it.o ./Core/Src/stm32f1xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f1xx.cyclo ./Core/Src/system_stm32f1xx.d ./Core/Src/system_stm32f1xx.o ./Core/Src/system_stm32f1xx.su ./Core/Src/usart.cyclo ./Core/Src/usart.d ./Core/Src/usart.o ./Core/Src/usart.su
 
 .PHONY: clean-Core-2f-Src
 

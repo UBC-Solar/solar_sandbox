@@ -1,9 +1,0 @@
-../Core/Src/graphics.c:6:16:draw_text	40	static
-../Core/Src/graphics.c:29:16:draw_char	32	static
-../Core/Src/graphics.c:87:15:text_height	16	static
-../Core/Src/graphics.c:95:15:text_width	32	static
-../Core/Src/graphics.c:131:6:draw_rectangle	32	static
-../Core/Src/graphics.c:145:6:draw_box	32	static
-../Core/Src/graphics.c:161:6:draw_line	80	static
-../Core/Src/graphics.c:226:6:draw_circle	32	static
-../Core/Src/graphics.c:254:6:draw_filled_circle	40	static

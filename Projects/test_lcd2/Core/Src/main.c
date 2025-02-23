@@ -24,11 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd.h"
-#include "st7565-config.h"
-#include "st7565.h"
-#include "graphics.h"
-#include "font_tahoma.h"
+#include "lcd_graphics.h"
 
 /* USER CODE END Includes */
 
@@ -37,7 +33,7 @@
 
 /* USER CODE END PTD */
 
-/* Private define ------------------------------------------------------------*/
+// /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
@@ -257,12 +253,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
 
-    int v1 = 1;
-    float v2 = 1.1;
+    int v1 = 0;
+    float v2 = -20;
 
-    char k[] = "69";
-    draw_text(k, 45, 25, Verdana32, 2);
-    glcd_refresh();
+    // char k[] = "69";
+    // draw_text(k, 45, 25, Verdana32, 2);
+    // glcd_refresh();
 
 
   while (1)
@@ -271,10 +267,15 @@ int main(void)
     /* USER CODE BEGIN 3 */
     // LCD_display_data_field_0(v1);
     // LCD_display_data_field_1(v2);
+    LCD_display_power_bar(v2, 130.0f);
+    LCD_display_speed(v1 % 100, 1);
+    LCD_display_drive_state(v1 % 5);
+    LCD_display_SOC(v1 % 101);  
 
-    // ++v1;
+    ++v1;
+    v2 += 0.4;
     // v2 = v2 + 1.0;
-    HAL_Delay(500);
+    HAL_Delay(200);
     // ClearLCD(NHD); // clear LCD
     // HAL_Delay(1000);
     // DispPic(NHD); // Show Image

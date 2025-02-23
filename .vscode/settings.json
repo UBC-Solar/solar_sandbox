@@ -3,6 +3,8 @@
         "lcd.h": "c",
         "spi.h": "c",
         "stdio.h": "c",
-        "main.h": "c"
+        "main.h": "c",
+        "lcd_graphics.h": "c",
+        "font_verdana.h": "c"
     }
 }
