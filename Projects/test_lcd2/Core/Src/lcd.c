@@ -6,6 +6,8 @@
 #include "lcd.h"
 #include "main.h"
 #include <stdio.h>
+#include "st7565.h"
+#include "graphics.h"
 
 /** START FIELD DISPLAYING FUNCTION DEFINITIONS */
 
@@ -87,7 +89,6 @@ void LCD_init(SPI_HandleTypeDef* hspi)
 {
     sg_spi_handle = hspi;
     ST7565_begin();
-    print_fields();
 }
 
 /**

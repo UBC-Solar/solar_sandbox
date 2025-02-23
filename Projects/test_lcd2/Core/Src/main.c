@@ -25,6 +25,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "lcd.h"
+#include "st7565-config.h"
+#include "st7565.h"
+#include "graphics.h"
+#include "font_tahoma.h"
 
 /* USER CODE END Includes */
 
@@ -256,13 +260,17 @@ int main(void)
     int v1 = 1;
     float v2 = 1.1;
 
+    char k[] = "69";
+    draw_text(k, 45, 25, Verdana32, 2);
+    glcd_refresh();
+
 
   while (1)
   {
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
-    LCD_display_data_field_0(v1);
-    LCD_display_data_field_1(v2);
+    // LCD_display_data_field_0(v1);
+    // LCD_display_data_field_1(v2);
 
     // ++v1;
     // v2 = v2 + 1.0;

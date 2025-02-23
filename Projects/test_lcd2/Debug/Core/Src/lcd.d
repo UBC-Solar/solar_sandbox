@@ -23,7 +23,8 @@ Core/Src/lcd.o: ../Core/Src/lcd.c ../Core/Inc/spi.h ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
- ../Core/Inc/lcd.h ../Core/Inc/ST7565.h ../Core/Inc/main.h
+ ../Core/Inc/lcd.h ../Core/Inc/ST7565.h ../Core/Inc/main.h \
+ ../Core/Inc/st7565.h ../Core/Inc/graphics.h
 ../Core/Inc/spi.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
@@ -53,3 +54,5 @@ Core/Src/lcd.o: ../Core/Src/lcd.c ../Core/Inc/spi.h ../Core/Inc/main.h \
 ../Core/Inc/lcd.h:
 ../Core/Inc/ST7565.h:
 ../Core/Inc/main.h:
+../Core/Inc/st7565.h:
+../Core/Inc/graphics.h:

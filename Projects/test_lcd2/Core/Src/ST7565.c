@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdlib.h>
 #include <stdint.h>
 #include "ST7565.h"
+#include "st7565.h"
 #include "main.h"
 #include "lcd.h"
 #include "spi.h"
@@ -166,18 +167,12 @@ void ST7565_drawcircle(uint8_t x0, uint8_t y0, uint8_t r, uint8_t color) {
 }
 
 void ST7565_begin() {
-  ST7565_st7565_init();
-  LCD_write_command(CMD_DISPLAY_ON);
-  LCD_write_command(CMD_SET_ALLPTS_NORMAL);
-}
-
-void ST7565_st7565_init(void) {
     // ADC select
     LCD_write_command(CMD_SET_ADC_NORMAL);
     // LCD OFF
     LCD_write_command(CMD_DISPLAY_OFF);
     // SHL select
-    LCD_write_command(CMD_SET_COM_NORMAL);        // This makes the base arduino firmware flipped
+    LCD_write_command(CMD_SET_COM_NORMAL + 8);        // This makes the base arduino firmware flipped
     // LCD bias select
     LCD_write_command(CMD_SET_BIAS_9);
     // turn on voltage follower (VC=1, VR=1, VF=1)
@@ -187,10 +182,16 @@ void ST7565_st7565_init(void) {
     // Electronic Volume Command (set contrast) Double Byte: 1 of 2
     LCD_write_command(CMD_SET_VOLUME_FIRST);
     LCD_write_command(CMD_SET_CONTRAST);
+    LCD_write_command(GLCD_CMD_DISPLAY_START);
 
     LCD_write_command(CMD_DISPLAY_ON);
+    LCD_write_command(CMD_SET_ALLPTS_NORMAL);
 
-  
+    glcd_init();
+}
+
+void ST7565_st7565_init(void) {
+
     // set up a bounding box for screen updates. This optimizes num pixels to change
     ST7565_updateBoundingBox(0, 0, LCDWIDTH-1, LCDHEIGHT-1);
 }
