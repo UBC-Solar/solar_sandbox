@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_line   0000b8cb  00000000  00000000  00031c5c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_str    00085f2c  00000000  00000000  0003d527  2**0
+ 17 .debug_str    00085f0c  00000000  00000000  0003d527  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .comment      00000043  00000000  00000000  000c3453  2**0
+ 18 .comment      00000043  00000000  00000000  000c3433  2**0
                   CONTENTS, READONLY
- 19 .debug_rnglists 00000744  00000000  00000000  000c3496  2**0
+ 19 .debug_rnglists 00000744  00000000  00000000  000c3476  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  0000384c  00000000  00000000  000c3bdc  2**2
+ 20 .debug_frame  0000384c  00000000  00000000  000c3bbc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000006a  00000000  00000000  000c7428  2**0
+ 21 .debug_line_str 0000006a  00000000  00000000  000c7408  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2436,7 +2436,7 @@ void LCD_display_speed(uint32_t speed, int units)
  8001726:	683b      	ldr	r3, [r7, #0]
  8001728:	2b01      	cmp	r3, #1
  800172a:	d11d      	bne.n	8001768 <LCD_display_speed+0xd0>
-        case LCD_SPEED_UNITS_KPH:
+        case KPH:
             old_bb_speed_units = draw_text("kph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
  800172c:	4b19      	ldr	r3, [pc, #100]	@ (8001794 <LCD_display_speed+0xfc>)
  800172e:	789b      	ldrb	r3, [r3, #2]
@@ -2453,7 +2453,7 @@ void LCD_display_speed(uint32_t speed, int units)
  8001746:	6013      	str	r3, [r2, #0]
             break;
  8001748:	e01d      	b.n	8001786 <LCD_display_speed+0xee>
-        case LCD_SPEED_UNITS_MPH:
+        case MPH:
             old_bb_speed_units = draw_text("mph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
  800174a:	4b12      	ldr	r3, [pc, #72]	@ (8001794 <LCD_display_speed+0xfc>)
  800174c:	789b      	ldrb	r3, [r3, #2]
@@ -2993,7 +2993,7 @@ void LCD_init(SPI_HandleTypeDef* hspi)
     HAL_Delay(30);
  8001aea:	201e      	movs	r0, #30
  8001aec:	f000 fb7c 	bl	80021e8 <HAL_Delay>
-    
+
     sg_spi_handle = hspi;
  8001af0:	4a14      	ldr	r2, [pc, #80]	@ (8001b44 <LCD_init+0x7c>)
  8001af2:	687b      	ldr	r3, [r7, #4]

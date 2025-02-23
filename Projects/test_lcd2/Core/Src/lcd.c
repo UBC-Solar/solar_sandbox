@@ -279,10 +279,10 @@ void LCD_display_speed(uint32_t speed, int units)
     
     /* Draw the speed units */
     switch (units) {
-        case LCD_SPEED_UNITS_KPH:
+        case KPH:
             old_bb_speed_units = draw_text("kph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
-        case LCD_SPEED_UNITS_MPH:
+        case MPH:
             old_bb_speed_units = draw_text("mph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
         default:
@@ -428,7 +428,7 @@ void LCD_init(SPI_HandleTypeDef* hspi)
     HAL_Delay(30);
     HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_SET); 
     HAL_Delay(30);
-    
+
     sg_spi_handle = hspi;
 
     LCD_write_command(CMD_SET_ADC_NORMAL);          

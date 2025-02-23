@@ -20,8 +20,8 @@
 #define BOTTOM_RIGHT_X      127
 #define BOTTOM_RIGHT_Y      63
 
-#define LCD_SPEED_UNITS_MPH 0
-#define LCD_SPEED_UNITS_KPH 1
+#define MPH                 0
+#define KPH                 1
 #define SPEED_UNITS_FONT    (Verdana8)
 #define SPEED_UNITS_SPACING 1
 

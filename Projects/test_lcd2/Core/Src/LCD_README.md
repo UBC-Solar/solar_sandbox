@@ -11,6 +11,7 @@ This README explains how to use the LCD library. This is intended for use on the
 ## What this Library Comes With
 * Adds the weight of extra logic to program the LCD screen
 * Adds a **1024 byte buffer** to hold LCD pixels. 
+* Adds 3 files `lcd.h`, `lcd.c`, and `font_verdana.h` to your project.
 
 ## Initialization
 Call the `LCD_init()` function once with a **pointer** to your SPI handle. This will likely occur in your `main.c` code. To initialize the SPI peripheral correctly set these fields as follows:
@@ -24,54 +25,37 @@ Possible differences
 There are 4 piece of data we display on the LCD screen
 1. Speed (mph or kph)
 2. Drive State (Drive 'D', Reverse 'R', Park 'P')
-3. Pack Power as a horizontal bar
-4. SoC (State of Charge in %)
+3. SoC (State of Charge in %) 
+4. Pack Power as a horizontal bar
 
-### Setting the Speed
+### Displaying the Speed
+Call the `LCD_display_speed(speed, units)` function with the following parameters
+* `speed`: The speed you want to display. This is a `uint32_t` type.
+    * Speed will display normally **only** if `0 <= speed < 100`. Basically, 2 digits is the max displayed.
+* `units`: The units you want to display. either `MPH` or `KPH`. These are defined in `lcd.h`.
 
 
+### Displaying the Drive State
+Call the `LCD_display_drive_state(drive_state)` function with the following parameter
+* `drive_state`: The drive state you want to display. This is one of the following defines:
+    * `FORWARD_STATE` displays a `D`, `REVERSE_STATE` displays a `R`, or `PARK_STATE` displays a `P`. These are defined in `lcd.h`.
 
-There are 2 parts to adding a field onto the LCD screen.
-1. Adding the fields heading/name.
-2. Adding the fields data.
 
-### Set the Field Name
-To do this, go into `lcd.h` first and find the `/** START DISPLAY FIELDS */` section. In here, add a field by defining the following. 
+### Displaying the SoC
+Call the `LCD_display_soc(soc)` function with the following parameter
+* `soc`: The SoC you want to display. This is a `uint32_t` type.
+    * SoC will display normally **only** if `0 <= soc < 100`. Basically, 2 digits is the max displayed.
+    * `100%` will display normally although the `%` will be cut off.
 
-**Notes** 
-* Replace `x` with whatever the next field number is. 
-* Line numbers are 0-indexed. Meaning the line at the top of the screen is line 0 and correspondingly field 0.
-* The `DATA_POS` is calculated as the character width times the number of characters of the heading/name (not including the null terminating character). Example `"Speed: "` is exactly 7 characters including the space. We include the space if we want tthe data to come after a space. 
 
-**Explanation of what to Define**
-* `FIELD_x`: Specifies the heading/name of the field. Example: `#define FIELD_0       "Speed: "`
-* `FIELD_x_DATA_POS`: Specifies where in the line the data will start printing. Example: `#define FIELD_0_DATA_POS   (7 * CHAR_WIDTH)`
-* `FIELD_x_LINE`: Specifies the line number . Example: `#define FIELD_0_LINE  0`
+### Displaying the Pack Power
+Call the `LCD_display_pack_power(pack_current, pack_voltage)` function with the following parameters
+* `pack_current`: The current you want to display. This is a `float` type
+* `pack_voltage`: The voltage you want to display. This is a `float` type
 
-### Set the Field Data
-Now that these defines are made we need to declare the function prototype for the field we want to display. To do this, name the function `LCD_display_data_field_x` where x is the field number. For the argument of the function, you need to decide what data type do you want to display. For example things that need a decimal point could be of the float type. Things that are integers will be int. You can choose whatever you want as long as you can convert it to a string (see in the next step). Example: `void LCD_display_data_field_0(uint32_t speed);`
+The intention is to take these values directly from the CAN message and input them into this function.
+* Note: We use **`-3000W`** as the minimum power and **`+5400W`** as the maximum power. This is to ensure the bar is always displayed correctly. The calculated power will be normalized to this range.
 
-Navigate to `lcd.c` now and locate `void print_fields()`. In this function, you need to perform an `LCD_print` for the field you want to display.
-
-Go down a bit and define the `void LCD_display_data_field_x` function you made the declaration for in `lcd.h`. This function does 2 things.
-1. Takes the input number and converts it to a string.
-2. Takes the string and performs an `LCD_print` to display it.
-
-For a simple defintion, use `sprintf` to generate your string. 
-
-Example
-```c
-void LCD_display_data_field_0(uint32_t speed)
-{
-    // convert speed to string.
-    char speed_str[12];  // Buffer to hold the converted string (enough for 10 digits + null terminator)
-    sprintf(speed_str, "%lu", (unsigned long)speed);  // Convert uint32_t to string
-
-    LCD_print(FIELD_0_DATA_POS, FIELD_0_LINE, speed_str);     // Field 1
-}
-```
-
-Now you are done! You can use the `LCD_display_data_field_x` function you made wherever in your code to update the LCD screen data!
 
 ## Library Functionality
-There are extra functions we can add to the library, however, they are removed to make the file simple to read. Please see this [link](https://github.com/mberntsen/STM32-Libraries/blob/master/ST7565/src/ST7565.c) for the original library code.
+There are extra functions we can add to the library, however, they are removed to make the file simple to read. Please see this [link](https://github.com/edeca/Electronics) for the original library code which also has more fonts!
