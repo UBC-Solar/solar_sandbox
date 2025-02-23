@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "lcd_graphics.h"
+#include "lcd.h"
 
 /* USER CODE END Includes */
 

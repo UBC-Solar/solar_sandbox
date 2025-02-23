@@ -1,6 +1,6 @@
-../Core/Src/lcd_graphics.c:53:13:glcd_pixel	4
-../Core/Src/lcd_graphics.c:82:13:glcd_clear_bounding_box	9
-../Core/Src/lcd_graphics.c:97:13:glcd_refresh	5
+../Core/Src/lcd_graphics.c:53:13:lcd_pixel	4
+../Core/Src/lcd_graphics.c:82:13:lcd_clear_bounding_box	9
+../Core/Src/lcd_graphics.c:97:13:lcd_refresh	5
 ../Core/Src/lcd_graphics.c:145:13:draw_rectangle	3
 ../Core/Src/lcd_graphics.c:167:23:draw_text	2
 ../Core/Src/lcd_graphics.c:199:23:draw_char	9

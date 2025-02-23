@@ -33,19 +33,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  14 .debug_aranges 000009b0  00000000  00000000  00018da0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_macro  00017a4c  00000000  00000000  00019750  2**0
+ 15 .debug_macro  000184f4  00000000  00000000  00019750  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_line   0000b8e5  00000000  00000000  0003119c  2**0
+ 16 .debug_line   0000b8ca  00000000  00000000  00031c44  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_str    00085f4f  00000000  00000000  0003ca81  2**0
+ 17 .debug_str    00085f2c  00000000  00000000  0003d50e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .comment      00000043  00000000  00000000  000c29d0  2**0
+ 18 .comment      00000043  00000000  00000000  000c343a  2**0
                   CONTENTS, READONLY
- 19 .debug_rnglists 00000743  00000000  00000000  000c2a13  2**0
+ 19 .debug_rnglists 00000743  00000000  00000000  000c347d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  0000384c  00000000  00000000  000c3158  2**2
+ 20 .debug_frame  0000384c  00000000  00000000  000c3bc0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000006a  00000000  00000000  000c69a4  2**0
+ 21 .debug_line_str 0000006a  00000000  00000000  000c740c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1624,13 +1624,13 @@ void MX_GPIO_Init(void)
  800121c:	40011000 	.word	0x40011000
  8001220:	10110000 	.word	0x10110000
 
-08001224 <glcd_pixel>:
+08001224 <lcd_pixel>:
  * 
  * @param x The x coordinate (1-based).
  * @param y The y coordinate (1-based).
  * @param color 1 to set the pixel, 0 to clear it.
  */
-static void glcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
+static void lcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
  8001224:	b480      	push	{r7}
  8001226:	b085      	sub	sp, #20
  8001228:	af00      	add	r7, sp, #0
@@ -1644,10 +1644,10 @@ static void glcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
     if (x > SCREEN_WIDTH || y > SCREEN_HEIGHT) return;
  8001236:	79fb      	ldrb	r3, [r7, #7]
  8001238:	2b80      	cmp	r3, #128	@ 0x80
- 800123a:	d849      	bhi.n	80012d0 <glcd_pixel+0xac>
+ 800123a:	d849      	bhi.n	80012d0 <lcd_pixel+0xac>
  800123c:	79bb      	ldrb	r3, [r7, #6]
  800123e:	2b40      	cmp	r3, #64	@ 0x40
- 8001240:	d846      	bhi.n	80012d0 <glcd_pixel+0xac>
+ 8001240:	d846      	bhi.n	80012d0 <lcd_pixel+0xac>
 
     // Real screen coordinates are 0-63, not 1-64.
     x -= 1;
@@ -1671,7 +1671,7 @@ static void glcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
  800125e:	81fb      	strh	r3, [r7, #14]
 
     #ifdef ST7565_DIRTY_PAGES
-        glcd_dirty_pages |= 1 << (array_pos / 128);
+        lcd_dirty_pages |= 1 << (array_pos / 128);
  8001260:	89fb      	ldrh	r3, [r7, #14]
  8001262:	09db      	lsrs	r3, r3, #7
  8001264:	b29b      	uxth	r3, r3
@@ -1679,23 +1679,23 @@ static void glcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
  8001268:	2301      	movs	r3, #1
  800126a:	4093      	lsls	r3, r2
  800126c:	b25a      	sxtb	r2, r3
- 800126e:	4b1b      	ldr	r3, [pc, #108]	@ (80012dc <glcd_pixel+0xb8>)
+ 800126e:	4b1b      	ldr	r3, [pc, #108]	@ (80012dc <lcd_pixel+0xb8>)
  8001270:	781b      	ldrb	r3, [r3, #0]
  8001272:	b25b      	sxtb	r3, r3
  8001274:	4313      	orrs	r3, r2
  8001276:	b25b      	sxtb	r3, r3
  8001278:	b2da      	uxtb	r2, r3
- 800127a:	4b18      	ldr	r3, [pc, #96]	@ (80012dc <glcd_pixel+0xb8>)
+ 800127a:	4b18      	ldr	r3, [pc, #96]	@ (80012dc <lcd_pixel+0xb8>)
  800127c:	701a      	strb	r2, [r3, #0]
     #endif
 
     if (colour) {
  800127e:	797b      	ldrb	r3, [r7, #5]
  8001280:	2b00      	cmp	r3, #0
- 8001282:	d011      	beq.n	80012a8 <glcd_pixel+0x84>
-        glcd_buffer[array_pos] |= 1 << (y % 8);
+ 8001282:	d011      	beq.n	80012a8 <lcd_pixel+0x84>
+        lcd_buffer[array_pos] |= 1 << (y % 8);
  8001284:	89fb      	ldrh	r3, [r7, #14]
- 8001286:	4a16      	ldr	r2, [pc, #88]	@ (80012e0 <glcd_pixel+0xbc>)
+ 8001286:	4a16      	ldr	r2, [pc, #88]	@ (80012e0 <lcd_pixel+0xbc>)
  8001288:	5cd3      	ldrb	r3, [r2, r3]
  800128a:	b25a      	sxtb	r2, r3
  800128c:	79bb      	ldrb	r3, [r7, #6]
@@ -1707,13 +1707,13 @@ static void glcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
  800129c:	b25a      	sxtb	r2, r3
  800129e:	89fb      	ldrh	r3, [r7, #14]
  80012a0:	b2d1      	uxtb	r1, r2
- 80012a2:	4a0f      	ldr	r2, [pc, #60]	@ (80012e0 <glcd_pixel+0xbc>)
+ 80012a2:	4a0f      	ldr	r2, [pc, #60]	@ (80012e0 <lcd_pixel+0xbc>)
  80012a4:	54d1      	strb	r1, [r2, r3]
- 80012a6:	e014      	b.n	80012d2 <glcd_pixel+0xae>
+ 80012a6:	e014      	b.n	80012d2 <lcd_pixel+0xae>
     } else {
-        glcd_buffer[array_pos] &= 0xFF ^ 1 << (y % 8);
+        lcd_buffer[array_pos] &= 0xFF ^ 1 << (y % 8);
  80012a8:	89fb      	ldrh	r3, [r7, #14]
- 80012aa:	4a0d      	ldr	r2, [pc, #52]	@ (80012e0 <glcd_pixel+0xbc>)
+ 80012aa:	4a0d      	ldr	r2, [pc, #52]	@ (80012e0 <lcd_pixel+0xbc>)
  80012ac:	5cd3      	ldrb	r3, [r2, r3]
  80012ae:	b25a      	sxtb	r2, r3
  80012b0:	79bb      	ldrb	r3, [r7, #6]
@@ -1727,9 +1727,9 @@ static void glcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
  80012c4:	b25a      	sxtb	r2, r3
  80012c6:	89fb      	ldrh	r3, [r7, #14]
  80012c8:	b2d1      	uxtb	r1, r2
- 80012ca:	4a05      	ldr	r2, [pc, #20]	@ (80012e0 <glcd_pixel+0xbc>)
+ 80012ca:	4a05      	ldr	r2, [pc, #20]	@ (80012e0 <lcd_pixel+0xbc>)
  80012cc:	54d1      	strb	r1, [r2, r3]
- 80012ce:	e000      	b.n	80012d2 <glcd_pixel+0xae>
+ 80012ce:	e000      	b.n	80012d2 <lcd_pixel+0xae>
     if (x > SCREEN_WIDTH || y > SCREEN_HEIGHT) return;
  80012d0:	bf00      	nop
     }
@@ -1742,13 +1742,13 @@ static void glcd_pixel(uint8_t x, uint8_t y, uint8_t colour) {
  80012dc:	20000605 	.word	0x20000605
  80012e0:	200001f0 	.word	0x200001f0
 
-080012e4 <glcd_clear_bounding_box>:
+080012e4 <lcd_clear_bounding_box>:
  * @param x1 Left coordinate (1-based).
  * @param y1 Top coordinate (1-based).
  * @param x2 Right coordinate (1-based).
  * @param y2 Bottom coordinate (1-based).
  */
-static void glcd_clear_bounding_box(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2) {
+static void lcd_clear_bounding_box(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2) {
  80012e4:	b490      	push	{r4, r7}
  80012e6:	b084      	sub	sp, #16
  80012e8:	af00      	add	r7, sp, #0
@@ -1767,34 +1767,34 @@ static void glcd_clear_bounding_box(unsigned char x1, unsigned char y1, unsigned
     if (x1 >= SCREEN_WIDTH || x2 >= SCREEN_WIDTH || y1 >= SCREEN_HEIGHT || y2 >= SCREEN_HEIGHT || x1 > x2 || y1 > y2)
  8001302:	f997 3007 	ldrsb.w	r3, [r7, #7]
  8001306:	2b00      	cmp	r3, #0
- 8001308:	db33      	blt.n	8001372 <glcd_clear_bounding_box+0x8e>
+ 8001308:	db33      	blt.n	8001372 <lcd_clear_bounding_box+0x8e>
  800130a:	f997 3005 	ldrsb.w	r3, [r7, #5]
  800130e:	2b00      	cmp	r3, #0
- 8001310:	db2f      	blt.n	8001372 <glcd_clear_bounding_box+0x8e>
+ 8001310:	db2f      	blt.n	8001372 <lcd_clear_bounding_box+0x8e>
  8001312:	79bb      	ldrb	r3, [r7, #6]
  8001314:	2b3f      	cmp	r3, #63	@ 0x3f
- 8001316:	d82c      	bhi.n	8001372 <glcd_clear_bounding_box+0x8e>
+ 8001316:	d82c      	bhi.n	8001372 <lcd_clear_bounding_box+0x8e>
  8001318:	793b      	ldrb	r3, [r7, #4]
  800131a:	2b3f      	cmp	r3, #63	@ 0x3f
- 800131c:	d829      	bhi.n	8001372 <glcd_clear_bounding_box+0x8e>
+ 800131c:	d829      	bhi.n	8001372 <lcd_clear_bounding_box+0x8e>
  800131e:	79fa      	ldrb	r2, [r7, #7]
  8001320:	797b      	ldrb	r3, [r7, #5]
  8001322:	429a      	cmp	r2, r3
- 8001324:	d825      	bhi.n	8001372 <glcd_clear_bounding_box+0x8e>
+ 8001324:	d825      	bhi.n	8001372 <lcd_clear_bounding_box+0x8e>
  8001326:	79ba      	ldrb	r2, [r7, #6]
  8001328:	793b      	ldrb	r3, [r7, #4]
  800132a:	429a      	cmp	r2, r3
- 800132c:	d821      	bhi.n	8001372 <glcd_clear_bounding_box+0x8e>
+ 800132c:	d821      	bhi.n	8001372 <lcd_clear_bounding_box+0x8e>
         return;
 
     for (unsigned char y = y1; y <= y2; y++) {
  800132e:	79bb      	ldrb	r3, [r7, #6]
  8001330:	73fb      	strb	r3, [r7, #15]
- 8001332:	e019      	b.n	8001368 <glcd_clear_bounding_box+0x84>
+ 8001332:	e019      	b.n	8001368 <lcd_clear_bounding_box+0x84>
         for (unsigned char x = x1; x <= x2; x++) {
  8001334:	79fb      	ldrb	r3, [r7, #7]
  8001336:	73bb      	strb	r3, [r7, #14]
- 8001338:	e00f      	b.n	800135a <glcd_clear_bounding_box+0x76>
+ 8001338:	e00f      	b.n	800135a <lcd_clear_bounding_box+0x76>
             unsigned short array_pos = x + ((y / 8) * 128);
  800133a:	7bbb      	ldrb	r3, [r7, #14]
  800133c:	b29a      	uxth	r2, r3
@@ -1805,9 +1805,9 @@ static void glcd_clear_bounding_box(unsigned char x1, unsigned char y1, unsigned
  8001346:	b29b      	uxth	r3, r3
  8001348:	4413      	add	r3, r2
  800134a:	81bb      	strh	r3, [r7, #12]
-            glcd_buffer[array_pos] = 0;
+            lcd_buffer[array_pos] = 0;
  800134c:	89bb      	ldrh	r3, [r7, #12]
- 800134e:	4a0b      	ldr	r2, [pc, #44]	@ (800137c <glcd_clear_bounding_box+0x98>)
+ 800134e:	4a0b      	ldr	r2, [pc, #44]	@ (800137c <lcd_clear_bounding_box+0x98>)
  8001350:	2100      	movs	r1, #0
  8001352:	54d1      	strb	r1, [r2, r3]
         for (unsigned char x = x1; x <= x2; x++) {
@@ -1817,7 +1817,7 @@ static void glcd_clear_bounding_box(unsigned char x1, unsigned char y1, unsigned
  800135a:	7bba      	ldrb	r2, [r7, #14]
  800135c:	797b      	ldrb	r3, [r7, #5]
  800135e:	429a      	cmp	r2, r3
- 8001360:	d9eb      	bls.n	800133a <glcd_clear_bounding_box+0x56>
+ 8001360:	d9eb      	bls.n	800133a <lcd_clear_bounding_box+0x56>
     for (unsigned char y = y1; y <= y2; y++) {
  8001362:	7bfb      	ldrb	r3, [r7, #15]
  8001364:	3301      	adds	r3, #1
@@ -1825,8 +1825,8 @@ static void glcd_clear_bounding_box(unsigned char x1, unsigned char y1, unsigned
  8001368:	7bfa      	ldrb	r2, [r7, #15]
  800136a:	793b      	ldrb	r3, [r7, #4]
  800136c:	429a      	cmp	r2, r3
- 800136e:	d9e1      	bls.n	8001334 <glcd_clear_bounding_box+0x50>
- 8001370:	e000      	b.n	8001374 <glcd_clear_bounding_box+0x90>
+ 800136e:	d9e1      	bls.n	8001334 <lcd_clear_bounding_box+0x50>
+ 8001370:	e000      	b.n	8001374 <lcd_clear_bounding_box+0x90>
         return;
  8001372:	bf00      	nop
         }
@@ -1838,34 +1838,34 @@ static void glcd_clear_bounding_box(unsigned char x1, unsigned char y1, unsigned
  800137a:	4770      	bx	lr
  800137c:	200001f0 	.word	0x200001f0
 
-08001380 <glcd_refresh>:
+08001380 <lcd_refresh>:
 
 /**
  * @brief Refreshes the LCD display by calling the ST7565 display update.
  */
-static void glcd_refresh() {
+static void lcd_refresh() {
  8001380:	b580      	push	{r7, lr}
  8001382:	b082      	sub	sp, #8
  8001384:	af00      	add	r7, sp, #0
     for (int y = 0; y < 8; y++) {
  8001386:	2300      	movs	r3, #0
  8001388:	607b      	str	r3, [r7, #4]
- 800138a:	e037      	b.n	80013fc <glcd_refresh+0x7c>
+ 800138a:	e037      	b.n	80013fc <lcd_refresh+0x7c>
 
     #ifdef ST7565_DIRTY_PAGES
             // Only copy this page if it is marked as "dirty"
-            if (!(glcd_dirty_pages & (1 << y))) continue;
- 800138c:	4b20      	ldr	r3, [pc, #128]	@ (8001410 <glcd_refresh+0x90>)
+            if (!(lcd_dirty_pages & (1 << y))) continue;
+ 800138c:	4b20      	ldr	r3, [pc, #128]	@ (8001410 <lcd_refresh+0x90>)
  800138e:	781b      	ldrb	r3, [r3, #0]
  8001390:	461a      	mov	r2, r3
  8001392:	687b      	ldr	r3, [r7, #4]
  8001394:	fa42 f303 	asr.w	r3, r2, r3
  8001398:	f003 0301 	and.w	r3, r3, #1
  800139c:	2b00      	cmp	r3, #0
- 800139e:	d029      	beq.n	80013f4 <glcd_refresh+0x74>
+ 800139e:	d029      	beq.n	80013f4 <lcd_refresh+0x74>
     #endif
 
-        LCD_write_command(GLCD_CMD_SET_PAGE | y);
+        LCD_write_command(CMD_SET_PAGE | y);
  80013a0:	687b      	ldr	r3, [r7, #4]
  80013a2:	b25b      	sxtb	r3, r3
  80013a4:	f063 034f 	orn	r3, r3, #79	@ 0x4f
@@ -1876,37 +1876,37 @@ static void glcd_refresh() {
         // pixels differently, the ST7565_REVERSE define allows this to
         // be controlled if necessary.
 #ifdef ST7565_REVERSE
-        if (!glcd_flipped) {
+        if (!lcd_flipped) {
 #else
-        if (glcd_flipped) {
- 80013b2:	4b18      	ldr	r3, [pc, #96]	@ (8001414 <glcd_refresh+0x94>)
+        if (lcd_flipped) {
+ 80013b2:	4b18      	ldr	r3, [pc, #96]	@ (8001414 <lcd_refresh+0x94>)
  80013b4:	781b      	ldrb	r3, [r3, #0]
  80013b6:	2b00      	cmp	r3, #0
- 80013b8:	d003      	beq.n	80013c2 <glcd_refresh+0x42>
+ 80013b8:	d003      	beq.n	80013c2 <lcd_refresh+0x42>
 #endif
-            LCD_write_command(GLCD_CMD_COLUMN_LOWER | 4);
+            LCD_write_command(CMD_COLUMN_LOWER | 4);
  80013ba:	2004      	movs	r0, #4
  80013bc:	f000 fb48 	bl	8001a50 <LCD_write_command>
- 80013c0:	e002      	b.n	80013c8 <glcd_refresh+0x48>
+ 80013c0:	e002      	b.n	80013c8 <lcd_refresh+0x48>
         } else {
-            LCD_write_command(GLCD_CMD_COLUMN_LOWER);
+            LCD_write_command(CMD_COLUMN_LOWER);
  80013c2:	2000      	movs	r0, #0
  80013c4:	f000 fb44 	bl	8001a50 <LCD_write_command>
         }
-        LCD_write_command(GLCD_CMD_COLUMN_UPPER);
+        LCD_write_command(CMD_COLUMN_UPPER);
  80013c8:	2010      	movs	r0, #16
  80013ca:	f000 fb41 	bl	8001a50 <LCD_write_command>
 
         for (int x = 0; x < 128; x++) {
  80013ce:	2300      	movs	r3, #0
  80013d0:	603b      	str	r3, [r7, #0]
- 80013d2:	e00b      	b.n	80013ec <glcd_refresh+0x6c>
-            LCD_write_data(glcd_buffer[y * 128 + x]);
+ 80013d2:	e00b      	b.n	80013ec <lcd_refresh+0x6c>
+            LCD_write_data(lcd_buffer[y * 128 + x]);
  80013d4:	687b      	ldr	r3, [r7, #4]
  80013d6:	01da      	lsls	r2, r3, #7
  80013d8:	683b      	ldr	r3, [r7, #0]
  80013da:	4413      	add	r3, r2
- 80013dc:	4a0e      	ldr	r2, [pc, #56]	@ (8001418 <glcd_refresh+0x98>)
+ 80013dc:	4a0e      	ldr	r2, [pc, #56]	@ (8001418 <lcd_refresh+0x98>)
  80013de:	5cd3      	ldrb	r3, [r2, r3]
  80013e0:	4618      	mov	r0, r3
  80013e2:	f000 fb53 	bl	8001a8c <LCD_write_data>
@@ -1916,9 +1916,9 @@ static void glcd_refresh() {
  80013ea:	603b      	str	r3, [r7, #0]
  80013ec:	683b      	ldr	r3, [r7, #0]
  80013ee:	2b7f      	cmp	r3, #127	@ 0x7f
- 80013f0:	ddf0      	ble.n	80013d4 <glcd_refresh+0x54>
- 80013f2:	e000      	b.n	80013f6 <glcd_refresh+0x76>
-            if (!(glcd_dirty_pages & (1 << y))) continue;
+ 80013f0:	ddf0      	ble.n	80013d4 <lcd_refresh+0x54>
+ 80013f2:	e000      	b.n	80013f6 <lcd_refresh+0x76>
+            if (!(lcd_dirty_pages & (1 << y))) continue;
  80013f4:	bf00      	nop
     for (int y = 0; y < 8; y++) {
  80013f6:	687b      	ldr	r3, [r7, #4]
@@ -1926,14 +1926,14 @@ static void glcd_refresh() {
  80013fa:	607b      	str	r3, [r7, #4]
  80013fc:	687b      	ldr	r3, [r7, #4]
  80013fe:	2b07      	cmp	r3, #7
- 8001400:	ddc4      	ble.n	800138c <glcd_refresh+0xc>
+ 8001400:	ddc4      	ble.n	800138c <lcd_refresh+0xc>
         }
     }
 
     #ifdef ST7565_DIRTY_PAGES
         // All pages have now been updated, reset the indicator.
-        glcd_dirty_pages = 0;
- 8001402:	4b03      	ldr	r3, [pc, #12]	@ (8001410 <glcd_refresh+0x90>)
+        lcd_dirty_pages = 0;
+ 8001402:	4b03      	ldr	r3, [pc, #12]	@ (8001410 <lcd_refresh+0x90>)
  8001404:	2200      	movs	r2, #0
  8001406:	701a      	strb	r2, [r3, #0]
     #endif
@@ -1972,18 +1972,18 @@ static void draw_rectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8
  800143a:	79fb      	ldrb	r3, [r7, #7]
  800143c:	73fb      	strb	r3, [r7, #15]
  800143e:	e010      	b.n	8001462 <draw_rectangle+0x46>
-        glcd_pixel(x, y1, color);
+        lcd_pixel(x, y1, color);
  8001440:	f897 2020 	ldrb.w	r2, [r7, #32]
  8001444:	79b9      	ldrb	r1, [r7, #6]
  8001446:	7bfb      	ldrb	r3, [r7, #15]
  8001448:	4618      	mov	r0, r3
- 800144a:	f7ff feeb 	bl	8001224 <glcd_pixel>
-        glcd_pixel(x, y2, color);
+ 800144a:	f7ff feeb 	bl	8001224 <lcd_pixel>
+        lcd_pixel(x, y2, color);
  800144e:	f897 2020 	ldrb.w	r2, [r7, #32]
  8001452:	7939      	ldrb	r1, [r7, #4]
  8001454:	7bfb      	ldrb	r3, [r7, #15]
  8001456:	4618      	mov	r0, r3
- 8001458:	f7ff fee4 	bl	8001224 <glcd_pixel>
+ 8001458:	f7ff fee4 	bl	8001224 <lcd_pixel>
     for(uint8_t x = x1; x <= x2; x++) {
  800145c:	7bfb      	ldrb	r3, [r7, #15]
  800145e:	3301      	adds	r3, #1
@@ -1997,18 +1997,18 @@ static void draw_rectangle(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8
  800146a:	79bb      	ldrb	r3, [r7, #6]
  800146c:	73bb      	strb	r3, [r7, #14]
  800146e:	e010      	b.n	8001492 <draw_rectangle+0x76>
-        glcd_pixel(x1, y, color);
+        lcd_pixel(x1, y, color);
  8001470:	f897 2020 	ldrb.w	r2, [r7, #32]
  8001474:	7bb9      	ldrb	r1, [r7, #14]
  8001476:	79fb      	ldrb	r3, [r7, #7]
  8001478:	4618      	mov	r0, r3
- 800147a:	f7ff fed3 	bl	8001224 <glcd_pixel>
-        glcd_pixel(x2, y, color);
+ 800147a:	f7ff fed3 	bl	8001224 <lcd_pixel>
+        lcd_pixel(x2, y, color);
  800147e:	f897 2020 	ldrb.w	r2, [r7, #32]
  8001482:	7bb9      	ldrb	r1, [r7, #14]
  8001484:	797b      	ldrb	r3, [r7, #5]
  8001486:	4618      	mov	r0, r3
- 8001488:	f7ff fecc 	bl	8001224 <glcd_pixel>
+ 8001488:	f7ff fecc 	bl	8001224 <lcd_pixel>
     for(uint8_t y = y1; y <= y2; y++) {
  800148c:	7bbb      	ldrb	r3, [r7, #14]
  800148e:	3301      	adds	r3, #1
@@ -2266,7 +2266,7 @@ static bounding_box_t draw_char(unsigned char c, unsigned char x, unsigned char 
  80015fa:	f003 0301 	and.w	r3, r3, #1
  80015fe:	2b00      	cmp	r3, #0
  8001600:	d00c      	beq.n	800161c <draw_char+0xfc>
-				glcd_pixel(x + i, y + j, 1);
+				lcd_pixel(x + i, y + j, 1);
  8001602:	79ba      	ldrb	r2, [r7, #6]
  8001604:	7d7b      	ldrb	r3, [r7, #21]
  8001606:	4413      	add	r3, r2
@@ -2277,10 +2277,10 @@ static bounding_box_t draw_char(unsigned char c, unsigned char x, unsigned char 
  8001610:	b2db      	uxtb	r3, r3
  8001612:	2201      	movs	r2, #1
  8001614:	4619      	mov	r1, r3
- 8001616:	f7ff fe05 	bl	8001224 <glcd_pixel>
+ 8001616:	f7ff fe05 	bl	8001224 <lcd_pixel>
  800161a:	e00b      	b.n	8001634 <draw_char+0x114>
 			} else {
-				glcd_pixel(x + i, y + j, 0);
+				lcd_pixel(x + i, y + j, 0);
  800161c:	79ba      	ldrb	r2, [r7, #6]
  800161e:	7d7b      	ldrb	r3, [r7, #21]
  8001620:	4413      	add	r3, r2
@@ -2291,7 +2291,7 @@ static bounding_box_t draw_char(unsigned char c, unsigned char x, unsigned char 
  800162a:	b2db      	uxtb	r3, r3
  800162c:	2200      	movs	r2, #0
  800162e:	4619      	mov	r1, r3
- 8001630:	f7ff fdf8 	bl	8001224 <glcd_pixel>
+ 8001630:	f7ff fdf8 	bl	8001224 <lcd_pixel>
 		for (uint8_t j = 0; j < font[FONT_HEADER_HEIGHT]; j++) {
  8001634:	7d3b      	ldrb	r3, [r7, #20]
  8001636:	3301      	adds	r3, #1
@@ -2364,7 +2364,7 @@ void LCD_display_speed(uint32_t speed, int units)
  80016a0:	6039      	str	r1, [r7, #0]
     char speed_str[12];
     /* Clear the previous speed and unit areas */
-    glcd_clear_bounding_box(SPEED_X - SPEED_SPACING, SPEED_Y, old_bb_speed.x2 + SPEED_SPACING, BOTTOM_RIGHT_Y);
+    lcd_clear_bounding_box(SPEED_X - SPEED_SPACING, SPEED_Y, old_bb_speed.x2 + SPEED_SPACING, BOTTOM_RIGHT_Y);
  80016a2:	4b3c      	ldr	r3, [pc, #240]	@ (8001794 <LCD_display_speed+0xfc>)
  80016a4:	789b      	ldrb	r3, [r3, #2]
  80016a6:	3302      	adds	r3, #2
@@ -2372,8 +2372,8 @@ void LCD_display_speed(uint32_t speed, int units)
  80016aa:	233f      	movs	r3, #63	@ 0x3f
  80016ac:	211d      	movs	r1, #29
  80016ae:	2022      	movs	r0, #34	@ 0x22
- 80016b0:	f7ff fe18 	bl	80012e4 <glcd_clear_bounding_box>
-    glcd_clear_bounding_box(old_bb_speed.x2 - SPEED_SPACING, SPEED_Y, old_bb_speed_units.x2 + SPEED_UNITS_SPACING, SPEED_Y + 11);
+ 80016b0:	f7ff fe18 	bl	80012e4 <lcd_clear_bounding_box>
+    lcd_clear_bounding_box(old_bb_speed.x2 - SPEED_SPACING, SPEED_Y, old_bb_speed_units.x2 + SPEED_UNITS_SPACING, SPEED_Y + 11);
  80016b4:	4b37      	ldr	r3, [pc, #220]	@ (8001794 <LCD_display_speed+0xfc>)
  80016b6:	789b      	ldrb	r3, [r3, #2]
  80016b8:	3b02      	subs	r3, #2
@@ -2384,7 +2384,7 @@ void LCD_display_speed(uint32_t speed, int units)
  80016c2:	b2da      	uxtb	r2, r3
  80016c4:	2328      	movs	r3, #40	@ 0x28
  80016c6:	211d      	movs	r1, #29
- 80016c8:	f7ff fe0c 	bl	80012e4 <glcd_clear_bounding_box>
+ 80016c8:	f7ff fe0c 	bl	80012e4 <lcd_clear_bounding_box>
     
     if (speed < 10) { // Single digit speed
  80016cc:	687b      	ldr	r3, [r7, #4]
@@ -2488,8 +2488,8 @@ void LCD_display_speed(uint32_t speed, int units)
             break;
  8001784:	bf00      	nop
     }
-    glcd_refresh();
- 8001786:	f7ff fdfb 	bl	8001380 <glcd_refresh>
+    lcd_refresh();
+ 8001786:	f7ff fdfb 	bl	8001380 <lcd_refresh>
 }
  800178a:	bf00      	nop
  800178c:	3718      	adds	r7, #24
@@ -2520,13 +2520,13 @@ void LCD_display_drive_state(int state)
     char state_str[2] = {ERROR_SYMBOL, '\0'};  // Default to error symbol.
  80017c0:	2358      	movs	r3, #88	@ 0x58
  80017c2:	81bb      	strh	r3, [r7, #12]
-    glcd_clear_bounding_box(STATE_X, STATE_Y, old_bb_drive_state.x2, BOTTOM_RIGHT_Y);
+    lcd_clear_bounding_box(STATE_X, STATE_Y, old_bb_drive_state.x2, BOTTOM_RIGHT_Y);
  80017c4:	4b17      	ldr	r3, [pc, #92]	@ (8001824 <LCD_display_drive_state+0x6c>)
  80017c6:	789a      	ldrb	r2, [r3, #2]
  80017c8:	233f      	movs	r3, #63	@ 0x3f
  80017ca:	2128      	movs	r1, #40	@ 0x28
  80017cc:	2001      	movs	r0, #1
- 80017ce:	f7ff fd89 	bl	80012e4 <glcd_clear_bounding_box>
+ 80017ce:	f7ff fd89 	bl	80012e4 <lcd_clear_bounding_box>
     
     switch (state) {
  80017d2:	687b      	ldr	r3, [r7, #4]
@@ -2577,8 +2577,8 @@ void LCD_display_drive_state(int state)
  8001812:	4603      	mov	r3, r0
  8001814:	4a03      	ldr	r2, [pc, #12]	@ (8001824 <LCD_display_drive_state+0x6c>)
  8001816:	6013      	str	r3, [r2, #0]
-    glcd_refresh();
- 8001818:	f7ff fdb2 	bl	8001380 <glcd_refresh>
+    lcd_refresh();
+ 8001818:	f7ff fdb2 	bl	8001380 <lcd_refresh>
 }
  800181c:	bf00      	nop
  800181e:	3710      	adds	r7, #16
@@ -2600,12 +2600,12 @@ void LCD_display_SOC(uint32_t soc)
  8001832:	6078      	str	r0, [r7, #4]
     char soc_str[12];
     bounding_box_t bb;
-    glcd_clear_bounding_box(SOC_X - SOC_SPACING, SOC_Y, BOTTOM_RIGHT_X, BOTTOM_RIGHT_Y);
+    lcd_clear_bounding_box(SOC_X - SOC_SPACING, SOC_Y, BOTTOM_RIGHT_X, BOTTOM_RIGHT_Y);
  8001834:	233f      	movs	r3, #63	@ 0x3f
  8001836:	227f      	movs	r2, #127	@ 0x7f
  8001838:	212e      	movs	r1, #46	@ 0x2e
  800183a:	205e      	movs	r0, #94	@ 0x5e
- 800183c:	f7ff fd52 	bl	80012e4 <glcd_clear_bounding_box>
+ 800183c:	f7ff fd52 	bl	80012e4 <lcd_clear_bounding_box>
     
     if (soc < 10) {
  8001840:	687b      	ldr	r3, [r7, #4]
@@ -2657,8 +2657,8 @@ void LCD_display_SOC(uint32_t soc)
  80018a0:	4603      	mov	r3, r0
  80018a2:	4a08      	ldr	r2, [pc, #32]	@ (80018c4 <LCD_display_SOC+0x98>)
  80018a4:	6013      	str	r3, [r2, #0]
-    glcd_refresh();
- 80018a6:	f7ff fd6b 	bl	8001380 <glcd_refresh>
+    lcd_refresh();
+ 80018a6:	f7ff fd6b 	bl	8001380 <lcd_refresh>
 }
  80018aa:	bf00      	nop
  80018ac:	3718      	adds	r7, #24
@@ -2694,12 +2694,12 @@ void LCD_display_power_bar(float pack_current, float pack_voltage)
  80018e0:	617b      	str	r3, [r7, #20]
 
     /* Clear the drawing area (including extra space for the center line) */
-    glcd_clear_bounding_box(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM + 3);
+    lcd_clear_bounding_box(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM + 3);
  80018e2:	2317      	movs	r3, #23
  80018e4:	227f      	movs	r2, #127	@ 0x7f
  80018e6:	2101      	movs	r1, #1
  80018e8:	2001      	movs	r0, #1
- 80018ea:	f7ff fcfb 	bl	80012e4 <glcd_clear_bounding_box>
+ 80018ea:	f7ff fcfb 	bl	80012e4 <lcd_clear_bounding_box>
 
     /* Draw the outline of the power bar */
     draw_rectangle(BAR_LEFT, BAR_TOP, BAR_RIGHT, BAR_BOTTOM, 1);
@@ -2757,14 +2757,14 @@ void LCD_display_power_bar(float pack_current, float pack_voltage)
  8001956:	232c      	movs	r3, #44	@ 0x2c
  8001958:	62fb      	str	r3, [r7, #44]	@ 0x2c
  800195a:	e00a      	b.n	8001972 <LCD_display_power_bar+0xaa>
-                glcd_pixel(x, y, 1);
+                lcd_pixel(x, y, 1);
  800195c:	6afb      	ldr	r3, [r7, #44]	@ 0x2c
  800195e:	b2db      	uxtb	r3, r3
  8001960:	6b3a      	ldr	r2, [r7, #48]	@ 0x30
  8001962:	b2d1      	uxtb	r1, r2
  8001964:	2201      	movs	r2, #1
  8001966:	4618      	mov	r0, r3
- 8001968:	f7ff fc5c 	bl	8001224 <glcd_pixel>
+ 8001968:	f7ff fc5c 	bl	8001224 <lcd_pixel>
             for (int x = CENTER_X + 1; x <= CENTER_X + fill_pixels; x++) {
  800196c:	6afb      	ldr	r3, [r7, #44]	@ 0x2c
  800196e:	3301      	adds	r3, #1
@@ -2832,14 +2832,14 @@ void LCD_display_power_bar(float pack_current, float pack_voltage)
  80019e8:	232a      	movs	r3, #42	@ 0x2a
  80019ea:	623b      	str	r3, [r7, #32]
  80019ec:	e00a      	b.n	8001a04 <LCD_display_power_bar+0x13c>
-                glcd_pixel(x, y, 1);
+                lcd_pixel(x, y, 1);
  80019ee:	6a3b      	ldr	r3, [r7, #32]
  80019f0:	b2db      	uxtb	r3, r3
  80019f2:	6a7a      	ldr	r2, [r7, #36]	@ 0x24
  80019f4:	b2d1      	uxtb	r1, r2
  80019f6:	2201      	movs	r2, #1
  80019f8:	4618      	mov	r0, r3
- 80019fa:	f7ff fc13 	bl	8001224 <glcd_pixel>
+ 80019fa:	f7ff fc13 	bl	8001224 <lcd_pixel>
             for (int x = CENTER_X - 1; x >= CENTER_X - fill_pixels; x--) {
  80019fe:	6a3b      	ldr	r3, [r7, #32]
  8001a00:	3b01      	subs	r3, #1
@@ -2865,13 +2865,13 @@ void LCD_display_power_bar(float pack_current, float pack_voltage)
  8001a1c:	2301      	movs	r3, #1
  8001a1e:	61fb      	str	r3, [r7, #28]
  8001a20:	e009      	b.n	8001a36 <LCD_display_power_bar+0x16e>
-        glcd_pixel(CENTER_X, y, 1);
+        lcd_pixel(CENTER_X, y, 1);
  8001a22:	69fb      	ldr	r3, [r7, #28]
  8001a24:	b2db      	uxtb	r3, r3
  8001a26:	2201      	movs	r2, #1
  8001a28:	4619      	mov	r1, r3
  8001a2a:	202b      	movs	r0, #43	@ 0x2b
- 8001a2c:	f7ff fbfa 	bl	8001224 <glcd_pixel>
+ 8001a2c:	f7ff fbfa 	bl	8001224 <lcd_pixel>
     for (int y = BAR_TOP; y <= BAR_BOTTOM + 3; y++) {
  8001a30:	69fb      	ldr	r3, [r7, #28]
  8001a32:	3301      	adds	r3, #1
@@ -2880,8 +2880,8 @@ void LCD_display_power_bar(float pack_current, float pack_voltage)
  8001a38:	2b17      	cmp	r3, #23
  8001a3a:	ddf2      	ble.n	8001a22 <LCD_display_power_bar+0x15a>
     }
-    glcd_refresh();
- 8001a3c:	f7ff fca0 	bl	8001380 <glcd_refresh>
+    lcd_refresh();
+ 8001a3c:	f7ff fca0 	bl	8001380 <lcd_refresh>
 }
  8001a40:	bf00      	nop
  8001a42:	3738      	adds	r7, #56	@ 0x38
@@ -3006,7 +3006,7 @@ void LCD_init(SPI_HandleTypeDef* hspi)
     LCD_write_command(CMD_SET_CONTRAST - 5);
  8001b00:	200c      	movs	r0, #12
  8001b02:	f7ff ffa5 	bl	8001a50 <LCD_write_command>
-    LCD_write_command(GLCD_CMD_DISPLAY_START);
+    LCD_write_command(CMD_DISPLAY_START);
  8001b06:	2040      	movs	r0, #64	@ 0x40
  8001b08:	f7ff ffa2 	bl	8001a50 <LCD_write_command>
     LCD_write_command(CMD_DISPLAY_ON);
@@ -3131,7 +3131,7 @@ int main(void)
  8001bb2:	1ad1      	subs	r1, r2, r3
  8001bb4:	4608      	mov	r0, r1
  8001bb6:	f7ff fdff 	bl	80017b8 <LCD_display_drive_state>
-    LCD_display_SOC(v1 % 101);
+    LCD_display_SOC(v1 % 101);  
  8001bba:	687b      	ldr	r3, [r7, #4]
  8001bbc:	4a1a      	ldr	r2, [pc, #104]	@ (8001c28 <main+0x100>)
  8001bbe:	fb82 1203 	smull	r1, r2, r2, r3
