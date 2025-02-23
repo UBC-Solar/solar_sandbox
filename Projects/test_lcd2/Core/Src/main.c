@@ -235,12 +235,6 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
-    HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_RESET); 
-    HAL_Delay(100);
-    HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_SET); 
-    HAL_Delay(100);
-
-    HAL_Delay(100);
     // init_LCD();
     LCD_init(&hspi2);
     // HAL_Delay(100);

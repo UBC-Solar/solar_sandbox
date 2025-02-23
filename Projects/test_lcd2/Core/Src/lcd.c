@@ -424,6 +424,11 @@ void LCD_write_data(uint8_t data)
  */
 void LCD_init(SPI_HandleTypeDef* hspi)
 {
+    HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_RESET); 
+    HAL_Delay(30);
+    HAL_GPIO_WritePin(RST_GPIO_Port, RST_Pin, GPIO_PIN_SET); 
+    HAL_Delay(30);
+    
     sg_spi_handle = hspi;
 
     LCD_write_command(CMD_SET_ADC_NORMAL);          

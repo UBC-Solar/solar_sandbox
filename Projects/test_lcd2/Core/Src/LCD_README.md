@@ -4,13 +4,13 @@ This README explains how to use the LCD library. This is intended for use on the
 ## Useful Links
 * [DRD Altium Link](https://ubc-solar.365.altium.com/designs/A1D09E3F-0EB6-42A4-A897-C945D50A3C55?variant=[No+Variations]&activeDocumentId=E_PAS_DRD.SchDoc(1)&activeView=SCH&location=[1,95.68,26.62,35.19]#design)
 * [LCD Basic Arduino Functionality GitHub Link](https://github.com/NewhavenDisplay/NHD-C12864A1Z_Example/blob/main/NHD-C12864A1Z/NHD-C12864A1Z.ino#L197)
-* [LCD Printing Library GitHub Link](https://github.com/mberntsen/STM32-Libraries/blob/master/ST7565/src/ST7565.c)
-* [LCD Screen ](https://newhavendisplay.com/content/specs/NHD-C12864A1Z-FSW-FBW-HTT.pdf)
+* [LCD Printing Library GitHub Link](https://github.com/edeca/Electronics)
+* [LCD Screen](https://newhavendisplay.com/content/specs/NHD-C12864A1Z-FSW-FBW-HTT.pdf)
 * [LCD ST7565P Controller Datasheet](https://support.newhavendisplay.com/hc/en-us/article_attachments/4414878945687)
 
-## Additions
+## What this Library Comes With
 * Adds the weight of extra logic to program the LCD screen
-* Adds a **1024 byte buffer** to quickly handle LCD operations!
+* Adds a **1024 byte buffer** to hold LCD pixels. 
 
 ## Initialization
 Call the `LCD_init()` function once with a **pointer** to your SPI handle. This will likely occur in your `main.c` code. To initialize the SPI peripheral correctly set these fields as follows:
@@ -20,7 +20,17 @@ Call the `LCD_init()` function once with a **pointer** to your SPI handle. This 
 Possible differences
 * Since the DRD does not have a 32kHz crystal oscillator you will likely have a different baudrate. The default baudrate **should** work, however, when debugging consider this problem.
 
-## How to Add a Field
+## How to Set Values
+There are 4 piece of data we display on the LCD screen
+1. Speed (mph or kph)
+2. Drive State (Drive 'D', Reverse 'R', Park 'P')
+3. Pack Power as a horizontal bar
+4. SoC (State of Charge in %)
+
+### Setting the Speed
+
+
+
 There are 2 parts to adding a field onto the LCD screen.
 1. Adding the fields heading/name.
 2. Adding the fields data.

@@ -4,5 +4,5 @@
 ../Core/Src/main.c:161:6:ClearLCD	32	static
 ../Core/Src/main.c:182:6:DispPic	32	static
 ../Core/Src/main.c:209:5:main	16	static
-../Core/Src/main.c:294:6:SystemClock_Config	72	static
-../Core/Src/main.c:337:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:288:6:SystemClock_Config	72	static
+../Core/Src/main.c:331:6:Error_Handler	4	static,ignoring_inline_asm
