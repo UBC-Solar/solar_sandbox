@@ -11,7 +11,7 @@ This README explains how to use the LCD library. This is intended for use on the
 ## What this Library Comes With
 * Adds the weight of extra logic to program the LCD screen
 * Adds a **1024 byte buffer** to hold LCD pixels. 
-* Adds 3 files `lcd.h`, `lcd.c`, and `font_verdana.h` to your project.
+* Adds 4 files `lcd.h`, `lcd.c`, `font_verdana.h`, and `font_verdana.c` to your project.
 
 ## Initialization
 Call the `LCD_init()` function once with a **pointer** to your SPI handle. This will likely occur in your `main.c` code. To initialize the SPI peripheral correctly set these fields as follows:
