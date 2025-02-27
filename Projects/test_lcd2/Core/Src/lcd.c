@@ -276,17 +276,21 @@ void LCD_display_speed(uint32_t speed, int units)
         sprintf(speed_str, "%02lu", (unsigned long)speed);  
         old_bb_speed = draw_text(speed_str, SPEED_X, SPEED_Y, SPEED_FONT, SPEED_SPACING);
     }
+
+    #define WIDEST_CHAR_LEN_VERDANA32           24      // pixels
     
     /* Draw the speed units */
     switch (units) {
         case KPH:
-            old_bb_speed_units = draw_text("kph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            // old_bb_speed_units = draw_text("kph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            old_bb_speed_units = draw_text("kph", SPEED_X + 2 * WIDEST_CHAR_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
-        case MPH:
-            old_bb_speed_units = draw_text("mph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            case MPH:
+            // old_bb_speed_units = draw_text("mph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            old_bb_speed_units = draw_text("mph", SPEED_X + 2 * WIDEST_CHAR_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
         default:
-            old_bb_speed_units = draw_text("xxx", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            old_bb_speed_units = draw_text("xxx", SPEED_X + 2 * WIDEST_CHAR_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
     }
     lcd_refresh();
