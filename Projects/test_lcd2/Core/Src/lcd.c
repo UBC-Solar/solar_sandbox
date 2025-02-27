@@ -277,20 +277,20 @@ void LCD_display_speed(uint32_t speed, int units)
         old_bb_speed = draw_text(speed_str, SPEED_X, SPEED_Y, SPEED_FONT, SPEED_SPACING);
     }
 
-    #define WIDEST_CHAR_LEN_VERDANA32           24      // pixels
+    #define WIDEST_NUM_LEN_VERDANA32           24      // pixels
     
     /* Draw the speed units */
     switch (units) {
         case KPH:
             // old_bb_speed_units = draw_text("kph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
-            old_bb_speed_units = draw_text("kph", SPEED_X + 2 * WIDEST_CHAR_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            old_bb_speed_units = draw_text("kph", SPEED_X + 2 * WIDEST_NUM_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
             case MPH:
             // old_bb_speed_units = draw_text("mph", old_bb_speed.x2 + SPEED_SPACING, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
-            old_bb_speed_units = draw_text("mph", SPEED_X + 2 * WIDEST_CHAR_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            old_bb_speed_units = draw_text("mph", SPEED_X + 2 * WIDEST_NUM_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
         default:
-            old_bb_speed_units = draw_text("xxx", SPEED_X + 2 * WIDEST_CHAR_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
+            old_bb_speed_units = draw_text("xxx", SPEED_X + 2 * WIDEST_NUM_LEN_VERDANA32, SPEED_Y, SPEED_UNITS_FONT, SPEED_UNITS_SPACING);
             break;
     }
     lcd_refresh();
@@ -330,6 +330,9 @@ void LCD_display_drive_state(int state)
  */
 void LCD_display_SOC(uint32_t soc)
 {
+
+    #define WIDEST_NUM_LEN_VERDANA16        11 // pixels
+
     char soc_str[12];
     bounding_box_t bb;
     lcd_clear_bounding_box(SOC_X - SOC_SPACING, SOC_Y, BOTTOM_RIGHT_X, BOTTOM_RIGHT_Y);
@@ -341,7 +344,10 @@ void LCD_display_SOC(uint32_t soc)
         sprintf(soc_str, "%02lu", (unsigned long)soc);
         bb = draw_text(soc_str, SOC_X, SOC_Y, SOC_FONT, SOC_SPACING);
     }
-    old_bb_soc = draw_char(SOC_UNITS, bb.x2 + 2, SOC_Y, SOC_UNITS_FONT);
+
+    UNUSED(bb);     // remove warnigin
+
+    old_bb_soc = draw_char(SOC_UNITS, SOC_X + 2 * WIDEST_NUM_LEN_VERDANA16 + 2, SOC_Y, SOC_UNITS_FONT);
     lcd_refresh();
 }
 
