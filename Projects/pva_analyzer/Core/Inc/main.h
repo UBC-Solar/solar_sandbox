@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdint.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -46,7 +46,8 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define NUM_SAMPLES 4096
+extern uint16_t adc_buffer[NUM_SAMPLES];
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -66,6 +67,10 @@ void Error_Handler(void);
 #define USART_RX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
+#define UART_DONE_Pin GPIO_PIN_6
+#define UART_DONE_GPIO_Port GPIOC
+#define ADC_DONE_Pin GPIO_PIN_8
+#define ADC_DONE_GPIO_Port GPIOC
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14

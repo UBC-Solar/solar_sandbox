@@ -21,6 +21,7 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
+#include "usart.h"
 
 /* USER CODE END 0 */
 
@@ -65,6 +66,12 @@ void MX_ADC1_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN ADC1_Init 2 */
+  sConfig.SamplingTime = ADC_SAMPLETIME_239CYCLES_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
   if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK){
     Error_Handler();
   }
@@ -144,12 +151,19 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    HAL_GPIO_WritePin(ADC_DONE_GPIO_Port, ADC_DONE_Pin, GPIO_PIN_SET);
+
+    // Transmit the first half
+    // if (uart_dma_cplt)
+    HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&adc_buffer[0], sizeof(uint32_t) * NUM_SAMPLES / 2);
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-    HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+    HAL_GPIO_WritePin(ADC_DONE_GPIO_Port, ADC_DONE_Pin, GPIO_PIN_RESET);
+    
+    // Transmit second half
+    HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&adc_buffer[(NUM_SAMPLES >> 2) - 1], sizeof(uint32_t) * NUM_SAMPLES / 2);
 }
 
 /* USER CODE END 1 */

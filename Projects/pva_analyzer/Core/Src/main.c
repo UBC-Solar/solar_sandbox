@@ -35,7 +35,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define NUM_SAMPLES 4096
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
