@@ -22,8 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 
-volatile bool uart_dma_half_cplt = true;
-volatile bool uart_dma_cplt = true;
+volatile bool uart_dma_cplt = false;
 
 /* USER CODE END 0 */
 

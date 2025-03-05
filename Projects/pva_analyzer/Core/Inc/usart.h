@@ -35,7 +35,6 @@ extern "C" {
 extern UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN Private defines */
-extern volatile bool uart_dma_half_cplt;
 extern volatile bool uart_dma_cplt;
 /* USER CODE END Private defines */
 

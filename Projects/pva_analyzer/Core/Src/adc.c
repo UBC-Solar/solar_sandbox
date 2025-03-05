@@ -148,14 +148,15 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
+static uint8_t DELIMITER[4] = {0xFF, 0xFF, 0xFF, 0xFF}; 
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
     HAL_GPIO_WritePin(ADC_DONE_GPIO_Port, ADC_DONE_Pin, GPIO_PIN_SET);
 
     // Transmit the first half
-    // if (uart_dma_cplt)
-    HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&adc_buffer[0], sizeof(uint32_t) * NUM_SAMPLES / 2);
+    // HAL_GPIO_TogglePin(UART_DONE_GPIO_Port, UART_DONE_Pin);
+    // HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&adc_buffer[0], sizeof(uint16_t) * NUM_SAMPLES / 2);
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
@@ -163,7 +164,9 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
     HAL_GPIO_WritePin(ADC_DONE_GPIO_Port, ADC_DONE_Pin, GPIO_PIN_RESET);
     
     // Transmit second half
-    HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&adc_buffer[(NUM_SAMPLES >> 2) - 1], sizeof(uint32_t) * NUM_SAMPLES / 2);
+    HAL_GPIO_TogglePin(UART_DONE_GPIO_Port, UART_DONE_Pin);
+    // HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&adc_buffer[(NUM_SAMPLES >> 2) - 1], (sizeof(uint16_t) * NUM_SAMPLES / 2) + NUM_DELIMITER_UINT16);
+    HAL_UART_Transmit_DMA(&huart2, (uint8_t *)&adc_buffer[0], sizeof(adc_buffer));
 }
 
 /* USER CODE END 1 */

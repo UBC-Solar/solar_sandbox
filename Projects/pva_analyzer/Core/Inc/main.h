@@ -46,8 +46,10 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define NUM_SAMPLES 4096
-extern uint16_t adc_buffer[NUM_SAMPLES];
+#define NUM_DELIMITER_UINT16         2
+#define NUM_SAMPLES             4096
+
+extern uint16_t adc_buffer[NUM_SAMPLES + NUM_DELIMITER_UINT16];
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/

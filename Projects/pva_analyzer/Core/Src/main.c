@@ -45,7 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint16_t adc_buffer[NUM_SAMPLES];
+uint16_t adc_buffer[NUM_SAMPLES + NUM_DELIMITER_UINT16];
 
 /* USER CODE END PV */
 
@@ -94,6 +94,9 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
+    adc_buffer[NUM_SAMPLES + 0] = (uint16_t)(0xffff);
+    adc_buffer[NUM_SAMPLES + 1] = (uint16_t)(0xff0a);
+    
   HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, NUM_SAMPLES);
 
   /* USER CODE END 2 */
