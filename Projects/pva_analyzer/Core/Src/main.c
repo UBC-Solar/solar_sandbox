@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -34,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define NUM_SAMPLES 4096
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -45,6 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint16_t adc_buffer[NUM_SAMPLES];
 
 /* USER CODE END PV */
 
@@ -88,31 +90,24 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_ADC_Start(&hadc1);
+
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, NUM_SAMPLES);
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  char buffer[20]; // Buffer to hold formatted string
-
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+ while (1)
+ {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-      HAL_ADC_PollForConversion(&hadc1, 1000);
-      uint32_t adc_val = HAL_ADC_GetValue(&hadc1);
-  
-      sprintf(buffer, "ADC val: %d\r\n", adc_val);
-      HAL_UART_Transmit(&huart2, (uint8_t *)buffer, strlen(buffer), 100);
-  
-      HAL_Delay(100);
-  }
+ }
+ 
   /* USER CODE END 3 */
 }
 
