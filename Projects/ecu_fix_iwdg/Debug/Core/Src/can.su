@@ -1,0 +1,6 @@
+../Core/Src/can.c:58:6:CAN_Init	16	static
+../Core/Src/can.c:83:6:CAN_SendMessage450	64	static
+../Core/Src/can.c:120:6:CAN_SendMessage1806E5F4	64	static
+../Core/Src/can.c:158:6:CAN_CheckRxMessages	24	static
+../Core/Src/can.c:188:6:CAN_CheckRxChargerMessage	4	static
+../Core/Src/can.c:208:13:initFilter0x18FF50E5	48	static

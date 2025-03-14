@@ -1,0 +1,5 @@
+../Core/Src/debug_io.c:19:6:DebugIO_Init	1
+../Core/Src/debug_io.c:25:5:__io_putchar	1
+../Core/Src/debug_io.c:40:5:__io_getchar	1
+../Core/Src/debug_io.c:47:5:_read	2
+../Core/Src/debug_io.c:59:5:_write	2

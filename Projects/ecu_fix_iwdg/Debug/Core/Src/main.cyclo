@@ -1,0 +1,17 @@
+../Core/Src/main.c:85:6:HAL_ADC_LevelOutOfWindowCallback	1
+../Core/Src/main.c:90:6:HAL_TIM_PeriodElapsedCallback	1
+../Core/Src/main.c:97:6:HAL_GPIO_EXTI_Callback	2
+../Core/Src/main.c:110:5:main	3
+../Core/Src/main.c:197:6:SystemClock_Config	4
+../Core/Src/main.c:245:13:MX_ADC1_Init	12
+../Core/Src/main.c:372:13:MX_CAN_Init	2
+../Core/Src/main.c:409:13:MX_IWDG_Init	2
+../Core/Src/main.c:437:13:MX_TIM2_Init	4
+../Core/Src/main.c:484:13:MX_TIM3_Init	4
+../Core/Src/main.c:529:13:MX_UART5_Init	2
+../Core/Src/main.c:560:13:MX_DMA_Init	1
+../Core/Src/main.c:578:13:MX_GPIO_Init	1
+../Core/Src/main.c:671:6:HAL_ADC_ConvHalfCpltCallback	2
+../Core/Src/main.c:678:6:HAL_ADC_ConvCpltCallback	2
+../Core/Src/main.c:684:6:averageAndSaveValues_ADC1	2
+../Core/Src/main.c:717:6:Error_Handler	1
