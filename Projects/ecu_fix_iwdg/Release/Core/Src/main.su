@@ -1,0 +1,9 @@
+../Core/Src/main.c:85:6:HAL_ADC_LevelOutOfWindowCallback	0	static
+../Core/Src/main.c:90:6:HAL_TIM_PeriodElapsedCallback	0	static
+../Core/Src/main.c:97:6:HAL_GPIO_EXTI_Callback	0	static
+../Core/Src/main.c:200:6:SystemClock_Config	96	static,ignoring_inline_asm
+../Core/Src/main.c:110:5:main	88	static,ignoring_inline_asm
+../Core/Src/main.c:687:6:averageAndSaveValues_ADC1	16	static
+../Core/Src/main.c:674:6:HAL_ADC_ConvHalfCpltCallback	0	static
+../Core/Src/main.c:681:6:HAL_ADC_ConvCpltCallback	0	static
+../Core/Src/main.c:720:6:Error_Handler	0	static,ignoring_inline_asm

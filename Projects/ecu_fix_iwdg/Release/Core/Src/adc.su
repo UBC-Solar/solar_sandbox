@@ -1,0 +1,7 @@
+../Core/Src/adc.c:97:6:ADC1_processRawReadings	72	static
+../Core/Src/adc.c:138:6:ADC1_setFaultStatus	0	static
+../Core/Src/adc.c:151:5:ADC1_getFaultStatus	0	static
+../Core/Src/adc.c:164:6:ADC1_setBusyStatus	0	static
+../Core/Src/adc.c:177:5:ADC1_getBusyStatus	0	static
+../Core/Src/adc.c:191:7:volts2temp	8	static
+../Core/Src/adc.c:32:6:ADC_setReading	8	static

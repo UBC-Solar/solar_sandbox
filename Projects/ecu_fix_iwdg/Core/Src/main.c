@@ -185,6 +185,9 @@ int main(void)
 
       last_blink_time = current_time;
     }
+
+
+    //HAL_Delay(10000);
   }
 
   /* USER CODE END 3 */
