@@ -2571,10 +2571,10 @@ void FSM_Init()
  80018c0:	4b09      	ldr	r3, [pc, #36]	@ (80018e8 <FSM_Init+0x54>)
  80018c2:	2211      	movs	r2, #17
  80018c4:	701a      	strb	r2, [r3, #0]
-    }
     else {
         FSM_state = FSM_RESET;
     }
+    
 
     return;
  80018c6:	e003      	b.n	80018d0 <FSM_Init+0x3c>
