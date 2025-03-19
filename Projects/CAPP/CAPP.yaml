@@ -1,29 +1,42 @@
 CAN_Messages:
   - id: 0x100
     extended_id: false
+    sender_ECU: MDI
     name: MotorDiagnostics
-    sender: MDI
-    receivers:
-      - MCB
-      - TEL
     signals:
       - name: vehicle_speed
         datatype: float
-        unit: m/s
       - name: drive_state
         datatype: uint8_t
-        unit: N/A
   - id: 0x101
     extended_id: false
     name: MCBDiagnostics
-    sender: MCB
-    receivers:
-      - MCB
-      - TEL
     signals:
       - name: vehicle_speed
         datatype: float
-        unit: m/s
       - name: drive_state
         datatype: uint8_t
-        unit: N/A
+  - id: 0x300
+    extended_id: false
+    name: AMB_Diagnostics
+    signals:
+      - name: temperature1
+        datatype: float
+      - name: temp_fail1
+        datatype: bool
+      - name: temp_fail2
+        datatype: bool
+  - id: 0x400
+    extended_id: false
+    name: DID_Diagnostics
+    signals:
+      - name: sig1
+        datatype: uint8_t
+      - name: sig2
+        datatype: uint32_t
+      - name: sig3
+        datatype: uint8_t
+      - name: sig4
+        datatype: bool
+      - name: sig5
+        datatype: uint16_t

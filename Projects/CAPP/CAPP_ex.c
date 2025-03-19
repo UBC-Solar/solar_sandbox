@@ -60,7 +60,12 @@ void CAPP_package_uint8_t(uint8_t* buffer, uint8_t buf_len, uint8_t start_bit, u
 }
 
 
-void CAPP_Parse_MotorDiagnostics(MotorDiagnostics_t* MotorDiagnostics, uint8_t* CAN_data)
+void CAPP_Parse_MotorDiagnostics(MotorDiagnostics_t* MotorDiagnostics, uint8_t* data)
 {
-   MotorDiagnostics->vehicle_speed = parse_float(CAN_data, 0);
+   MotorDiagnostics->vehicle_speed = parse_float(data, 0);
+}
+
+void CAPP_Package_MotorDiagnostics(MotorDiagnostics_t* MotorDiagnostics, uint8_t* data)
+{
+   CAPP_package_float(data, 8, 0, MotorDiagnostics->vehicle_speed);
 }

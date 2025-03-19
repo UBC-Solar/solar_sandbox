@@ -14,3 +14,10 @@ typedef struct {
    uint8_t drive_state;
 } CAPP_MCBDiagnostics_t;
 
+#define AMB_DIAGNOSTICS_CAN_ID (0x300)
+typedef struct {
+   float temperature1;
+   bool temp_fail1;
+   bool temp_fail2;
+} CAPP_AMB_Diagnostics_t;
+
