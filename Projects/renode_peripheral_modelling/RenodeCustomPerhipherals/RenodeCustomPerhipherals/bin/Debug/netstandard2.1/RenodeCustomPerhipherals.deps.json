@@ -1,0 +1,678 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.1/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.1": {},
+    ".NETStandard,Version=v2.1/": {
+      "RenodeCustomPerhipherals/1.0.0": {
+        "dependencies": {
+          "AntShell": "1.0.9026.22255",
+          "AsyncIO": "0.1.69.0",
+          "CookComputing.XmlRpcV2": "2.5.0.0",
+          "cores-arm-m": "0.0.0.0",
+          "cores-arm": "0.0.0.0",
+          "cores-i386": "0.0.0.0",
+          "cores-ppc": "0.0.0.0",
+          "cores-ppc64": "0.0.0.0",
+          "cores-riscv": "0.0.0.0",
+          "cores-riscv64": "0.0.0.0",
+          "cores-sparc": "0.0.0.0",
+          "CxxDemangler": "1.0.9026.22256",
+          "Dynamitey": "1.0.2.0",
+          "ELFSharp": "0.1.1.0",
+          "Emulator": "0.0.0.0",
+          "Extensions": "0.0.0.0",
+          "FdtSharp": "0.1.0.0",
+          "IronPython": "2.7.11.0",
+          "IronPython.Modules": "2.7.11.0",
+          "libtftp": "0.0.0.0",
+          "Lucene.Net": "3.0.3.0",
+          "LZ4": "1.0.15.93",
+          "Microsoft.Dynamic": "1.3.0.0",
+          "Microsoft.Scripting": "1.3.0.0",
+          "Migrant": "0.14.0.0",
+          "Mono.Cecil": "0.9.5.0",
+          "NetMQ": "4.0.0.207",
+          "Nini": "1.1.0.0",
+          "OptionsParser": "0.1.0.0",
+          "PacketDotNet": "0.13.0.0",
+          "Renode-peripherals": "0.0.0.0",
+          "Renode": "1.15.3.22387",
+          "SampleCommandPlugin": "0.0.0.0",
+          "Sprache": "2.1.0.0",
+          "TermSharp": "0.0.0.0",
+          "TracePlugin": "0.0.0.0",
+          "UI": "0.0.0.0",
+          "VerilatorPlugin": "0.0.0.0",
+          "WiresharkPlugin": "0.0.0.0",
+          "Xwt": "0.1.0.0",
+          "Xwt.WPF": "0.1.0.0"
+        },
+        "runtime": {
+          "RenodeCustomPerhipherals.dll": {}
+        }
+      },
+      "AntShell/1.0.9026.22255": {
+        "runtime": {
+          "AntShell.dll": {
+            "assemblyVersion": "1.0.9026.22255",
+            "fileVersion": "1.0.9026.22255"
+          }
+        }
+      },
+      "AsyncIO/0.1.69.0": {
+        "runtime": {
+          "AsyncIO.dll": {
+            "assemblyVersion": "0.1.69.0",
+            "fileVersion": "0.1.69.0"
+          }
+        }
+      },
+      "CookComputing.XmlRpcV2/2.5.0.0": {
+        "runtime": {
+          "CookComputing.XmlRpcV2.dll": {
+            "assemblyVersion": "2.5.0.0",
+            "fileVersion": "2.5.0.0"
+          }
+        }
+      },
+      "cores-arm-m/0.0.0.0": {
+        "runtime": {
+          "cores-arm-m.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "cores-arm/0.0.0.0": {
+        "runtime": {
+          "cores-arm.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "cores-i386/0.0.0.0": {
+        "runtime": {
+          "cores-i386.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "cores-ppc/0.0.0.0": {
+        "runtime": {
+          "cores-ppc.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "cores-ppc64/0.0.0.0": {
+        "runtime": {
+          "cores-ppc64.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "cores-riscv/0.0.0.0": {
+        "runtime": {
+          "cores-riscv.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "cores-riscv64/0.0.0.0": {
+        "runtime": {
+          "cores-riscv64.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "cores-sparc/0.0.0.0": {
+        "runtime": {
+          "cores-sparc.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "CxxDemangler/1.0.9026.22256": {
+        "runtime": {
+          "CxxDemangler.dll": {
+            "assemblyVersion": "1.0.9026.22256",
+            "fileVersion": "1.0.9026.22256"
+          }
+        }
+      },
+      "Dynamitey/1.0.2.0": {
+        "runtime": {
+          "Dynamitey.dll": {
+            "assemblyVersion": "1.0.2.0",
+            "fileVersion": "1.0.2.0"
+          }
+        }
+      },
+      "ELFSharp/0.1.1.0": {
+        "runtime": {
+          "ELFSharp.dll": {
+            "assemblyVersion": "0.1.1.0",
+            "fileVersion": "0.1.1.0"
+          }
+        }
+      },
+      "Emulator/0.0.0.0": {
+        "runtime": {
+          "Emulator.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Extensions/0.0.0.0": {
+        "runtime": {
+          "Extensions.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "FdtSharp/0.1.0.0": {
+        "runtime": {
+          "FdtSharp.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "IronPython/2.7.11.0": {
+        "runtime": {
+          "IronPython.dll": {
+            "assemblyVersion": "2.7.11.0",
+            "fileVersion": "2.7.11.1000"
+          }
+        }
+      },
+      "IronPython.Modules/2.7.11.0": {
+        "runtime": {
+          "IronPython.Modules.dll": {
+            "assemblyVersion": "2.7.11.0",
+            "fileVersion": "2.7.11.1000"
+          }
+        }
+      },
+      "libtftp/0.0.0.0": {
+        "runtime": {
+          "libtftp.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Lucene.Net/3.0.3.0": {
+        "runtime": {
+          "Lucene.Net.dll": {
+            "assemblyVersion": "3.0.3.0",
+            "fileVersion": "3.0.3.0"
+          }
+        }
+      },
+      "LZ4/1.0.15.93": {
+        "runtime": {
+          "LZ4.dll": {
+            "assemblyVersion": "1.0.15.93",
+            "fileVersion": "1.0.15.93"
+          }
+        }
+      },
+      "Microsoft.Dynamic/1.3.0.0": {
+        "runtime": {
+          "Microsoft.Dynamic.dll": {
+            "assemblyVersion": "1.3.0.0",
+            "fileVersion": "1.3.0.1000"
+          }
+        }
+      },
+      "Microsoft.Scripting/1.3.0.0": {
+        "runtime": {
+          "Microsoft.Scripting.dll": {
+            "assemblyVersion": "1.3.0.0",
+            "fileVersion": "1.3.0.1000"
+          }
+        }
+      },
+      "Migrant/0.14.0.0": {
+        "runtime": {
+          "Migrant.dll": {
+            "assemblyVersion": "0.14.0.0",
+            "fileVersion": "0.14.0.0"
+          }
+        }
+      },
+      "Mono.Cecil/0.9.5.0": {
+        "runtime": {
+          "Mono.Cecil.dll": {
+            "assemblyVersion": "0.9.5.0",
+            "fileVersion": "0.9.5.0"
+          }
+        }
+      },
+      "NetMQ/4.0.0.207": {
+        "runtime": {
+          "NetMQ.dll": {
+            "assemblyVersion": "4.0.0.207",
+            "fileVersion": "4.0.0.207"
+          }
+        }
+      },
+      "Nini/1.1.0.0": {
+        "runtime": {
+          "Nini.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "OptionsParser/0.1.0.0": {
+        "runtime": {
+          "OptionsParser.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "PacketDotNet/0.13.0.0": {
+        "runtime": {
+          "PacketDotNet.dll": {
+            "assemblyVersion": "0.13.0.0",
+            "fileVersion": "0.13.0.0"
+          }
+        }
+      },
+      "Renode-peripherals/0.0.0.0": {
+        "runtime": {
+          "Renode-peripherals.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Renode/1.15.3.22387": {
+        "runtime": {
+          "Renode.exe": {
+            "assemblyVersion": "1.15.3.22387",
+            "fileVersion": "1.15.3.22387"
+          }
+        }
+      },
+      "SampleCommandPlugin/0.0.0.0": {
+        "runtime": {
+          "SampleCommandPlugin.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Sprache/2.1.0.0": {
+        "runtime": {
+          "Sprache.dll": {
+            "assemblyVersion": "2.1.0.0",
+            "fileVersion": "2.1.0.0"
+          }
+        }
+      },
+      "TermSharp/0.0.0.0": {
+        "runtime": {
+          "TermSharp.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "TracePlugin/0.0.0.0": {
+        "runtime": {
+          "TracePlugin.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "UI/0.0.0.0": {
+        "runtime": {
+          "UI.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "VerilatorPlugin/0.0.0.0": {
+        "runtime": {
+          "VerilatorPlugin.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "WiresharkPlugin/0.0.0.0": {
+        "runtime": {
+          "WiresharkPlugin.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "Xwt/0.1.0.0": {
+        "runtime": {
+          "Xwt.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "Xwt.WPF/0.1.0.0": {
+        "runtime": {
+          "Xwt.WPF.dll": {
+            "assemblyVersion": "0.1.0.0",
+            "fileVersion": "0.1.0.0"
+          }
+        }
+      },
+      "BigGustave/0.0.0.0": {
+        "runtime": {
+          "BigGustave.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "mcs/0.0.0.0": {
+        "runtime": {
+          "mcs.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "BitMiracle.LibJpeg.NET/1.5.0.0": {
+        "runtime": {
+          "BitMiracle.LibJpeg.NET.dll": {
+            "assemblyVersion": "1.5.0.0",
+            "fileVersion": "1.5.0.0"
+          }
+        }
+      },
+      "FlatBuffers/0.0.0.0": {
+        "runtime": {
+          "FlatBuffers.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "protobuf-net/2.4.0.0": {
+        "runtime": {
+          "protobuf-net.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.7.18"
+          }
+        }
+      },
+      "crypto/1.9.0.0": {
+        "runtime": {
+          "crypto.dll": {
+            "assemblyVersion": "1.9.0.0",
+            "fileVersion": "1.9.21290.1"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "RenodeCustomPerhipherals/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AntShell/1.0.9026.22255": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AsyncIO/0.1.69.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CookComputing.XmlRpcV2/2.5.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-arm-m/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-arm/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-i386/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-ppc/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-ppc64/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-riscv/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-riscv64/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "cores-sparc/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CxxDemangler/1.0.9026.22256": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Dynamitey/1.0.2.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ELFSharp/0.1.1.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Emulator/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Extensions/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FdtSharp/0.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IronPython/2.7.11.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "IronPython.Modules/2.7.11.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "libtftp/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Lucene.Net/3.0.3.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LZ4/1.0.15.93": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Dynamic/1.3.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Scripting/1.3.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Migrant/0.14.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Mono.Cecil/0.9.5.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "NetMQ/4.0.0.207": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Nini/1.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "OptionsParser/0.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "PacketDotNet/0.13.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Renode-peripherals/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Renode/1.15.3.22387": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SampleCommandPlugin/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Sprache/2.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "TermSharp/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "TracePlugin/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "UI/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "VerilatorPlugin/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "WiresharkPlugin/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Xwt/0.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Xwt.WPF/0.1.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BigGustave/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "mcs/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BitMiracle.LibJpeg.NET/1.5.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FlatBuffers/0.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "protobuf-net/2.4.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "crypto/1.9.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

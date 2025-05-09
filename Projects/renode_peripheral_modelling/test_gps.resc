@@ -1,0 +1,17 @@
+# Create the emulation machine
+mach create
+
+# Load your custom peripheral (SolarGPS)
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/SolarGPS.cs
+
+# Load the platform with stm32f103 and the I2C bus
+machine LoadPlatformDescription @stm32f103.repl
+
+# Load the compiled firmware ELF into sysbus
+sysbus LoadELF @test.elf
+
+# Show a terminal analyzer for USART1
+showAnalyzer sysbus.usart1
+
+# Start the simulation
+start
