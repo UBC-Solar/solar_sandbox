@@ -48,6 +48,10 @@ rtc: Timers.STM32F103_RTC @ sysbus 0x40002800
 rcc: Miscellaneous.STM32F103_RCC @ sysbus 0x40021000
     rtcPeripheral: rtc
 
+rcc_mapper: Miscellaneous.RCC_PLL_MAPPER @ sysbus 0x42420060
+    rccPeripheral: rcc 
+
+flash_acr: Miscellaneous.FLASH_ACR @ sysbus 0x40022000
 
 exti: IRQControllers.STM32F4_EXTI @ sysbus 0x40010400
     numberOfOutputLines: 19
@@ -88,3 +92,4 @@ sysbus:
     init:
         ApplySVD @https://dl.antmicro.com/projects/renode/svd/STM32F103.svd.gz
         Tag <0x40021000, 0x40021003> "RCC_CR" 0x0A020083
+       

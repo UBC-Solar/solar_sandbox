@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using Antmicro.Renode.Core;
 using Antmicro.Renode.Core.Structure.Registers;
 using Antmicro.Renode.Logging;
-using Antmicro.Renode.Peripherals.Bus;
 using Antmicro.Renode.Time;
 using Antmicro.Renode.Utilities;
 using Antmicro.Renode.Peripherals.Timers;
 using System;
-using System.Collections.Generic;
-using Antmicro.Renode.Core;
-using Antmicro.Renode.Core.Structure.Registers;
-using Antmicro.Renode.Peripherals.Bus;
-using Antmicro.Renode.Peripherals.Timers;
+
+
+
 
 
 namespace Antmicro.Renode.Peripherals.Timers
@@ -240,6 +237,7 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
         
         public void WriteDoubleWord(long offset, uint value)
         {
+           // this.NoisyLog(string.Format("WRITING TO RCC reg FIle MAPPER + value: {0:X}", value));
             RegistersCollection.Write(offset, value);
         }
         
@@ -267,7 +265,69 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
         }
     }
 
+    public class RCC_PLL_MAPPER :IDoubleWordPeripheral, IKnownSize
+    {
+        private STM32F103_RCC peripheral;
+        public RCC_PLL_MAPPER(STM32F103_RCC rccPeripheral)
+        {
+            peripheral = rccPeripheral;
+        }
+        public long Size => 0x400;
+        public void Reset()
+        {
+            
+        }
 
+        public uint ReadDoubleWord(long offset)
+        {
+            this.NoisyLog("READING FROM RCC MAPPER");
+            return peripheral.ReadDoubleWord(0x0);
+        }
+
+        public void WriteDoubleWord(long offset, uint value)
+        {
+            if (value == 0)
+            {
+                uint new_value = peripheral.ReadDoubleWord(0x0);
+                new_value &= ~(1u << 24);
+                peripheral.WriteDoubleWord(0x0, new_value);
+            }
+            else if (value == 1)
+            {
+                uint new_value = peripheral.ReadDoubleWord(0x0);
+                new_value  |= (1 << 24); 
+                peripheral.WriteDoubleWord(0x0, new_value);
+            }
+           
+            
+        }
+    }
+    public class FLASH_ACR :IDoubleWordPeripheral, IKnownSize
+    {
+        private uint regValue = 0x2;
+        public FLASH_ACR()
+        {
+          
+        }
+        public long Size => 0x4;
+        public void Reset()
+        {
+            
+        }
+
+        public uint ReadDoubleWord(long offset)
+        {
+            return regValue;
+        }
+
+        public void WriteDoubleWord(long offset, uint value)
+        {
+            regValue = value;
+        }
+           
+            
+        }
+    
 
 
 } 

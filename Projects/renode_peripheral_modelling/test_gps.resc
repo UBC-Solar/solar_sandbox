@@ -1,9 +1,10 @@
 # Create the emulation machine
+Clear
 mach create
 
 # Load your custom peripheral (SolarGPS)
 i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/SolarGPS.cs
-i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_All.cs
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_ALL.cs
 
 # Load the platform with stm32f103 and the I2C bus
 machine LoadPlatformDescription @stm32f103.repl
@@ -14,5 +15,12 @@ sysbus LoadELF @test.elf
 # Show a terminal analyzer for USART1
 showAnalyzer sysbus.usart1
 
+
+sysbus.cpu ExecutionMode SingleStep
+
+machine StartGdbServer 3333
+
+logLevel -1
+
 # Start the simulation
-start
+#start

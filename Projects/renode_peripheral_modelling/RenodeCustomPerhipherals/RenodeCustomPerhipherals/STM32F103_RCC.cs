@@ -16,7 +16,7 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
     public sealed class STM32F103_RCC : IDoubleWordPeripheral, IKnownSize,
         IProvidesRegisterCollection<DoubleWordRegisterCollection>
     {
-        public STM32F103_RCC(IMachine machine , Antmicro.Renode.Peripherals.Timers.STM32F103_RTC rtcPeripheral)
+        public STM32F103_RCC(IMachine machine /*, Antmicro.Renode.Peripherals.Timers.STM32F103_RTC rtcPeripheral*/)
         {
 
             var registersMap = new Dictionary<long, DoubleWordRegister>
@@ -75,7 +75,7 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
                         .WithReservedBits(16,3)
                         .WithValueField(19, 1, name: "TIM9RST")
                         .WithValueField(20, 1, name: "TIM10RST")
-                        .WithValueField(21, 1, name: "TIM811ST")
+                        .WithValueField(21, 1, name: "TIM11ST")
                         .WithReservedBits(22,10)
                 },
                 {
@@ -149,11 +149,11 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
                             {
                                 if (value)
                                 {
-                                    machine.SystemBus.EnablePeripheral(rtcPeripheral);
+                                    //machine.SystemBus.EnablePeripheral(rtcPeripheral);
                                 }
                                 else
                                 {
-                                    machine.SystemBus.DisablePeripheral(rtcPeripheral);
+                                   // machine.SystemBus.DisablePeripheral(rtcPeripheral);
                                 }
                             })
                         .WithValueField(16, 1, name: "BDRST")
@@ -171,7 +171,7 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
                         .WithTag("SFTRSTF", 28, 1)
                         .WithTag("IWDGRSTF", 29, 1)
                         .WithTag("WWDGRSTF", 30, 1)
-                        .WithTag("LPWRRSTF", 31, 1)
+                        .WithTag("LPWRSTF", 31, 1)
                 },
                 {
                     (long)Registers.AHBPeripheralClockEnable, new DoubleWordRegister(this, 0x14)
