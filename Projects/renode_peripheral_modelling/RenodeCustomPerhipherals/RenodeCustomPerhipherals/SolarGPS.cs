@@ -14,7 +14,6 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
     public class SolarGPS : II2CPeripheral
     {
         private String message = "GPS!";
-        
         public SolarGPS()
         {
             Reset();
@@ -23,19 +22,15 @@ namespace Antmicro.Renode.Peripherals.Miscellaneous
         {
             return System.Text.Encoding.ASCII.GetBytes(message);
         }
-
         public void Write(byte[] data)
         {
-            
         }
         public void FinishTransmission()
         {
-            
         }
 
         public void Reset()
         {
-            return;
         }
     }
 }

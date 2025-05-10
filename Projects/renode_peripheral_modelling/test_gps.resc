@@ -3,6 +3,7 @@ mach create
 
 # Load your custom peripheral (SolarGPS)
 i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/SolarGPS.cs
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_All.cs
 
 # Load the platform with stm32f103 and the I2C bus
 machine LoadPlatformDescription @stm32f103.repl
