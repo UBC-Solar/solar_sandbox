@@ -2,3 +2,5 @@
 *.vscode*
 hppc_data.csv
 main
+.env
+*image*
