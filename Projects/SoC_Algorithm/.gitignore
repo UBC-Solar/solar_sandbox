@@ -1,0 +1,3 @@
+*.venv*
+*.vscode*
+hppc_data.csv
