@@ -250,7 +250,7 @@ void SOC_predict_then_update(float g_total_pack_voltage_soc, float g_pack_curren
     #endif // DEBUG
 }
 
-uint8_t SOC_get_soc()
+float SOC_get_soc()
 {
-    return (uint8_t)(state[SOC] * 100);
+    return (state[SOC] * 100);
 }
