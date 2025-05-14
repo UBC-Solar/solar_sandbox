@@ -1,7 +1,7 @@
 #include "soc.h"
 #include <stdio.h>
 
-#define HPPC_DATA_CSV   "hppc_data.csv"
+#define HPPC_DATA_CSV   "fsgp_data.csv"
 #define SOC_OUTPUT_CSV   "soc.csv"
 
 int main()

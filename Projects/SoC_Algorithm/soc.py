@@ -45,52 +45,54 @@ with open("/home/aarjav/Documents/UBC/solar_sandbox/Projects/SoC_Algorithm/curre
     voltage_data = dill.load(pack_voltage_f)
 
     # for i in range(len(current_data)):
-    print(len(current_data))
-    print(len(voltage_data))
-    # for i in range(len(current_data)):
-    #     print(current_data[i], voltage_data[i], file=f)
+    for i in range(len(current_data)):
+        print(current_data[i], voltage_data[i], file=f)
 
 # f.close()
 
 
-# from data_tools.collections import TimeSeries
+from data_tools.collections import TimeSeries
 
-# client = DBClient()
+client = DBClient()
 
-# # ISO 8601-compliant times corresponding to pre-competition testing
-# start = "2024-07-16T14:00:00Z"
-# stop = "2024-07-17T01:00:00Z"
+# ISO 8601-compliant times corresponding to pre-competition testing
+start = "2024-07-16T14:00:00Z"
+stop = "2024-07-17T01:00:00Z"
 
-# start_dt = datetime.fromisoformat(start)
-# stop_dt  = datetime.fromisoformat(stop)
+start_dt = datetime.fromisoformat(start)
+stop_dt  = datetime.fromisoformat(stop)
 
-# # We can, in one line, make a query to InfluxDB and parse
-# # the data into a powerful format: the `TimeSeries` class.
-# voltage_data: TimeSeries = client.query_time_series(
-#     start=start_dt,
-#     stop=stop_dt,
-#     field="TotalPackVoltage",
-#     units="V"
-# )
-# current_data: TimeSeries = client.query_time_series(
-#     start=start_dt,
-#     stop=stop_dt,
-#     field="PackCurrent",
-#     units="C"
-# )
+# We can, in one line, make a query to InfluxDB and parse
+# the data into a powerful format: the `TimeSeries` class.
+voltage_data: TimeSeries = client.query_time_series(
+    start=start_dt,
+    stop=stop_dt,
+    field="TotalPackVoltage",
+    units="V",
+    granularity=0.1
+)
+current_data: TimeSeries = client.query_time_series(
+    start=start_dt,
+    stop=stop_dt,
+    field="PackCurrent",
+    units="C",
+    granularity=0.1
+)
 
-# current_data, voltage_data = TimeSeries.align(current_data, voltage_data)
+current_data, voltage_data = TimeSeries.align(current_data, voltage_data)
 
-# current_dump_f = open("current_data_comp.dill", "wb")
-# voltage_dump_f = open("voltage_data_comp.dill", "wb")
+current_dump_f = open("current_data_comp.dill", "wb")
+voltage_dump_f = open("voltage_data_comp.dill", "wb")
 
-# # Align them
+# Align them
 
-# dill.dump(current_data, current_dump_f)
-# dill.dump(voltage_data, voltage_dump_f)
+dill.dump(current_data, current_dump_f)
+dill.dump(voltage_data, voltage_dump_f)
 
-# current_dump_f.close()
-# voltage_dump_f.close()
+current_dump_f.close()
+voltage_dump_f.close()
+
+print(len(current_data))
 
 # Plot the data
 # voltage_data.plot(show=False)
