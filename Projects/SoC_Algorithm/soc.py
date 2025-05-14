@@ -10,7 +10,7 @@ with open("/home/aarjav/Documents/UBC/sunlink/data_analysis/parameter_extraction
     voltage_data = dill.load(pack_voltage_f)
 
     # for i in range(len(current_data)):
-    for i in range(10):
+    for i in range(len(current_data)):
         print(current_data[i], voltage_data[i], file=f)
 
 f.close()
