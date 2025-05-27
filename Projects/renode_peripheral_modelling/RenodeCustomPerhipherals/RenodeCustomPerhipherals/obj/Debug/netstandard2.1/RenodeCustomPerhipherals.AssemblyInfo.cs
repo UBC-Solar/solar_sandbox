@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RenodeCustomPerhipherals")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c64e5f359aa31c8eb40220754130fdab7b2d34fe")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ca008d2a56a98f8e126774e8a14b0f3aaf656179")]
 [assembly: System.Reflection.AssemblyProductAttribute("RenodeCustomPerhipherals")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RenodeCustomPerhipherals")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

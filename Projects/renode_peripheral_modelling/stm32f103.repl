@@ -31,12 +31,19 @@ cpu: CPU.CortexM @ sysbus
     cpuType: "cortex-m3"
     nvic: nvic
 
+can1: CAN.STM32F103_CAN @ sysbus <0x40006400, +0x400>
+    [0-3] -> nvic@[19-22]
+
+can2: CAN.STM32F103_CAN @ sysbus <0x40006800, +0x400>
+    [0-3] -> nvic@[63-66]
+    master: can1
+
 
 i2c1: I2C.STM32F4_I2C @ sysbus 0x40005400
     EventInterrupt -> nvic@31
     ErrorInterrupt -> nvic@32
 
-gps: Miscellaneous.SolarGPS @ i2c1 0x42
+//gps: Miscellaneous.SolarGPS @ i2c1 0x42
 
 i2c2: I2C.STM32F4_I2C @ sysbus 0x40005800
     EventInterrupt -> nvic@33
@@ -48,8 +55,13 @@ rtc: Timers.STM32F103_RTC @ sysbus 0x40002800
 rcc: Miscellaneous.STM32F103_RCC @ sysbus 0x40021000
     rtcPeripheral: rtc
 
-rcc_mapper: Miscellaneous.RCC_PLL_MAPPER @ sysbus 0x42420060
-    rccPeripheral: rcc 
+//rcc_mapper: Miscellaneous.RCC_PLL_MAPPER @ sysbus 0x42420060
+  //  rccPeripheral: rcc 
+
+
+
+bitbandPeripherals: Miscellaneous.BitBanding @ sysbus <0x42000000, +0x2000000>
+    peripheralBase: 0x40000000
 
 flash_acr: Miscellaneous.FLASH_ACR @ sysbus 0x40022000
 
@@ -87,6 +99,16 @@ gpioPortF: GPIOPort.STM32F1GPIOPort @ sysbus <0x40011C00, +0x400>
 
 gpioPortG: GPIOPort.STM32F1GPIOPort @ sysbus <0x40012000, +0x400>
     [0-15] -> exti@[0-15]
+
+rts: Miscellaneous.Button @ gpioPortA 
+    ->gpioPortA@0
+lts: Miscellaneous.Button @ gpioPortA
+    ->gpioPortA@1
+mode: Miscellaneous.Button @ gpioPortB 
+    ->gpioPortB@12
+horn: Miscellaneous.Button @ gpioPortC
+    ->gpioPortC@9 
+
 
 sysbus:
     init:

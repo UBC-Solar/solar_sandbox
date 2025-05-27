@@ -1,26 +1,44 @@
-# Create the emulation machine
 Clear
-mach create
+mach create "m1"
+mach create "m2"
+mach set "m1"
 
 # Load your custom peripheral (SolarGPS)
 i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/SolarGPS.cs
 i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_ALL.cs
-
-# Load the platform with stm32f103 and the I2C bus
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_CAN.cs
 machine LoadPlatformDescription @stm32f103.repl
-
-# Load the compiled firmware ELF into sysbus
 sysbus LoadELF @test.elf
 
-# Show a terminal analyzer for USART1
+#showAnalyzer sysbus.usart1
+#showAnalyzer sysbus.can1
+#sysbus.cpu ExecutionMode SingleStep
+#machine StartGdbServer 3333
+
+sysbus LogAllPeripheralsAccess true
+#logLevel -1
+
+mach set "m2"
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/SolarGPS.cs
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_ALL.cs
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_CAN.cs
+
+machine LoadPlatformDescription @stm32f103.repl
+sysbus LoadELF @can_Rx.elf
 showAnalyzer sysbus.usart1
+sysbus LogAllPeripheralsAccess true
+
+#sysbus.cpu ExecutionMode SingleStep
+#machine StartGdbServer 3333
 
 
-sysbus.cpu ExecutionMode SingleStep
+emulation CreateCANHub "canHub"
 
-machine StartGdbServer 3333
+mach set "m1"
+connector Connect sysbus.can1 canHub
 
-logLevel -1
+mach set "m2"
+connector Connect sysbus.can1 canHub
 
 # Start the simulation
-#start
+start

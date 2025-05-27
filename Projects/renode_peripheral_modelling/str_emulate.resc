@@ -1,0 +1,38 @@
+Clear
+mach create "str"
+mach create "can_rx"
+mach set "str"
+
+
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_ALL.cs 
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_CAN.cs
+
+machine LoadPlatformDescription @stm32f103.repl
+sysbus LoadELF @str.elf #debug binary because no watchdog periph setup yet
+showAnalyzer sysbus.usart5
+sysbus.cpu ExecutionMode SingleStep
+machine StartGdbServer 3333
+
+
+sysbus LogAllPeripheralsAccess true
+
+mach set "can_rx"
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_ALL.cs
+i @RenodeCustomPerhipherals/RenodeCustomPerhipherals/STM32F103_CAN.cs
+
+machine LoadPlatformDescription @stm32f103.repl
+sysbus LoadELF @can_Rx.elf
+showAnalyzer sysbus.usart1
+sysbus LogAllPeripheralsAccess true
+sysbus.cpu ExecutionMode SingleStep
+machine StartGdbServer 4444
+
+emulation CreateCANHub "canHub"
+
+mach set "str"
+connector Connect sysbus.can1 canHub
+
+mach set "can_rx"
+connector Connect sysbus.can1 canHub
+
+start
