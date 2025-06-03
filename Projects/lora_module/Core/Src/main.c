@@ -92,7 +92,7 @@ int main(void)
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
   // uint8_t txMsg[]  = "Hello over LoRa!\r\n";
-  uint8_t txMsg = 1;
+  uint8_t txMsg = 0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -101,7 +101,7 @@ int main(void)
   {
     // strlen((char*)txMsg) for char length
     HAL_UART_Transmit(&huart4, &txMsg, sizeof(txMsg), HAL_MAX_DELAY);
-    HAL_Delay(1000); 
+    HAL_Delay(1000);
     txMsg++;
     
     /* USER CODE END WHILE */

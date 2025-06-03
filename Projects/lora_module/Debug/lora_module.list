@@ -113,8 +113,8 @@ int main(void)
  8000236:	f000 f85b 	bl	80002f0 <MX_UART4_Init>
   /* USER CODE BEGIN 2 */
   // uint8_t txMsg[]  = "Hello over LoRa!\r\n";
-  uint8_t txMsg = 1;
- 800023a:	2301      	movs	r3, #1
+  uint8_t txMsg = 0;
+ 800023a:	2300      	movs	r3, #0
  800023c:	71fb      	strb	r3, [r7, #7]
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -127,7 +127,7 @@ int main(void)
  8000244:	2201      	movs	r2, #1
  8000246:	4806      	ldr	r0, [pc, #24]	@ (8000260 <main+0x3c>)
  8000248:	f001 f918 	bl	800147c <HAL_UART_Transmit>
-    HAL_Delay(1000); 
+    HAL_Delay(1000);
  800024c:	f44f 707a 	mov.w	r0, #1000	@ 0x3e8
  8000250:	f000 fa00 	bl	8000654 <HAL_Delay>
     txMsg++;
