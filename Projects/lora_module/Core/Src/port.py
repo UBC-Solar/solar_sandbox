@@ -8,9 +8,9 @@
         
 import serial, time
 
-ser = serial.Serial('/dev/cu.usbserial-120', 9600, timeout=0.1)
+ser = serial.Serial('/dev/cu.usbserial-2120', 9600, timeout=0.1)
 while True:
     b = ser.read(1)
     if b:
-        print(b[0])
+        print(b.hex())
     time.sleep(0.05)
