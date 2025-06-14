@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdbool.h>
+
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -41,15 +41,12 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define NUM_DELIMITER_UINT16         2
-#define NUM_SAMPLES             4096
 
-extern uint16_t adc_buffer[NUM_SAMPLES + NUM_DELIMITER_UINT16];
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-extern bool uart_tx_flag;
+
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -60,10 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define DEBUG2_Pin GPIO_PIN_1
-#define DEBUG2_GPIO_Port GPIOA
-#define DEBUG1_Pin GPIO_PIN_5
-#define DEBUG1_GPIO_Port GPIOA
+#define LED1_Pin GPIO_PIN_5
+#define LED1_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

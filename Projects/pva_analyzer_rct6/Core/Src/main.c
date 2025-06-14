@@ -18,10 +18,6 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "adc.h"
-#include "dma.h"
-#include "usart.h"
-#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -44,67 +40,34 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc2;
+
+TIM_HandleTypeDef htim3;
+
+UART_HandleTypeDef huart5;
 
 /* USER CODE BEGIN PV */
-uint16_t adc_buffer[NUM_SAMPLES + NUM_DELIMITER_UINT16];
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_UART5_Init(void);
+static void MX_ADC1_Init(void);
+static void MX_ADC2_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
+
+uint32_t timer_value;
+uint32_t previous_timer_value = 0;
+uint32_t timer_overflows = 0;
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-bool uart_tx_flag;
-
-
-uint64_t Read_ADC_Value(void)
-{
-    uint64_t value = 0;
-
-    // Poll for conversion complete (timeout = 10ms)
-    if (HAL_ADC_PollForConversion(&hadc1, 10) != HAL_OK)
-    {
-        // Timeout or error
-        return 0;
-    }
-
-    value = HAL_ADC_GetValue(&hadc1);
-    // Check if conversion is finished
-    // if ((HAL_ADC_GetState(&hadc1) & HAL_ADC_STATE_REG_EOC) == HAL_ADC_STATE_REG_EOC)
-    // {
-    //     // Get the converted value
-    //     value = HAL_ADC_GetValue(&hadc1);
-    // }
-
-
-    return value;
-}
-uint64_t Read_ADC_Value2(void)
-{
-    uint64_t value = 0;
-
-    // Poll for conversion complete (timeout = 10ms)
-    if (HAL_ADC_PollForConversion(&hadc2, 100) != HAL_OK)
-    {
-        // Timeout or error
-        return 0;
-    }
-
-    value = HAL_ADC_GetValue(&hadc2);
-    // Check if conversion is finished
-    // if ((HAL_ADC_GetState(&hadc1) & HAL_ADC_STATE_REG_EOC) == HAL_ADC_STATE_REG_EOC)
-    // {
-    //     // Get the converted value
-    //     value = HAL_ADC_GetValue(&hadc1);
-    // }
-
-
-    return value;
-}
 
 /* USER CODE END 0 */
 
@@ -137,27 +100,20 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
   MX_UART5_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  adc_buffer[NUM_SAMPLES + 0] = (uint16_t)(0xffff);
-  adc_buffer[NUM_SAMPLES + 1] = (uint16_t)(0xff0a);
+  HAL_TIM_Base_Start(&htim3);
 
-    // Start conversion for basic
-    if (HAL_ADC_Start(&hadc1) != HAL_OK)
-    {
-    }
+  // uint32_t adc1_values[200] = {0};
+  // uint32_t adc2_values[200] = {0};
+  // uint32_t index = 0;
 
-    // Start conversion for basic
-    if (HAL_ADC_Start(&hadc2) != HAL_OK)
-    {
-    }
-
-
-// HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buffer, NUM_SAMPLES);
+  // HAL_ADC_Start(&hadc1);
+  // HAL_ADC_Start(&hadc2);
 
   /* USER CODE END 2 */
 
@@ -168,28 +124,47 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    
-        // HAL_GPIO_TogglePin(DEBUG1_GPIO_Port, DEBUG1_Pin);       // Debug 1 blinking means Uart is done
-        // HAL_Delay(100);
-    
-        uint64_t adcVal = Read_ADC_Value();
-        uint64_t adcVal2 = Read_ADC_Value2();
-        uint64_t x = (adcVal << 32) | adcVal2;
-        HAL_UART_Transmit(&huart5, (uint8_t *)&x, sizeof(x), 5);
-        // HAL_UART_Transmit(&huart5, (uint8_t *)&adcVal2, sizeof(adcVal2), 5);
-        HAL_Delay(10);
 
-        // char c[] = "Hello World";
-        // HAL_UART_Transmit(&huart5, (uint8_t *)c, 12, 50);
-        // HAL_GPIO_TogglePin(DEBUG1_GPIO_Port, DEBUG1_Pin);       // Debug 1 blinking means Uart is done
-        // HAL_Delay(100);
+    // Read ADC1 and ADC2 then print to UART
+
+    uint64_t adc1_value = 0;
+    uint64_t adc2_value = 0;
+
+    // adc1_values[index] = HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+    // adc2_values[index] = HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
+    // index++;
+
+    // if (index >= 200){
+    //   index = 0;
+    // }
+
+    HAL_ADC_Start(&hadc1);
+    if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
+    {
+      adc1_value = (uint64_t)HAL_ADC_GetValue(&hadc1);
+    }
+    HAL_ADC_Stop(&hadc1);
+
+    HAL_ADC_Start(&hadc2);
+    if (HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)
+    {
+      adc2_value = (uint64_t)HAL_ADC_GetValue(&hadc2);
+    }
+    HAL_ADC_Stop(&hadc2);
     
-        // if (uart_tx_flag)
-        // {
-        //     uart_tx_flag = false;
-        //     HAL_UART_Transmit(&huart5, (uint8_t *)&adc_buffer[0], sizeof(adc_buffer), 1000);
-        //     HAL_GPIO_WritePin(DEBUG1_GPIO_Port, DEBUG1_Pin, 0);       // Debug 1 blinking means Uart is done
-        // }
+    uint32_t timer_reading = __HAL_TIM_GET_COUNTER(&htim3);
+    if (timer_reading < previous_timer_value) {
+      timer_overflows++;
+    }
+    previous_timer_value = timer_value;
+    timer_value = timer_reading + (timer_overflows * 65536); // Assuming 16-bit timer
+
+    uint64_t out = (adc1_value << 48) | (adc2_value << 32) | timer_value;
+    HAL_StatusTypeDef status = HAL_UART_Transmit(&huart5, (uint8_t*)&out, sizeof(out), HAL_MAX_DELAY);
+
+    if (status != HAL_OK) {
+      HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1); // Assuming LED1 is connected to PC13
+    }
   }
   /* USER CODE END 3 */
 }
@@ -207,13 +182,12 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-  RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL8;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI_DIV2;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -238,6 +212,211 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_7;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
+  * @brief ADC2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC2_Init(void)
+{
+
+  /* USER CODE BEGIN ADC2_Init 0 */
+
+  /* USER CODE END ADC2_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC2_Init 1 */
+
+  /* USER CODE END ADC2_Init 1 */
+
+  /** Common config
+  */
+  hadc2.Instance = ADC2;
+  hadc2.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc2.Init.ContinuousConvMode = DISABLE;
+  hadc2.Init.DiscontinuousConvMode = DISABLE;
+  hadc2.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc2.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc2.Init.NbrOfConversion = 1;
+  if (HAL_ADC_Init(&hadc2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_6;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc2, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC2_Init 2 */
+
+  /* USER CODE END ADC2_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 64;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_IC_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim3, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+  * @brief UART5 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_UART5_Init(void)
+{
+
+  /* USER CODE BEGIN UART5_Init 0 */
+
+  /* USER CODE END UART5_Init 0 */
+
+  /* USER CODE BEGIN UART5_Init 1 */
+
+  /* USER CODE END UART5_Init 1 */
+  huart5.Instance = UART5;
+  huart5.Init.BaudRate = 115200;
+  huart5.Init.WordLength = UART_WORDLENGTH_8B;
+  huart5.Init.StopBits = UART_STOPBITS_1;
+  huart5.Init.Parity = UART_PARITY_NONE;
+  huart5.Init.Mode = UART_MODE_TX_RX;
+  huart5.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart5.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart5) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN UART5_Init 2 */
+
+  /* USER CODE END UART5_Init 2 */
+
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_GPIO_Init(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : LED1_Pin */
+  GPIO_InitStruct.Pin = LED1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
+
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
