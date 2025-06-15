@@ -64,7 +64,7 @@ static void MX_TIM3_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#define SAMPLES 100
+
 /* USER CODE END 0 */
 
 /**
@@ -102,19 +102,16 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start(&htim3);
+  #define SAMPLES 500
 
-  uint16_t adc1_values[100] = {0};
-  uint16_t adc2_values[100] = {0};
-  uint32_t index = 0;
-
-  HAL_ADC_Start(&hadc1);
-  //HAL_ADC_Start(&hadc2);
+  uint16_t adc1_values[SAMPLES] = {0};
+  uint16_t adc2_values[SAMPLES] = {0};
+  uint16_t index = 0;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+  
   while (1)
   {
     /* USER CODE END WHILE */
@@ -123,26 +120,31 @@ int main(void)
 
     // Read ADC1 and ADC2 then print to UART
 
+    HAL_ADC_Start(&hadc1);
+    if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
+    {
+      adc1_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc1);
+    }
+    HAL_ADC_Stop(&hadc1);
 
-    adc1_values[index] = HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-    adc2_values[index] = HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
-    index++;
-    char out1[] = "HELLO";
-    HAL_StatusTypeDef status2 = HAL_UART_Transmit(&huart5, (uint8_t*)out1, sizeof(out1), HAL_MAX_DELAY);
+    HAL_ADC_Start(&hadc2);
+    if (HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)
+    {
+      adc2_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc2);
+    }
+    HAL_ADC_Stop(&hadc2);
     
-    if (index >= SAMPLES){
+    index++;
+
+    if (index > SAMPLES){
+      HAL_Delay(1000);
       index = 0;
-      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-
-      // Create csv with all the values and print over UART
-      for (uint32_t i = 0; i < SAMPLES; i++) {
+      // Throw away first sample because we're seeing issues just read the monday update Aarjav
+      for (int i = 1; i < SAMPLES; i++) {
         uint32_t out = ((uint32_t)adc1_values[i] << 16) | ((uint32_t)adc2_values[i] << 0);
+        adc1_values[i] = 0;
+        adc2_values[i] = 0;
         HAL_StatusTypeDef status = HAL_UART_Transmit(&huart5, (uint8_t*)&out, sizeof(out), HAL_MAX_DELAY);
-
-        // Enable LED if transmission fails
-        if (status != HAL_OK) {
-          HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1);
-        }
       }
     }
   }
