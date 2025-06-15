@@ -143,8 +143,7 @@ int main(void)
 
     if (index > SAMPLES){
       HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-      // Throw away first sample because we're seeing issues just read the monday update Aarjav
-      for (int i = 1; i < SAMPLES; i++) {
+      for (int i = 0; i < SAMPLES; i++) {
         // First 16 bits are adc1 (current sensor voltage), last 16 bits are adc2 (voltage)
         uint32_t out = ((uint32_t)adc1_values[i] << 16) | ((uint32_t)adc2_values[i] << 0);
         adc1_values[i] = 0;
