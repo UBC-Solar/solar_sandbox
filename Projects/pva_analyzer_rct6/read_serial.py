@@ -22,6 +22,7 @@ def read():
         
         timer_in_s_since_start = time.time() - start_time
         
+        # ADC1 is current sensor voltage, ADC2 is voltage
         print(f"ADC1: {adc1}, ADC2: {adc2}, {timer_in_s_since_start}")
         
         csv.write(f"{adc1},{adc2}\n")
