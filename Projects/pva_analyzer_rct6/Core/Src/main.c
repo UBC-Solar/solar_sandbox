@@ -108,6 +108,9 @@ int main(void)
   uint16_t adc2_values[SAMPLES] = {0};
   uint16_t index = 0;
 
+  HAL_ADC_Start(&hadc1);
+  HAL_ADC_Start(&hadc2);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -120,25 +123,25 @@ int main(void)
 
     // Read ADC1 and ADC2 then print to UART
 
-    HAL_ADC_Start(&hadc1);
     if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
     {
-      adc1_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc1);
+      adc1_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc1); // Read current sensor voltage
     }
-    HAL_ADC_Stop(&hadc1);
 
-    HAL_ADC_Start(&hadc2);
     if (HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)
     {
-      adc2_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc2);
+      adc2_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc2); // Read voltage
     }
-    HAL_ADC_Stop(&hadc2);
     
+    // If voltage is 0, skip this sample (This assumes capacitors are not charged)
+    if (adc2_values[index] <= 1){
+      continue;
+    }
+
     index++;
 
     if (index > SAMPLES){
-      HAL_Delay(1000);
-      index = 0;
+      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
       // Throw away first sample because we're seeing issues just read the monday update Aarjav
       for (int i = 1; i < SAMPLES; i++) {
         uint32_t out = ((uint32_t)adc1_values[i] << 16) | ((uint32_t)adc2_values[i] << 0);
@@ -146,6 +149,7 @@ int main(void)
         adc2_values[i] = 0;
         HAL_StatusTypeDef status = HAL_UART_Transmit(&huart5, (uint8_t*)&out, sizeof(out), HAL_MAX_DELAY);
       }
+      index = 0;
     }
   }
   /* USER CODE END 3 */

@@ -6,7 +6,7 @@ start_time = time.time()
 csv = open("data.csv", "w")
 
 def read():
-    s = serial.Serial('COM9', 115200)
+    s = serial.Serial('COM10', 115200)
         
     # Read from COM9 in a while loop
     while True:
