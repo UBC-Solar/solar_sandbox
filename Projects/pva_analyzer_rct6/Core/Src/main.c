@@ -60,15 +60,11 @@ static void MX_ADC2_Init(void);
 static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
-uint32_t timer_value;
-uint32_t previous_timer_value = 0;
-uint32_t timer_overflows = 0;
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+#define SAMPLES 100
 /* USER CODE END 0 */
 
 /**
@@ -108,12 +104,12 @@ int main(void)
 
   HAL_TIM_Base_Start(&htim3);
 
-  // uint32_t adc1_values[200] = {0};
-  // uint32_t adc2_values[200] = {0};
-  // uint32_t index = 0;
+  uint16_t adc1_values[100] = {0};
+  uint16_t adc2_values[100] = {0};
+  uint32_t index = 0;
 
-  // HAL_ADC_Start(&hadc1);
-  // HAL_ADC_Start(&hadc2);
+  HAL_ADC_Start(&hadc1);
+  //HAL_ADC_Start(&hadc2);
 
   /* USER CODE END 2 */
 
@@ -127,43 +123,27 @@ int main(void)
 
     // Read ADC1 and ADC2 then print to UART
 
-    uint64_t adc1_value = 0;
-    uint64_t adc2_value = 0;
 
-    // adc1_values[index] = HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-    // adc2_values[index] = HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
-    // index++;
-
-    // if (index >= 200){
-    //   index = 0;
-    // }
-
-    HAL_ADC_Start(&hadc1);
-    if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
-    {
-      adc1_value = (uint64_t)HAL_ADC_GetValue(&hadc1);
-    }
-    HAL_ADC_Stop(&hadc1);
-
-    HAL_ADC_Start(&hadc2);
-    if (HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)
-    {
-      adc2_value = (uint64_t)HAL_ADC_GetValue(&hadc2);
-    }
-    HAL_ADC_Stop(&hadc2);
+    adc1_values[index] = HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+    adc2_values[index] = HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY);
+    index++;
+    char out1[] = "HELLO";
+    HAL_StatusTypeDef status2 = HAL_UART_Transmit(&huart5, (uint8_t*)out1, sizeof(out1), HAL_MAX_DELAY);
     
-    uint32_t timer_reading = __HAL_TIM_GET_COUNTER(&htim3);
-    if (timer_reading < previous_timer_value) {
-      timer_overflows++;
-    }
-    previous_timer_value = timer_value;
-    timer_value = timer_reading + (timer_overflows * 65536); // Assuming 16-bit timer
+    if (index >= SAMPLES){
+      index = 0;
+      HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
 
-    uint64_t out = (adc1_value << 48) | (adc2_value << 32) | timer_value;
-    HAL_StatusTypeDef status = HAL_UART_Transmit(&huart5, (uint8_t*)&out, sizeof(out), HAL_MAX_DELAY);
+      // Create csv with all the values and print over UART
+      for (uint32_t i = 0; i < SAMPLES; i++) {
+        uint32_t out = ((uint32_t)adc1_values[i] << 16) | ((uint32_t)adc2_values[i] << 0);
+        HAL_StatusTypeDef status = HAL_UART_Transmit(&huart5, (uint8_t*)&out, sizeof(out), HAL_MAX_DELAY);
 
-    if (status != HAL_OK) {
-      HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1); // Assuming LED1 is connected to PC13
+        // Enable LED if transmission fails
+        if (status != HAL_OK) {
+          HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, 1);
+        }
+      }
     }
   }
   /* USER CODE END 3 */
