@@ -60,8 +60,8 @@ all: main-build
 main-build: Jlink_Nucleo_Blinky.elf secondary-outputs
 
 # Tool invocations
-Jlink_Nucleo_Blinky.elf Jlink_Nucleo_Blinky.map: $(OBJS) $(USER_OBJS) C:\DEV\STM32CubeIDE\workspace_solar\Jlink_Nucleo_Blinky\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Jlink_Nucleo_Blinky.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\DEV\STM32CubeIDE\workspace_solar\Jlink_Nucleo_Blinky\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Jlink_Nucleo_Blinky.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Jlink_Nucleo_Blinky.elf Jlink_Nucleo_Blinky.map: $(OBJS) $(USER_OBJS) C:\DEV\solar_sandbox\Projects\Jlink_Nucleo_Blinky\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Jlink_Nucleo_Blinky.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\DEV\solar_sandbox\Projects\Jlink_Nucleo_Blinky\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Jlink_Nucleo_Blinky.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
