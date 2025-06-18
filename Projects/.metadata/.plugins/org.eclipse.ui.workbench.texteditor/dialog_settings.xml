@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<item key="replaceBarOpen" value="false"/>
+	<list key="searchhistory">
+		<item value="PORT"/>
+		<item value="draw"/>
+		<item value="void LCD_display_SOC(volatile uint32_t* soc)"/>
+		<item value="eco"/>
+		<item value="CAN_filter_init"/>
+		<item value="can"/>
+		<item value="can_id "/>
+		<item value="ide"/>
+		<item value="id"/>
+		<item value="RADIO_filter_and_queue_msg"/>
+		<item value="IDE"/>
+		<item value="BATT_OV"/>
+	</list>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="wrap" value="true"/>
+		<item key="casesensitive" value="false"/>
+		<item key="wholeword" value="false"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<item key="selection" value="FloatToBytes"/>
+		<list key="findhistory">
+			<item value="FloatToBytes"/>
+			<item value="0.244"/>
+			<item value="244"/>
+			<item value="value"/>
+			<item value="float_bytes"/>
+			<item value="read_sensor_register"/>
+			<item value="write_sensor_register"/>
+			<item value="error"/>
+			<item value="  "/>
+			<item value="retz"/>
+			<item value="rety"/>
+			<item value="retx"/>
+			<item value="ret_accelx"/>
+			<item value="GPS_CAN_MESSAGE_LENGTH"/>
+			<item value="vdop"/>
+		</list>
+		<list key="replacehistory">
+			<item value="float_bytes_x"/>
+			<item value="float_bytes_z"/>
+			<item value="float_bytes_y"/>
+			<item value="ACCEL_FS_MULTIPLIER_8G"/>
+			<item value="f"/>
+			<item value="FloatToBytes"/>
+			<item value="read_imu_register"/>
+			<item value="write_imu_register"/>
+			<item value="ret_accely"/>
+			<item value="ret_accelx"/>
+			<item value="IMU_CAN_MESSAGE_LENGTH"/>
+			<item value="gyro_z"/>
+			<item value="gyro_y"/>
+			<item value="gyro_x"/>
+			<item value="accel_z"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="1420"/>
+		<item key="DIALOG_Y_ORIGIN" value="276"/>
+		<item key="DIALOG_WIDTH" value="511"/>
+		<item key="DIALOG_HEIGHT" value="523"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-18|0|0|0|400|0|0|0|1|0|0|5|0|Segoe UI"/>
+	</section>
+</section>

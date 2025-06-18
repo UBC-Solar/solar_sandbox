@@ -1,0 +1,4 @@
+#Sat Nov 30 12:25:53 PST 2024
+expression=HAL_I2C_Mem_Write
+org.eclipse.help.ui.localSearch.master=true
+__DEFAULT__=false

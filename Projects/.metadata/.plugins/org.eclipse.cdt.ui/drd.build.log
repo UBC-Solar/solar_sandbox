@@ -1,0 +1,17 @@
+00:24:12 **** Incremental Build of configuration Release for project drd ****
+make -j12 all 
+arm-none-eabi-gcc "../Core/Src/regen_clamp.c" -mcpu=cortex-m3 -std=gnu11 -DUSE_HAL_DRIVER -DSTM32F103xE -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../Middlewares/Third_Party/FreeRTOS/Source/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2 -I../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3 -I"C:/DEV/firmware_v3/libraries/CAN_comms/Inc" -I"C:/DEV/firmware_v3/libraries/cyclic_data" -Os -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/regen_clamp.d" -MT"Core/Src/regen_clamp.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/regen_clamp.o"
+arm-none-eabi-gcc -o "drd.elf" @"objects.list"   -mcpu=cortex-m3 -T"C:\DEV\firmware_v3\components\drd\STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="drd.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: drd.elf
+ 
+arm-none-eabi-size  drd.elf 
+arm-none-eabi-objdump -h -S drd.elf  > "drd.list"
+   text	   data	    bss	    dec	    hex	filename
+  57160	    188	  21564	  78912	  13440	drd.elf
+Finished building: default.size.stdout
+ 
+Finished building: drd.list
+ 
+
+00:24:13 Build Finished. 0 errors, 0 warnings. (took 1s.158ms)
+
