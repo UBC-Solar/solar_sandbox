@@ -6,30 +6,36 @@ start_time = time.time()
 csv = open("data.csv", "w")
 
 def read():
-    s = serial.Serial('COM10', 115200)
+    s = serial.Serial('/dev/ttyUSB0', 115200)
         
     # Read from COM9 in a while loop
     while True:
         data = s.read(4)
-        
-        value = int.from_bytes(data, 'little')
 
-        adc1 = (value >> 16) & 0xFFFF
-        adc2 = (value >> 0) & 0xFFFF
+        raw_voltage = data[0:2]
+        raw_current = data[2:4]
+
+        print(raw_current.hex(), raw_voltage.hex())
         
-        adc1 = adc1 * 3.3 / 4095
-        adc2 = adc2 * 3.3 / 4095
+        # value = int.from_bytes(data, 'little')
+
+
+        # adc1 = (value >> 16) & 0xFFFF
+        # adc2 = (value >> 0) & 0xFFFF
         
-        timer_in_s_since_start = time.time() - start_time
+        # # adc1 = adc1 * 3.3 / 4095
+        # # adc2 = adc2 * 3.3 / 4095
         
-        # ADC1 is current sensor voltage, ADC2 is voltage
-        print(f"ADC1: {adc1}, ADC2: {adc2}, {timer_in_s_since_start}")
+        # timer_in_s_since_start = time.time() - start_time
         
-        csv.write(f"{adc1},{adc2}\n")
-        csv.flush()
+        # # ADC1 is current sensor voltage, ADC2 is voltage
+        # print(f"ADC1: {adc1}, ADC2: {adc2}, {timer_in_s_since_start}")
         
-        # Sometimes this function gives garbage, just reset when it happens
-        if adc1 > 4 or adc2 > 4: return
+        # csv.write(f"{adc1},{adc2},{timer_in_s_since_start}\n")
+        # csv.flush()
+        
+        # # Sometimes this function gives garbage, just reset when it happens
+        # if adc1 > 4 or adc2 > 4: return
         
 while True:
     read()

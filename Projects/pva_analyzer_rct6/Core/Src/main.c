@@ -111,6 +111,9 @@ int main(void)
   /* USER CODE END 2 */
 
   /* Infinite loop */
+//   bool is_charging = false;
+
+  #define THRESHOLD_FOR_SENDING     (12)        // 0.01V / 3.25V * 4095.
   
   while (1)
   {
@@ -123,19 +126,19 @@ int main(void)
     HAL_ADC_Start(&hadc1);
     if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
     {
-      adc1_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc1); // Read current sensor voltage
+        adc1_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc1);
     }
     HAL_ADC_Stop(&hadc1);
 
     HAL_ADC_Start(&hadc2);
     if (HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)
     {
-      adc2_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc2); // Read voltage
+        adc2_values[index] = (uint16_t)HAL_ADC_GetValue(&hadc2);
     }
     HAL_ADC_Stop(&hadc2);
     
     // If voltage is <=1, skip this sample (This assumes capacitors are not charged)
-    if (adc2_values[index] <= 1){
+    if (adc2_values[index] <= 10000){
       continue;
     }
 
