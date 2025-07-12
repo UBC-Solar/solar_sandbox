@@ -9,34 +9,39 @@ def read():
     s = serial.Serial('/dev/ttyUSB0', 115200)
         
     # Read from COM9 in a while loop
+    sample = 0
     while True:
         data = s.read(4)
 
-        raw_voltage = data[0:2]
-        raw_current = data[2:4]
+        # raw_voltage = data[0:2]
+        # raw_current = data[2:4]
 
-        print(raw_current.hex(), raw_voltage.hex())
+        # print(raw_current.hex(), raw_voltage.hex())
         
-        # value = int.from_bytes(data, 'little')
+        value = int.from_bytes(data, 'little')
 
 
-        # adc1 = (value >> 16) & 0xFFFF
-        # adc2 = (value >> 0) & 0xFFFF
+        adc1 = (value >> 16) & 0xFFFF
+        adc2 = (value >> 0) & 0xFFFF
         
-        # # adc1 = adc1 * 3.3 / 4095
-        # # adc2 = adc2 * 3.3 / 4095
+        adc1 = adc1 * 3.3 / 4095
+        adc2 = adc2 * 3.3 / 4095
         
-        # timer_in_s_since_start = time.time() - start_time
+        timer_in_s_since_start = time.time() - start_time
         
-        # # ADC1 is current sensor voltage, ADC2 is voltage
-        # print(f"ADC1: {adc1}, ADC2: {adc2}, {timer_in_s_since_start}")
+        # ADC1 is current sensor voltage, ADC2 is voltage
+        print(f"ADC1: {adc1}, ADC2: {adc2}, {sample}")
         
-        # csv.write(f"{adc1},{adc2},{timer_in_s_since_start}\n")
-        # csv.flush()
+        csv.write(f"{adc1},{adc2},{sample}\n")
+        csv.flush()
+
+        sample += 1
         
-        # # Sometimes this function gives garbage, just reset when it happens
-        # if adc1 > 4 or adc2 > 4: return
+        # Sometimes this function gives garbage, just reset when it happens
+        if adc1 > 4 or adc2 > 4: return
         
 while True:
     read()
     print("Restarted")
+
+
