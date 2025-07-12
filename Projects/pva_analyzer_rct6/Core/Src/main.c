@@ -102,7 +102,7 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  #define SAMPLES 2000
+  #define SAMPLES 3500
 
   uint16_t adc1_values[SAMPLES] = {0};
   uint16_t adc2_values[SAMPLES] = {0};
@@ -113,7 +113,7 @@ int main(void)
   /* Infinite loop */
 //   bool is_charging = false;
 
-  #define THRESHOLD_FOR_SENDING     (12)        // 0.01V / 3.25V * 4095.
+  #define THRESHOLD_FOR_SENDING     (12)        // 0.01V / 3.25V * 4095. //  // 0 doesnt work because adc1/2_values already 0. 
   
   while (1)
   {
@@ -137,10 +137,12 @@ int main(void)
     }
     HAL_ADC_Stop(&hadc2);
     
+    
     // If voltage is <=1, skip this sample (This assumes capacitors are not charged)
-    if (adc2_values[index] <= THRESHOLD_FOR_SENDING){
+    if ((int)adc2_values[index] <= THRESHOLD_FOR_SENDING){
       continue;
     }
+    
 
     index++;
 
