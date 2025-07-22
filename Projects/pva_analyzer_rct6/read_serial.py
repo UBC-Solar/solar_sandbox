@@ -28,14 +28,15 @@ def read():
         # convert to volts
         adc1 = adc1 * 3.3 / 4095    # current
         adc2 = adc2 * 3.3 / 4095    # voltage
-        voltage = (adc2 * 93.75) / 3.214
-        current = (adc1 - 1.65) / 0.2
+        voltage = adc2 * 31.65      # voltage * (2k/3.3k) * (997k/21k) 
+        current = (adc1 - 1.6) / 0.2
         power = current * voltage
 
         # print to console
-        print(f"ADC1: {current}, ADC2: {voltage}, {power}, {sample}")
+        #print(f"ADC1: {adc1}, ADC2: {adc2}, {power}, {sample}")
 
         # write to CSV
+        #csv.write(f"{adc1},{adc2},{power},{sample}\n")
         csv.write(f"{current},{voltage},{power},{sample}\n")
         csv.flush()
 

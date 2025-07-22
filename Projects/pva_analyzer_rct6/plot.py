@@ -100,3 +100,18 @@ plt.grid(True)
 plt.tight_layout()
 #plt.savefig('plotIT.png')
 plt.show()
+
+pos_df = df[df['Power'] > 0]
+
+if not pos_df.empty:
+    # index of the largest positive Power
+    idx = pos_df['Power'].idxmax()
+
+    max_power   = pos_df.at[idx, 'Power']
+    volt_at_max = pos_df.at[idx, 'Voltage']
+    curr_at_max = pos_df.at[idx, 'Current']
+
+    print(f"Highest positive power: {max_power:.5f} W")
+    print(f" → at Voltage = {volt_at_max:.5f} V, Current = {curr_at_max:.5f} A")
+else:
+    print("No positive power readings found in the CSV.")

@@ -102,7 +102,7 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  #define SAMPLES 3500
+  #define SAMPLES 3600
 
   uint16_t adc1_values[SAMPLES] = {0};
   uint16_t adc2_values[SAMPLES] = {0};
