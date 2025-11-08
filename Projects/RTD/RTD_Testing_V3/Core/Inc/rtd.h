@@ -8,11 +8,12 @@
 #ifndef INC_RTD_H_
 #define INC_RTD_H_
 
-struct Rtd_status_t {
+#include <stdint.h>
 
-	Bool High_Threshold_Violation;
-	Bool Low_Threshold_Violation;
-};
-
+// Public function declarations
+void RTD_Init(void);
+float RTD_GetTemperature(void);
+float RTD_GetResistance(void);
+uint8_t RTD_ReadFaults(void);
 
 #endif /* INC_RTD_H_ */
