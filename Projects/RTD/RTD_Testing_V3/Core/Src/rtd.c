@@ -2,12 +2,27 @@
  * rtd.c
  *
  *  Created on: Nov 1, 2025
- *      Author: Luke Santosham
+ *      Author: Luke Santosham & Martin Wu
  */
 
 #define COEFF_OF_RESISTANCE_PLAT	0.00385
 #define RESISTANCE_AT_0C 			1000
 #define REFERENCE_RESISTANCE 		4300
+#define TIMEOUT_DELAY				100
+
+// Register Addresses
+#define CONFIG_REG      0x00
+#define RTD_MSB_REG     0x01
+#define RTD_LSB_REG     0x02
+#define FAULT_STATUS    0x07
+
+// Config Register Bits
+#define CONFIG_VBIAS    0x80  // V_BIAS enabled
+#define CONFIG_AUTO     0x40  // Auto conversion mode
+#define CONFIG_1SHOT    0x20  // 1-shot conversion
+#define CONFIG_3WIRE    0x10  // 3-wire RTD
+#define CONFIG_FAULTCYC 0x00  // No fault cycle
+#define CONFIG_FILT50HZ 0x01  // 50Hz filter
 
 //PUBLIC FUNCTIONS
 /*
@@ -22,32 +37,87 @@
  * RETURN:	A fault bit copied from the resistance register on
  * 			the MAX31865 chip
  */
-Rtd_status_t RtdGetTemperature(Uint32* temperature){
+Rtd_status_t RTD_GetTemperature(Uint32* temperature){
 
-	Uint32 temp;
-	Bool fault;
+	uint32_t temp;
+	Bool 	 fault;
 	fault = RTD_ResistanceToTemp(&temp);
 
 	if(!fault){
 		*temperature = temp;
-
 	}
 
+}
 
+
+void RTD_WriteRegister(uint8_t address, uint8_t data) {
+    uint8_t buffer[2];
+    buffer[0] = address | 0x80;
+    buffer[1] = data;
+
+    HAL_SPI_Transmit(&hspi1, buffer, 2, 100);
+}
+
+
+void RTD_Init(){
+	uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
+
+	RTD_WriteRegister(CONFIG_REG, config);
+
+	//We also need to initiate high and low thresholds for fault detection
+}
+
+//PRIVATE FUNCTIONS
+
+uint8_t RTD_ReadRegister(uint8_t address){
+	uint8_t data = 0;
+	uint8_t read_addr = address | 0x80;
+
+	HAL_SPI_Transmit(&hspi1, &read_addr, 1, TIMEOUT_DELAY);
+	HAL_SPI_Recieve(&hspi1, &data, 1, TIMEOUT_DELAY);
+
+	return data;
+}
+
+Rtd_status_t RTD_RtdFaults(){
+	uint8_t faults = 0;
+	Rtd_status_t status = {0};
+
+	faults = RTD_ReadRegister(FAULT_STATUS);
+	status.bits = faults >> 2;
 
 }
-void RtdInit();
 
-// private
-Bool RtdWriteConfig(tbd);
-Rtd_status_t GetRtdFaults();
-Uint32 RTD_ReadResistance();
+Bool RTD_ReadResistanceRatio(uint32_t* res_ratio){
 
-Bool RTD_ResistanceToTemp(Uint32* temp){
+	uint16_t resistance_ratio;
+	Bool     fault;
 
-	Uint32 resistance;
+	//get the MSB of the ratio
+	resistance_ratio = RTD_ReadRegister(RTD_MSB_REG);
+	resistance_ratio <<= 8;
+	//get the LSB of the ratio
+	resistance_ratio = RTD_ReadRegister(RTD_MSB_REG);
+
+	//Fault detection
+	if (resistance_ratio & 1)
+		fault = 1;
+	else
+		fault = 0;
+
+	*res_ratio = resistance_ratio >> 1;
+	return fault;
+
+}
+
+Bool RTD_ResistanceToTemp(uint32_t* temp){
+
+	uint32_t resistance;
 	Bool fault;
-	fault = RTD_ReadResistance(&resistance);
+
+	//get the fault and resistance of the RTD
+	fault = RTD_ReadResistanceRatio(&resistance);
+	resistance *= REFERENCE_RESISTANCE;
 
 	if (!fault)
 		*temp = resistance * COEFF_OF_RESISTANCE_PLAT + RESISTANCE_AT_0C;
