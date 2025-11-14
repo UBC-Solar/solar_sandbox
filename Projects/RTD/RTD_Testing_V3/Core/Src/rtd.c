@@ -37,16 +37,14 @@
  * RETURN:	A fault bit copied from the resistance register on
  * 			the MAX31865 chip
  */
-Rtd_status_t RTD_GetTemperature(Uint32* temperature){
+Bool RTD_GetTemperature(uint32_t* temperature, Rtd_status_t* status){
 
-	uint32_t temp;
-	Bool 	 fault;
-	fault = RTD_ResistanceToTemp(&temp);
+	Bool fault;
 
-	if(!fault){
-		*temperature = temp;
-	}
+	fault = RTD_ResistanceToTemp(temperature);
+	*status = RTD_ReadFaults();
 
+	return fault;
 }
 
 
@@ -55,7 +53,7 @@ void RTD_WriteRegister(uint8_t address, uint8_t data) {
     buffer[0] = address | 0x80;
     buffer[1] = data;
 
-    HAL_SPI_Transmit(&hspi1, buffer, 2, 100);
+    HAL_SPI_Transmit(&hspi1, buffer, 2, TIMEOUT_DELAY);
 }
 
 
@@ -80,12 +78,13 @@ uint8_t RTD_ReadRegister(uint8_t address){
 }
 
 Rtd_status_t RTD_RtdFaults(){
-	uint8_t faults = 0;
+	uint8_t raw = 0;
 	Rtd_status_t status = {0};
 
-	faults = RTD_ReadRegister(FAULT_STATUS);
-	status.bits = faults >> 2;
+	raw = RTD_ReadRegister(FAULT_STATUS);
+	status.bits = raw >> 2;
 
+	return status;
 }
 
 Bool RTD_ReadResistanceRatio(uint32_t* res_ratio){
