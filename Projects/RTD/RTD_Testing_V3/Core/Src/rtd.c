@@ -87,24 +87,21 @@ Rtd_status_t RTD_RtdFaults(){
 	return status;
 }
 
-Bool RTD_ReadResistanceRatio(uint32_t* res_ratio){
+Bool RTD_ReadResistanceRatio(uint32_t* resistance_ratio){
 
-	uint16_t resistance_ratio;
+	uint16_t buffer;
 	Bool     fault;
 
 	//get the MSB of the ratio
-	resistance_ratio = RTD_ReadRegister(RTD_MSB_REG);
-	resistance_ratio <<= 8;
+	buffer = RTD_ReadRegister(RTD_MSB_REG);
+	buffer <<= 8;
 	//get the LSB of the ratio
-	resistance_ratio = RTD_ReadRegister(RTD_MSB_REG);
+	buffer = RTD_ReadRegister(RTD_LSB_REG);
 
 	//Fault detection
-	if (resistance_ratio & 1)
-		fault = 1;
-	else
-		fault = 0;
+	fault = buffer & 1;
 
-	*res_ratio = resistance_ratio >> 1;
+	*resistance_ratio = buffer >> 1;
 	return fault;
 
 }
