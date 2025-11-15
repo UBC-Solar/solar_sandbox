@@ -9,11 +9,17 @@
 #define INC_RTD_H_
 
 #include <stdint.h>
+#include <stdbool.h>
+#include "main.h"
 
-// Public function declarations
+typedef struct {
+	bool High_Threshold_Violation;
+	bool Low_Threshold_Violation;
+} Rtd_status_t;
+
+// Function declarations
 void RTD_Init(void);
-float RTD_GetTemperature(void);
-float RTD_GetResistance(void);
-uint8_t RTD_ReadFaults(void);
+Rtd_status_t RtdGetTemperature(uint32_t* temperature);
+uint16_t RTD_ReadRTD(void);
 
 #endif /* INC_RTD_H_ */

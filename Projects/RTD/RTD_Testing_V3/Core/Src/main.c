@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "rtd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -90,16 +90,28 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-
+  
+  // Initialize the MAX31865 RTD chip
+  RTD_Init();
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint32_t temperature = 0;
+  Rtd_status_t status;
+  
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    
+    // Read temperature from the sensor
+    status = RtdGetTemperature(&temperature);
+    
+    // Add a delay between readings (e.g., 1 second)
+    HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }

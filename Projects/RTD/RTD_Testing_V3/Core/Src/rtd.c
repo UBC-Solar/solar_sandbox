@@ -2,12 +2,16 @@
  * rtd.c
  *
  *  Created on: Nov 1, 2025
- *      Author: Luke Santosham
+ *      Author: Luke Santosham & Martin Wu
  */
 
+#include "rtd.h"
+#include <stdint.h>
+#include <stdbool.h>
+
 #define COEFF_OF_RESISTANCE_PLAT	0.00385
-#define RESISTANCE_AT_0C 			1000
-#define REFERENCE_RESISTANCE 		4300
+#define RESISTANCE_AT_0C 			1000.0
+#define REFERENCE_RESISTANCE 		4300.0
 
 // Register Addresses
 #define CONFIG_REG      0x00
@@ -23,87 +27,87 @@
 #define CONFIG_FAULTCYC 0x00  // No fault cycle
 #define CONFIG_FILT50HZ 0x01  // 50Hz filter
 
-//PUBLIC FUNCTIONS
-/*
- * PURPOSE:	converts the resistance ratio into temperature and
- * 			writes it to the temperature pointer. Status is a
- * 			fault bit copied from the resistance register on
- * 			the MAX31865 chip.
- * PRE:		temperature: pointer to an Uint32 that will contain
- * 			the temperature
- * POST:	temperature: the temperature of the motor converted
- * 			from the resistance ratio
- * RETURN:	A fault bit copied from the resistance register on
- * 			the MAX31865 chip
- */
-Rtd_status_t RtdGetTemperature(Uint32* temperature){
 
-	Uint32 temp;
-	Bool fault;
-	fault = RTD_ResistanceToTemp(&temp);
+// Private function prototypes
+static void RTD_WriteRegister(uint8_t address, uint8_t data);
+static uint8_t RTD_ReadRegister(uint8_t address);
+static bool RTD_ResistanceToTemp(uint32_t* temp);
+static uint32_t RTD_ReadResistance(void);
 
-	if(!fault){
-		*temperature = temp;
-
-	}
-
-
-
-}
-void RTD_Init(void);
-void RTD_WriteRegister(uint8_t address, uint8_t data);
-
-
-void RTD_WriteRegister(uint8_t address, uint8_t data) {
+// Write to a MAX31865 register
+static void RTD_WriteRegister(uint8_t address, uint8_t data) {
     uint8_t buffer[2];
-    buffer[0] = address | 0x80;
+    buffer[0] = address | 0x80;  // Set MSB for write
     buffer[1] = data;
 
     HAL_SPI_Transmit(&hspi1, buffer, 2, 100);
 }
 
-void RTD_Init(void){
+// Initialize the MAX31865 chip
+void RTD_Init(void) {
 	uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
 	
-	RTD_WriteRegister(CONFIG_REG, config);	
+	RTD_WriteRegister(CONFIG_REG, config);
+
 }
 
-uint8_t RTD_ReadRegister(uint8_t address){
-	uint8_t tx_buffer = address & 0x7F; //Transmit buffer
-	uint8_t rx_buffer = 0; //Receive Buffer
+// Read from a MAX31865 register
+static uint8_t RTD_ReadRegister(uint8_t address) {
+	uint8_t tx_buffer = address & 0x7F;  // Clear MSB for read
+	uint8_t rx_buffer = 0;
 	
-	HAL_SPI_TransmitReceive(&hspi1, tx_buffer, rx_buffer, 1, 100);
+	HAL_SPI_Transmit(&hspi1, &tx_buffer, 1, 100);
+	HAL_SPI_Receive(&hspi1, &rx_buffer, 1, 100);
 	
 	return rx_buffer;
 }
 
-uint16_t RTD_ReadRTD (void){
+// Read the 15-bit RTD value from MAX31865
+uint16_t RTD_ReadRTD(void) {
 	uint8_t msb = RTD_ReadRegister(RTD_MSB_REG);
 	uint8_t lsb = RTD_ReadRegister(RTD_LSB_REG);
 	
 	uint16_t rtd = (msb << 8) | lsb;
+	
+	
+	// Shift right by 1 to get the 15-bit RTD value
 	rtd >>= 1;
 	
 	return rtd;
 }
 
 
+static uint32_t RTD_ReadResistance(void) {
+	uint16_t rtd_raw = RTD_ReadRTD();
+	
+	uint32_t resistance = ((uint32_t)rtd_raw * (uint32_t)REFERENCE_RESISTANCE) / 32768;
+	
+	return resistance;
+}
 
-// private
-Bool RtdWriteConfig(tbd);
-Rtd_status_t GetRtdFaults();
-Uint32 RTD_ReadResistance();
 
-Bool RTD_ResistanceToTemp(Uint32* temp){
+static bool RTD_ResistanceToTemp(uint32_t* temp) {
+	uint32_t resistance = RTD_ReadResistance();
+	
+	int32_t temp_celsius = ((int32_t)resistance - (int32_t)RESISTANCE_AT_0C) / COEFF_OF_RESISTANCE_PLAT;
+	
+	*temp = (uint32_t)temp_celsius;
+	
+	return false;
+}
 
-	Uint32 resistance;
-	Bool fault;
-	fault = RTD_ReadResistance(&resistance);
-
-	if (!fault)
-		*temp = resistance * COEFF_OF_RESISTANCE_PLAT + RESISTANCE_AT_0C;
-
-	return fault;
+Rtd_status_t RtdGetTemperature(uint32_t* temperature) {
+	Rtd_status_t status = {false, false};
+	uint32_t temp;
+	bool fault;
+	
+	fault = RTD_ResistanceToTemp(&temp);
+	
+	if(!fault) {
+		*temperature = temp;
+	}
+	
+	return status;
 }
 
 
