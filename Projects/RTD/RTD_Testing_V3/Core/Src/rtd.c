@@ -9,6 +9,8 @@
 #define RESISTANCE_AT_0C 			1000
 #define REFERENCE_RESISTANCE 		4300
 #define TIMEOUT_DELAY				100
+#define INIT_FAULT_READ				0x84
+#define MAX_ATTEMPTS				400
 
 // Register Addresses
 #define CONFIG_REG      0x00
@@ -37,14 +39,14 @@
  * RETURN:	A fault bit copied from the resistance register on
  * 			the MAX31865 chip
  */
-Bool RTD_GetTemperature(uint32_t* temperature, Rtd_status_t* status){
+bool RTD_GetTemperature(uint32_t* temperature, Rtd_faults_t* faults){
 
-	Bool fault;
+	bool status;
 
-	fault = RTD_ResistanceToTemp(temperature);
-	*status = RTD_ReadFaults();
+	status = !RTD_ResistanceToTemp(temperature);	//inverted so 1 == success, 0 == fail
+	*faults = RTD_ReadFaults();
 
-	return fault;
+	return status;
 }
 
 
@@ -77,9 +79,26 @@ uint8_t RTD_ReadRegister(uint8_t address){
 	return data;
 }
 
-Rtd_status_t RTD_RtdFaults(){
+Rtd_faults_t RTD_RtdFaults(){
 	uint8_t raw = 0;
-	Rtd_status_t status = {0};
+	Rtd_faults_t faults = {0};
+	int i = 0;
+
+	//saves the current state of
+	uint8_t prev = RTD_ReadRegister(CONFIG_REG);
+	uint8_t curr;
+	uint8_t init_fault = (prev & 0x11) | INIT_FAULT_READ;
+
+	RTD_WriteRegister(CONFIG_REG, init_fault);
+
+	for (i = 0; i++; i < MAX_ATTEMPTS){
+		curr = RTD_ReadRegister(CONFIG_REG);
+
+		if((curr >> 2) ^ 1 && (curr >> 3) ^ 1){
+			RTD_WriteRegister(CONFIG_REG, prev);
+			break;
+		}
+	}
 
 	raw = RTD_ReadRegister(FAULT_STATUS);
 	status.bits = raw >> 2;
@@ -87,10 +106,10 @@ Rtd_status_t RTD_RtdFaults(){
 	return status;
 }
 
-Bool RTD_ReadResistanceRatio(uint32_t* resistance_ratio){
+bool RTD_ReadResistanceRatio(uint32_t* resistance_ratio){
 
 	uint16_t buffer;
-	Bool     fault;
+	bool     status;
 
 	//get the MSB of the ratio
 	buffer = RTD_ReadRegister(RTD_MSB_REG);
@@ -99,26 +118,26 @@ Bool RTD_ReadResistanceRatio(uint32_t* resistance_ratio){
 	buffer = RTD_ReadRegister(RTD_LSB_REG);
 
 	//Fault detection
-	fault = buffer & 1;
+	status = buffer & 1;
 
 	*resistance_ratio = buffer >> 1;
-	return fault;
+	return status;
 
 }
 
-Bool RTD_ResistanceToTemp(uint32_t* temp){
+bool RTD_ResistanceToTemp(uint32_t* temp){
 
 	uint32_t resistance;
-	Bool fault;
+	bool status;
 
 	//get the fault and resistance of the RTD
-	fault = RTD_ReadResistanceRatio(&resistance);
+	status = RTD_ReadResistanceRatio(&resistance);
 	resistance *= REFERENCE_RESISTANCE;
 
-	if (!fault)
+	if (!status)
 		*temp = resistance * COEFF_OF_RESISTANCE_PLAT + RESISTANCE_AT_0C;
 
-	return fault;
+	return status;
 }
 
 
