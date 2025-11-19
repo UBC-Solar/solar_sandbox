@@ -25,5 +25,11 @@ typedef union {
     uint8_t bits;
 } Rtd_faults_t;
 
+typedef enum {
+	Rtd_OK,
+	Rtd_Fault,
+	Fault_Read_Attempt_Exceded
+}Rtd_status_t;
+
 
 #endif /* INC_RTD_H_ */
