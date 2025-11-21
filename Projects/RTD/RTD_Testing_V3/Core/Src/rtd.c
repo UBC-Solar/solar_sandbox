@@ -5,6 +5,8 @@
  *      Author: Luke Santosham & Martin Wu
  */
 
+#include "rtd.h"
+
 #define COEFF_OF_RESISTANCE_PLAT	0.00385
 #define RESISTANCE_AT_0C 			1000
 #define REFERENCE_RESISTANCE 		4300
@@ -33,6 +35,13 @@
 #define CONFIG_FAULTCYC 0x00  // No fault cycle
 #define CONFIG_FILT50HZ 0x01  // 50Hz filter
 
+
+//PRIVATE FUNCTION PROTOTYPES
+static bool RTD_WriteRegister(uint8_t address, uint8_t data);
+static bool RTD_ReadRegister(uint8_t address, uint8_t* data);
+static bool RTD_RtdFaults(Rtd_faults_t* faults);
+static bool RTD_ResistanceToTemp(uint32_t* temp);
+
 //PUBLIC FUNCTIONS
 /*
  * @brief:	Gets the temperature and status of the RTD
@@ -45,42 +54,23 @@
  */
 Rtd_status_t RTD_GetTemperature(uint32_t* temperature, Rtd_faults_t* faults){
 
-	bool rtd_fault = 0;
-	bool fault_read_error = 0;
+	bool rtd_read_flag = 0;
+	bool fault_read_flag = 0;
 	Rtd_status_t status;
 
 	//get temperature, faults and error flags
-	rtd_fault = RTD_ResistanceToTemp(temperature);
-	fault_read_error = RTD_ReadFaults(faults);
+	rtd_read_flag = RTD_ResistanceToTemp(temperature);
+	fault_read_flag = RTD_RtdFaults(faults);
 
 	//assign the RTD status based off flags
-	if (fault_read_error)
-		status = Fault_Read_Attempt_Exceded;
-	else if (rtd_fault)
-		status = Rtd_Fault;
+	if (fault_read_flag)
+		status = RtdFaultReadAttemptExceded;
+	else if (rtd_read_flag)
+		status = RtdStatusFault;
 	else
-		status = Rtd_OK;
+		status = RtdStatusOk;
 
 	return status;
-}
-
-
-void RTD_WriteRegister(uint8_t address, uint8_t data) {
-    uint8_t buffer[2];
-    buffer[0] = address | 0x80;
-    buffer[1] = data;
-
-    HAL_SPI_Transmit(&hspi1, buffer, 2, TIMEOUT_DELAY);
-}
-
-uint8_t RTD_ReadRegister(uint8_t address){
-	uint8_t data = 0;
-	uint8_t read_addr = address | 0x80;
-
-	HAL_SPI_Transmit(&hspi1, &read_addr, 1, TIMEOUT_DELAY);
-	HAL_SPI_Recieve(&hspi1, &data, 1, TIMEOUT_DELAY);
-
-	return data;
 }
 
 void RTD_Init(){
@@ -91,9 +81,9 @@ void RTD_Init(){
 	//write fault thresholds
 	uint8_t buffer;
 
-	buffer = (0xFF & MAX_FAULT_THRESHOLD) << 1;
+	buffer = (uint8_t)(((uint16_t)MAX_FAULT_THRESHOLD & 0x00FF) << 1);
 	RTD_WriteRegister(MAX_FAULT_THRESHOLD_LSB, buffer);
-	buffer = (0xFF & MAX_FAULT_THRESHOLD >> 8) << 1;
+	buffer = (uint8_t)((((uint16_t)MAX_FAULT_THRESHOLD >> 8) & 0x00FF) << 1);
 	RTD_WriteRegister(MAX_FAULT_THRESHOLD_MSB, buffer);
 
 	buffer = (0xFF & MIN_FAULT_THRESHOLD) << 1;
@@ -104,6 +94,24 @@ void RTD_Init(){
 }
 
 //PRIVATE FUNCTIONS
+static bool RTD_WriteRegister(uint8_t address, uint8_t data) {
+    uint8_t buffer[2] = {0};
+    buffer[0] = address | 0x80;
+    buffer[1] = data;
+	bool hal_status_flag = 0;
+
+    hal_status_flag = HAL_OK != HAL_SPI_Transmit(&hspi1, buffer, 2, TIMEOUT_DELAY);
+	return hal_status_flag;
+}
+
+static bool RTD_ReadRegister(uint8_t address, uint8_t* data){
+	uint8_t read_addr = address & 0x7F;
+	bool hal_status_flag = 0;
+
+	hal_status_flag = HAL_OK != HAL_SPI_Transmit(&hspi1, &read_addr, 1, TIMEOUT_DELAY);
+	hal_status_flag = HAL_OK != HAL_SPI_Receive(&hspi1, data, 1, TIMEOUT_DELAY);
+	return hal_status_flag;
+}
 
 static bool RTD_RtdFaults(Rtd_faults_t* faults){
 	uint8_t raw = 0;
@@ -111,7 +119,8 @@ static bool RTD_RtdFaults(Rtd_faults_t* faults){
 	int i = 0;
 
 	//saves the current state of the config register
-	uint8_t prev = RTD_ReadRegister(CONFIG_REG);
+	uint8_t prev;
+	RTD_ReadRegister(CONFIG_REG, &prev);
 	uint8_t curr;
 	uint8_t init_fault = (prev & 0x11) | INIT_FAULT_READ;
 
@@ -119,53 +128,45 @@ static bool RTD_RtdFaults(Rtd_faults_t* faults){
 	RTD_WriteRegister(CONFIG_REG, init_fault);
 
 	//exits fault read when {D2,D3} of config register is 00b
-	for (i = 0; i++; i < MAX_ATTEMPTS){
-		curr = RTD_ReadRegister(CONFIG_REG);
+	//for loop is implemented so the code cannot get stuck in a while loop
+	for (i = 0; i < MAX_ATTEMPTS; i++){
+		RTD_ReadRegister(CONFIG_REG, &curr);
 
 		//if a cycle completes, restore the previous configuration
-		if((curr >> 2) ^ 1 && (curr >> 3) ^ 1){
+		if(((curr >> 2) ^ 1) && ((curr >> 3) ^ 1)){
 			RTD_WriteRegister(CONFIG_REG, prev);
 			break;
 		}
 	}
 
 	//if the loop exceeds the max attempts, set the error flag
-	if (i >= MAX_ATTEMPTS) max_attempt_flag = 1;
-
+	if (i >= MAX_ATTEMPTS) max_attempt_flag = true;
 
 	//read the fault register after an auto fault detection cycle has occurred
-	raw = RTD_ReadRegister(FAULT_STATUS);
+	RTD_ReadRegister(FAULT_STATUS, &raw);
 	faults->bits = raw >> 2;
 
 	return max_attempt_flag;
 }
 
-static bool RTD_ReadResistanceRatio(uint32_t* resistance_ratio){
+static bool RTD_ResistanceToTemp(uint32_t* temp){
 
+	uint32_t resistance;
 	uint16_t buffer;
+	uint8_t msb, lsb;
 	bool fault_flag;
 
 	//get the MSB of the ratio
-	buffer = RTD_ReadRegister(RTD_MSB_REG);
-	buffer <<= 8;
+	RTD_ReadRegister(RTD_MSB_REG, &msb);
 	//get the LSB of the ratio
-	buffer = RTD_ReadRegister(RTD_LSB_REG);
+	RTD_ReadRegister(RTD_LSB_REG, &lsb);
+	buffer = ((uint16_t)msb << 8) | lsb;
 
 	//Fault detection
 	fault_flag = buffer & 1;
 
-	*resistance_ratio = buffer >> 1;
-	return status;
-
-}
-
-static bool RTD_ResistanceToTemp(uint32_t* temp){
-
-	uint32_t resistance;
-	bool fault_flag;
-
 	//get the fault flag and resistance of the RTD
-	fault_flag = RTD_ReadResistanceRatio(&resistance);
+	resistance = buffer >> 1;
 	resistance *= REFERENCE_RESISTANCE;
 
 	*temp = ((uint32_t)resistance - RESISTANCE_AT_0C) / COEFF_OF_RESISTANCE_PLAT / RESISTANCE_AT_0C;

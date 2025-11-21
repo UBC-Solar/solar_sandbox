@@ -7,11 +7,9 @@
 
 #ifndef INC_RTD_H_
 #define INC_RTD_H_
+#include "main.h"
 #include <stdbool.h>
-
-bool RTD_GetTemperature(uint32_t* temperature, Rtd_faults_t* status);
-void RTD_WriteRegister(uint8_t address, uint8_t data);
-void RTD_Init();
+#include <stdint.h>
 
 typedef union {
     struct {
@@ -26,10 +24,13 @@ typedef union {
 } Rtd_faults_t;
 
 typedef enum {
-	Rtd_OK,
-	Rtd_Fault,
-	Fault_Read_Attempt_Exceded
+	RtdStatusOk,
+	RtdStatusFault,
+	RtdFaultReadAttemptExceded
 }Rtd_status_t;
 
+//PUBLIC FUNCTIONS
+Rtd_status_t RTD_GetTemperature(uint32_t* temperature, Rtd_faults_t* status);
+void RTD_Init();
 
 #endif /* INC_RTD_H_ */
