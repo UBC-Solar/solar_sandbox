@@ -56,7 +56,7 @@ static void MX_SPI1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint32_t temperature = 0;
 /* USER CODE END 0 */
 
 /**
@@ -95,11 +95,19 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  Rtd_status_t status;
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	// Read temperature from the sensor
+	status = RtdGetTemperature(&temperature);
+
+    // Add a delay between readings (e.g., 1 second)
+    HAL_Delay(1000);
+
   }
   /* USER CODE END 3 */
 }
