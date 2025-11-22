@@ -96,6 +96,7 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   Rtd_status_t status;
+  Rtd_faults_t faults;
 
   while (1)
   {
@@ -103,8 +104,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	// Read temperature from the sensor
-	status = RtdGetTemperature(&temperature);
-
+	status = RTD_GetTemperature(&temperature, &faults);
     // Add a delay between readings (e.g., 1 second)
     HAL_Delay(1000);
 
