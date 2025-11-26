@@ -18,14 +18,19 @@
 #define MIN_FAULT_THRESHOLD			0x0000
 
 // Register Addresses
-#define CONFIG_REG      		0x00
-#define RTD_MSB_REG     		0x01
-#define RTD_LSB_REG     		0x02
-#define MAX_FAULT_THRESHOLD_MSB 0x03
-#define MAX_FAULT_THRESHOLD_LSB 0x04
-#define MIN_FAULT_THRESHOLD_MSB 0x05
-#define MIN_FAULT_THRESHOLD_LSB 0x06
-#define FAULT_STATUS    		0x07
+#define CONFIG_REG_R      		  0x00
+#define RTD_MSB_REG_R     		  0x01
+#define RTD_LSB_REG_R     		  0x02
+#define MAX_FAULT_THRESHOLD_MSB_R 0x03
+#define MAX_FAULT_THRESHOLD_LSB_R 0x04
+#define MIN_FAULT_THRESHOLD_MSB_R 0x05
+#define MIN_FAULT_THRESHOLD_LSB_R 0x06
+#define FAULT_STATUS_R    		  0x07
+#define CONFIG_REG_W   			  0x80
+#define MAX_FAULT_THRESHOLD_MSB_W 0x83
+#define MAX_FAULT_THRESHOLD_LSB_W 0x84
+#define MIN_FAULT_THRESHOLD_MSB_W 0x85
+#define MIN_FAULT_THRESHOLD_LSB_W 0x86
 
 // Config Register Bits
 #define CONFIG_VBIAS    0x80  // V_BIAS enabled
@@ -33,7 +38,7 @@
 #define CONFIG_1SHOT    0x20  // 1-shot conversion
 #define CONFIG_3WIRE    0x10  // 3-wire RTD
 #define CONFIG_FAULTCYC 0x00  // No fault cycle
-#define CONFIG_FILT50HZ 0x01  // 50Hz filter
+#define CONFIG_FILT50HZ 0x00  // 60Hz filter
 
 
 //PRIVATE FUNCTION PROTOTYPES
@@ -83,21 +88,37 @@ Rtd_status_t RTD_GetTemperature(uint32_t* temperature, Rtd_faults_t* faults){
 void RTD_Init(){
 	//write initial configuration
 	uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
-	RTD_WriteRegister(CONFIG_REG, config);
+	RTD_WriteRegister(CONFIG_REG_W, config);
 
 	//write fault thresholds
 	uint8_t buffer;
 
 	buffer = (uint8_t)(((uint16_t)MAX_FAULT_THRESHOLD & 0x00FF) << 1);
-	RTD_WriteRegister(MAX_FAULT_THRESHOLD_LSB, buffer);
+	RTD_WriteRegister(MAX_FAULT_THRESHOLD_LSB_W, buffer);
 	buffer = (uint8_t)((((uint16_t)MAX_FAULT_THRESHOLD >> 8) & 0x00FF) << 1);
-	RTD_WriteRegister(MAX_FAULT_THRESHOLD_MSB, buffer);
+	RTD_WriteRegister(MAX_FAULT_THRESHOLD_MSB_W, buffer);
 
 	buffer = (0xFF & MIN_FAULT_THRESHOLD) << 1;
-	RTD_WriteRegister(MIN_FAULT_THRESHOLD_LSB, buffer);
+	RTD_WriteRegister(MIN_FAULT_THRESHOLD_LSB_W, buffer);
 	buffer = (0xFF & MIN_FAULT_THRESHOLD >> 8) << 1;
-	RTD_WriteRegister(MIN_FAULT_THRESHOLD_MSB, buffer);
+	RTD_WriteRegister(MIN_FAULT_THRESHOLD_MSB_W, buffer);
 
+}
+
+void RTD_test(){
+	uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
+	uint16_t resistance;
+	uint16_t buffer;
+	uint8_t msb = 0, lsb = 0;
+	RTD_WriteRegister(CONFIG_REG_W, config);
+	HAL_Delay(1000);
+	config = 10;
+	//get the MSB of the ratio
+	RTD_ReadRegister(RTD_MSB_REG_R, &msb);
+	//get the LSB of the ratio
+	RTD_ReadRegister(RTD_LSB_REG_R, &lsb);
+	buffer = ((uint16_t)msb << 8) | lsb;
+	resistance = (buffer>> 1)/32 - 256;
 }
 
 //PRIVATE FUNCTIONS
@@ -110,11 +131,14 @@ void RTD_Init(){
  */
 static bool RTD_WriteRegister(uint8_t address, uint8_t data) {
     uint8_t buffer[2] = {0};
-    buffer[0] = address | 0x80;
+    buffer[0] = address;
     buffer[1] = data;
 	bool hal_status_flag = 0;
 
-    hal_status_flag = HAL_OK != HAL_SPI_Transmit(&hspi1, buffer, 2, TIMEOUT_DELAY);
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
+    hal_status_flag = (HAL_OK != HAL_SPI_Transmit(&hspi1, buffer, 2, TIMEOUT_DELAY));
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_SET);
+
 	return hal_status_flag;
 }
 
@@ -127,11 +151,13 @@ static bool RTD_WriteRegister(uint8_t address, uint8_t data) {
  *              false on success.
  */
 static bool RTD_ReadRegister(uint8_t address, uint8_t* data){
-	uint8_t read_addr = address & 0x7F;
+	uint8_t read_addr = address;
 	bool hal_status_flag = 0;
 
-	hal_status_flag |= HAL_OK != HAL_SPI_Transmit(&hspi1, &read_addr, 1, TIMEOUT_DELAY);
-	hal_status_flag |= HAL_OK != HAL_SPI_Receive(&hspi1, data, 1, TIMEOUT_DELAY);
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
+	hal_status_flag |= (HAL_OK != HAL_SPI_Transmit(&hspi1, &read_addr, 1, TIMEOUT_DELAY));
+	hal_status_flag |= (HAL_OK != HAL_SPI_Receive(&hspi1, data, 1, TIMEOUT_DELAY));
+	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_SET);
 	return hal_status_flag;
 }
 
@@ -154,21 +180,21 @@ static bool RTD_RtdFaults(Rtd_faults_t* faults){
 
 	//saves the current state of the config register
 	uint8_t prev;
-	RTD_ReadRegister(CONFIG_REG, &prev);
+	RTD_ReadRegister(CONFIG_REG_R, &prev);
 	uint8_t curr;
 	uint8_t init_fault = (prev & 0x11) | INIT_FAULT_READ;
 
 	//initiate an automatic fault read
-	RTD_WriteRegister(CONFIG_REG, init_fault);
+	RTD_WriteRegister(CONFIG_REG_W, init_fault);
 
 	//exits fault read when {D2,D3} of config register is 00b
 	//for loop is implemented so the code cannot get stuck in a while loop
 	for (i = 0; i < MAX_ATTEMPTS; i++){
-		RTD_ReadRegister(CONFIG_REG, &curr);
+		RTD_ReadRegister(CONFIG_REG_R, &curr);
 
 		//if a cycle completes, restore the previous configuration
 		if (((curr & 0x0C) == 0)){
-			RTD_WriteRegister(CONFIG_REG, prev);
+			RTD_WriteRegister(CONFIG_REG_W, prev);
 			break;
 		}
 	}
@@ -177,7 +203,7 @@ static bool RTD_RtdFaults(Rtd_faults_t* faults){
 	if (i >= MAX_ATTEMPTS) max_attempt_flag = true;
 
 	//read the fault register after an auto fault detection cycle has occurred
-	RTD_ReadRegister(FAULT_STATUS, &raw);
+	RTD_ReadRegister(FAULT_STATUS_R, &raw);
 	faults->bits = raw >> 2;
 
 	return max_attempt_flag;
@@ -196,15 +222,15 @@ static bool RTD_RtdFaults(Rtd_faults_t* faults){
  */
 static bool RTD_ResistanceToTemp(uint32_t* temp){
 
-	uint32_t resistance;
+	uint32_t resistance, temperature;
 	uint16_t buffer;
-	uint8_t msb, lsb;
+	uint8_t msb = 0, lsb = 0;
 	bool fault_flag;
 
 	//get the MSB of the ratio
-	RTD_ReadRegister(RTD_MSB_REG, &msb);
+	RTD_ReadRegister(RTD_MSB_REG_R, &msb);
 	//get the LSB of the ratio
-	RTD_ReadRegister(RTD_LSB_REG, &lsb);
+	RTD_ReadRegister(RTD_LSB_REG_R, &lsb);
 	buffer = ((uint16_t)msb << 8) | lsb;
 
 	//Fault detection
@@ -212,9 +238,10 @@ static bool RTD_ResistanceToTemp(uint32_t* temp){
 
 	//get the fault flag and resistance of the RTD
 	resistance = buffer >> 1;
-	resistance *= REFERENCE_RESISTANCE;
+	resistance = resistance / 32768 * REFERENCE_RESISTANCE;
 
-	*temp = (uint32_t)((resistance - RESISTANCE_AT_0C) / (COEFF_OF_RESISTANCE_PLAT * RESISTANCE_AT_0C));
+	temperature = (uint32_t)((resistance - RESISTANCE_AT_0C) / (COEFF_OF_RESISTANCE_PLAT * RESISTANCE_AT_0C));
+	*temp = temperature;
 
 	return fault_flag;
 }

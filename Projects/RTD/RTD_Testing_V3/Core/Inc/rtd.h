@@ -32,5 +32,7 @@ typedef enum {
 //PUBLIC FUNCTIONS
 Rtd_status_t RTD_GetTemperature(uint32_t* temperature, Rtd_faults_t* status);
 void RTD_Init();
+void RTD_test();
+
 
 #endif /* INC_RTD_H_ */
