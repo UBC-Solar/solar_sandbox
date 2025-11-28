@@ -42,8 +42,8 @@
 
 
 //PRIVATE FUNCTION PROTOTYPES
-static bool RTD_WriteRegister(uint8_t address, uint8_t data);
-static bool RTD_ReadRegister(uint8_t address, uint8_t* data);
+static bool RTD_WriteRegister(uint8_t address_with_write_bit, uint8_t data);
+static bool RTD_ReadRegister(uint8_t address_read, uint8_t* data);
 static bool RTD_RtdFaults(Rtd_faults_t* faults);
 static bool RTD_ResistanceToTemp(uint32_t* temp);
 
@@ -85,29 +85,31 @@ Rtd_status_t RTD_GetTemperature(uint32_t* temperature, Rtd_faults_t* faults){
  * @param:      None.
  * @returns:    None.
  */
-void RTD_Init(){
-	//write initial configuration
-	uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
-	RTD_WriteRegister(CONFIG_REG_W, config);
+void RTD_Init(void) {
+    /* Compose config: VBIAS | AUTO | 3WIRE | filter 50Hz (CONFIG_FILT50HZ=0) */
+    uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
+    RTD_WriteRegister(CONFIG_REG_W, config);
 
-	//write fault thresholds
-	uint8_t buffer;
+    /* Program thresholds properly: thresholds are 15-bit values that are left-shifted by 1 in registers */
+    uint16_t max_val = (uint16_t)(MAX_FAULT_THRESHOLD & 0x7FFF);    // ensure 15-bit
+    uint16_t reg_max = (uint16_t)( (max_val << 1) & 0xFFFF );
+    uint8_t max_msb = (uint8_t)((reg_max >> 8) & 0xFF);
+    uint8_t max_lsb = (uint8_t)(reg_max & 0xFF);
+    RTD_WriteRegister(MAX_FAULT_THRESHOLD_MSB_W, max_msb);
+    RTD_WriteRegister(MAX_FAULT_THRESHOLD_LSB_W, max_lsb);
 
-	buffer = (uint8_t)(((uint16_t)MAX_FAULT_THRESHOLD & 0x00FF) << 1);
-	RTD_WriteRegister(MAX_FAULT_THRESHOLD_LSB_W, buffer);
-	buffer = (uint8_t)((((uint16_t)MAX_FAULT_THRESHOLD >> 8) & 0x00FF) << 1);
-	RTD_WriteRegister(MAX_FAULT_THRESHOLD_MSB_W, buffer);
-
-	buffer = (0xFF & MIN_FAULT_THRESHOLD) << 1;
-	RTD_WriteRegister(MIN_FAULT_THRESHOLD_LSB_W, buffer);
-	buffer = (0xFF & MIN_FAULT_THRESHOLD >> 8) << 1;
-	RTD_WriteRegister(MIN_FAULT_THRESHOLD_MSB_W, buffer);
-
+    uint16_t min_val = (uint16_t)(MIN_FAULT_THRESHOLD & 0x7FFF);
+    uint16_t reg_min = (uint16_t)( (min_val << 1) & 0xFFFF );
+    uint8_t min_msb = (uint8_t)((reg_min >> 8) & 0xFF);
+    uint8_t min_lsb = (uint8_t)(reg_min & 0xFF);
+    RTD_WriteRegister(MIN_FAULT_THRESHOLD_MSB_W, min_msb);
+    RTD_WriteRegister(MIN_FAULT_THRESHOLD_LSB_W, min_lsb);
 }
 
-void RTD_test(){
+uint32_t RTD_test(){
 	uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
-	uint16_t resistance;
+	uint32_t temperature;
+	float resistance;
 	uint16_t buffer;
 	uint8_t msb = 0, lsb = 0;
 	RTD_WriteRegister(CONFIG_REG_W, config);
@@ -118,7 +120,9 @@ void RTD_test(){
 	//get the LSB of the ratio
 	RTD_ReadRegister(RTD_LSB_REG_R, &lsb);
 	buffer = ((uint16_t)msb << 8) | lsb;
-	resistance = (buffer>> 1)/32 - 256;
+	resistance = (buffer) / 32768.0f * (float)REFERENCE_RESISTANCE;
+	return temperature = (uint32_t)((resistance - RESISTANCE_AT_0C) / (COEFF_OF_RESISTANCE_PLAT * RESISTANCE_AT_0C));
+
 }
 
 //PRIVATE FUNCTIONS
@@ -129,19 +133,22 @@ void RTD_test(){
  * @param[in]:  data; the 8-bit value to write to the selected register.
  * @returns:    true if an SPI error occurred, false on success.
  */
-static bool RTD_WriteRegister(uint8_t address, uint8_t data) {
-    uint8_t buffer[2] = {0};
-    buffer[0] = address;
-    buffer[1] = data;
-	bool hal_status_flag = 0;
+static bool RTD_WriteRegister(uint8_t address_with_write_bit, uint8_t data) {
+    uint8_t tx[2];
+    uint8_t rx[2];
+    bool hal_err = false;
 
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
-    hal_status_flag = (HAL_OK != HAL_SPI_Transmit(&hspi1, buffer, 2, TIMEOUT_DELAY));
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_SET);
+    tx[0] = address_with_write_bit; /* Has write bit (0x80) already OR'd by caller */
+    tx[1] = data;
 
-	return hal_status_flag;
+    HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
+    if (HAL_SPI_TransmitReceive(&hspi1, tx, rx, 2, TIMEOUT_DELAY) != HAL_OK) {
+        hal_err = true;
+    }
+    HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_SET);
+
+    return hal_err;
 }
-
 /*
  * @brief:      Reads a single byte from an RTD register over SPI.
  * @param[in]:  address; the 7-bit register address to read from. The MSB is cleared
@@ -150,17 +157,25 @@ static bool RTD_WriteRegister(uint8_t address, uint8_t data) {
  * @returns:    true if an SPI error occurred during transmit or receive,
  *              false on success.
  */
-static bool RTD_ReadRegister(uint8_t address, uint8_t* data){
-	uint8_t read_addr = address;
-	bool hal_status_flag = 0;
+static bool RTD_ReadRegister(uint8_t address_read, uint8_t* data) {
+    uint8_t tx[2];
+    uint8_t rx[2];
+    bool hal_err = false;
 
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
-	hal_status_flag |= (HAL_OK != HAL_SPI_Transmit(&hspi1, &read_addr, 1, TIMEOUT_DELAY));
-	hal_status_flag |= (HAL_OK != HAL_SPI_Receive(&hspi1, data, 1, TIMEOUT_DELAY));
-	HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_SET);
-	return hal_status_flag;
+    /* Ensure MSB cleared for read */
+    tx[0] = (address_read & 0x7F);
+    tx[1] = 0x00;
+
+    HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_RESET);
+    if (HAL_SPI_TransmitReceive(&hspi1, tx, rx, 2, TIMEOUT_DELAY) != HAL_OK) {
+        hal_err = true;
+    } else {
+        *data = rx[1]; /* rx[0] is junk (MISO during address byte), rx[1] is register value */
+    }
+    HAL_GPIO_WritePin(SPI_CS_GPIO_Port, SPI_CS_Pin, GPIO_PIN_SET);
+
+    return hal_err;
 }
-
 /*
  * @brief:      Triggers an automatic fault-detection cycle and retrieves RTD fault bits.
  * @details:    Temporarily modifies the configuration register to issue an
@@ -182,7 +197,7 @@ static bool RTD_RtdFaults(Rtd_faults_t* faults){
 	uint8_t prev;
 	RTD_ReadRegister(CONFIG_REG_R, &prev);
 	uint8_t curr;
-	uint8_t init_fault = (prev & 0x11) | INIT_FAULT_READ;
+	uint8_t init_fault = (prev & 0x0C) | INIT_FAULT_READ;
 
 	//initiate an automatic fault read
 	RTD_WriteRegister(CONFIG_REG_W, init_fault);

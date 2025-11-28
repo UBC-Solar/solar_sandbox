@@ -90,7 +90,7 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  //RTD_Init();
+  RTD_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,7 +105,7 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	// Read temperature from the sensor
 	//status = RTD_GetTemperature(&temperature, &faults);
-	RTD_test();
+	temperature = RTD_test();
     // Add a delay between readings (e.g., 1 second)
     HAL_Delay(1000);
 
