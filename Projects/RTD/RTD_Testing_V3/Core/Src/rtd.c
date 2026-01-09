@@ -90,8 +90,8 @@ void RTD_Init(void) {
     uint8_t config = CONFIG_VBIAS | CONFIG_AUTO | CONFIG_3WIRE | CONFIG_FILT50HZ;
     RTD_WriteRegister(CONFIG_REG_W, config);
 
-    /* Program thresholds properly: thresholds are 15-bit values that are left-shifted by 1 in registers */
-    uint16_t max_val = (uint16_t)(MAX_FAULT_THRESHOLD & 0x7FFF);    // ensure 15-bit
+    /* Program thresholds: thresholds are 15-bit values that are left-shifted by 1 in registers */
+    uint16_t max_val = (uint16_t)(MAX_FAULT_THRESHOLD & 0x7FFF);
     uint16_t reg_max = (uint16_t)( (max_val << 1) & 0xFFFF );
     uint8_t max_msb = (uint8_t)((reg_max >> 8) & 0xFF);
     uint8_t max_lsb = (uint8_t)(reg_max & 0xFF);
@@ -120,7 +120,7 @@ uint32_t RTD_test(){
 	//get the LSB of the ratio
 	RTD_ReadRegister(RTD_LSB_REG_R, &lsb);
 	buffer = ((uint16_t)msb << 8) | lsb;
-	resistance = (buffer) / 32768.0f * (float)REFERENCE_RESISTANCE;
+	resistance = buffer / 32768.0f * (float)REFERENCE_RESISTANCE;
 	return temperature = (uint32_t)((resistance - RESISTANCE_AT_0C) / (COEFF_OF_RESISTANCE_PLAT * RESISTANCE_AT_0C));
 
 }
