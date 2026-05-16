@@ -1,0 +1,23 @@
+{
+   "version": "0.2.0",
+   "configurations": [
+   {
+      "name": "ST-LINK (active ELF path)",
+      "type": "stlinkgdbtarget",
+      "request": "launch",
+      "deviceName": "STM32F103RCT6",
+      "deviceCore": "Cortex-M3",
+      "cwd": "${workspaceFolder}",
+      "runEntry": "main",
+      "imagesAndSymbols": [
+        {
+          "imageFileName": "${command:cmake.launchTargetPath}",
+        }
+      ],
+      "liveWatch": {
+        "enabled": true,
+        "samplesPerSecond": 10
+      }
+    },
+   ]
+}
