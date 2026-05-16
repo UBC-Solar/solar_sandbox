@@ -100,13 +100,14 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    // HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET); //on
-    // HAL_Delay(1000);
-
-    // HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET); //off
-
-    // //HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    // HAL_Delay(1000);
+    
+    if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == 0){
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET); //on
+    }
+    else if(HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == 1){
+      HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET); //off
+    }
+    //HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
