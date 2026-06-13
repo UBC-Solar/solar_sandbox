@@ -112,6 +112,7 @@ int main(void)
 
     if (i2c1_read_status == HAL_OK) HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
     else HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+    HAL_Delay(1000);
     // i2c1_read_status = read_i2c_gps_module(receive_buffer);
   }
   /* USER CODE END 3 */
