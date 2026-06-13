@@ -46,14 +46,14 @@
 
 /* USER CODE BEGIN PV */
 volatile HAL_StatusTypeDef i2c1_ready = HAL_ERROR;
+volatile HAL_StatusTypeDef i2c1_read_status = HAL_ERROR;
 volatile uint32_t i2c1_error = HAL_I2C_ERROR_NONE;
-uint8_t receive_buffer[GPS_MESSAGE_LEN];
+uint8_t receive_buffer[GPS_MESSAGE_LEN + 1];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-HAL_StatusTypeDef read_i2c_gps_module(uint8_t *receive_buffer);
 
 /* USER CODE END PFP */
 
@@ -94,10 +94,9 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  i2c1_ready = HAL_I2C_IsDeviceReady(&hi2c1, GPS_ADDR, 3, 100);
+  i2c1_ready = gps_check_ready();
   i2c1_error = HAL_I2C_GetError(&hi2c1);
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,
-                    (i2c1_ready == HAL_OK) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, (i2c1_ready == HAL_OK) ? GPIO_PIN_SET : GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -107,7 +106,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    read_i2c_gps_module(receive_buffer);
+    i2c1_read_status = read_i2c_gps_module(receive_buffer);
+    receive_buffer[GPS_MESSAGE_LEN] = '\0';
+    i2c1_error = HAL_I2C_GetError(&hi2c1);
+
+    if (i2c1_read_status == HAL_OK) HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+    else HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+    // i2c1_read_status = read_i2c_gps_module(receive_buffer);
   }
   /* USER CODE END 3 */
 }
