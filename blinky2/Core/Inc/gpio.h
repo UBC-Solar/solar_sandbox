@@ -29,6 +29,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
 
 /* USER CODE END Includes */
 
@@ -39,6 +40,9 @@ extern "C" {
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+
+void GPS_Safeboot_Set(bool enabled);
+bool GPS_Safeboot_Read(void);
 
 /* USER CODE END Prototypes */
 

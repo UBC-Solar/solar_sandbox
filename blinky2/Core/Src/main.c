@@ -57,6 +57,20 @@ volatile float gps_latitude = 0.0f;
 volatile float gps_longitude = 0.0f;
 volatile uint16_t gps_dollar_count = 0;
 volatile uint8_t gps_gga_found = 0;
+
+/* Debugger controls/telemetry.  Change dbg_gps_safeboot_enabled while halted;
+ * the main loop applies the requested state and refreshes dbg_pa4_state. */
+volatile uint8_t dbg_gps_safeboot_enabled = 0U;
+volatile GPIO_PinState dbg_pa4_state = GPIO_PIN_RESET;
+volatile uint32_t dbg_gps_rx_bytes = 0U;
+volatile uint32_t dbg_gps_rx_messages = 0U;
+volatile uint32_t dbg_gps_uart_errors = 0U;
+volatile uint32_t dbg_gps_last_rx_tick = 0U;
+/* 0=startup, 1=GPIO initialized, 2=SAFEBOOT applied, 3=reset released,
+ * 4=UART started, 5=GPS UART data received.  Stage 3 is unused because this
+ * board configuration has no MCU-controlled GPS reset pin. */
+volatile uint32_t dbg_gps_boot_stage = 0U;
+static uint8_t gps_uart_rx_byte;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -176,7 +190,20 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  /* Debug breakpoint: PA4 has just been configured as an output. */
+  dbg_gps_boot_stage = 1U;
+  GPS_Safeboot_Set(dbg_gps_safeboot_enabled != 0U);
+  dbg_pa4_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4);
+  dbg_gps_boot_stage = 2U;
   MX_USART2_UART_Init();
+  if (HAL_UART_Receive_IT(&huart2, &gps_uart_rx_byte, 1U) == HAL_OK)
+  {
+    dbg_gps_boot_stage = 4U;
+  }
+  else
+  {
+    dbg_gps_uart_errors++;
+  }
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   HAL_Delay(5000);
@@ -197,6 +224,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    GPS_Safeboot_Set(dbg_gps_safeboot_enabled != 0U);
+    dbg_pa4_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4);
+
     memset(receive_buffer, 0, sizeof(receive_buffer));
 
     i2c1_read_status = read_i2c_gps_module(receive_buffer);
@@ -268,6 +298,34 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART2)
+  {
+    dbg_gps_rx_bytes++;
+    dbg_gps_last_rx_tick = HAL_GetTick();
+    dbg_gps_boot_stage = 5U;
+    if (gps_uart_rx_byte == '\n')
+    {
+      dbg_gps_rx_messages++;
+    }
+
+    if (HAL_UART_Receive_IT(huart, &gps_uart_rx_byte, 1U) != HAL_OK)
+    {
+      dbg_gps_uart_errors++;
+    }
+  }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART2)
+  {
+    dbg_gps_uart_errors++;
+    (void)HAL_UART_Receive_IT(huart, &gps_uart_rx_byte, 1U);
+  }
+}
 
 /* USER CODE END 4 */
 

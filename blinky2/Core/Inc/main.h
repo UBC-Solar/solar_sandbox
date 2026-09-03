@@ -75,6 +75,14 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN Private defines */
 
+/* GPS SAFEBOOT is connected to PA4.  Change only the active-state define if
+ * the GPS module uses the opposite polarity. */
+#define GPS_SAFEBOOT_GPIO_Port GPIOA
+#define GPS_SAFEBOOT_Pin       GPIO_PIN_4
+#ifndef GPS_SAFEBOOT_ACTIVE_STATE
+#define GPS_SAFEBOOT_ACTIVE_STATE GPIO_PIN_RESET
+#endif
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

@@ -30,6 +30,20 @@
 /*----------------------------------------------------------------------------*/
 /* USER CODE BEGIN 1 */
 
+void GPS_Safeboot_Set(bool enabled)
+{
+  GPIO_PinState state = enabled ? GPS_SAFEBOOT_ACTIVE_STATE :
+      ((GPS_SAFEBOOT_ACTIVE_STATE == GPIO_PIN_SET) ? GPIO_PIN_RESET : GPIO_PIN_SET);
+
+  HAL_GPIO_WritePin(GPS_SAFEBOOT_GPIO_Port, GPS_SAFEBOOT_Pin, state);
+}
+
+bool GPS_Safeboot_Read(void)
+{
+  return (HAL_GPIO_ReadPin(GPS_SAFEBOOT_GPIO_Port, GPS_SAFEBOOT_Pin) ==
+          GPS_SAFEBOOT_ACTIVE_STATE);
+}
+
 /* USER CODE END 1 */
 
 /** Configure pins as
@@ -51,6 +65,9 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPS_SAFEBOOT_GPIO_Port, GPS_SAFEBOOT_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : button_Pin */
@@ -59,12 +76,12 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(button_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
+  /*Configure GPIO pins : PA4 LD2_Pin */
+  GPIO_InitStruct.Pin = GPS_SAFEBOOT_Pin|LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
