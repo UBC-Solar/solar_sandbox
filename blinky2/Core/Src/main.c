@@ -18,12 +18,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f1xx_hal.h"
-#include "stm32f1xx_hal_gpio.h"
+#include "i2c.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "i2c_receive.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,22 +46,118 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+volatile HAL_StatusTypeDef i2c1_ready = HAL_ERROR;
+volatile HAL_StatusTypeDef i2c1_read_status = HAL_ERROR;
+volatile uint32_t i2c1_error = HAL_I2C_ERROR_NONE;
+uint8_t receive_buffer[GPS_MESSAGE_LEN + 1];
+volatile uint8_t gps_parse_ok = 0;
+volatile float gps_latitude = 0.0f;
+volatile float gps_longitude = 0.0f;
+volatile uint16_t gps_dollar_count = 0;
+volatile uint8_t gps_gga_found = 0;
 
+/* Debugger controls/telemetry.  Change dbg_gps_safeboot_enabled while halted;
+ * the main loop applies the requested state and refreshes dbg_pa4_state. */
+volatile uint8_t dbg_gps_safeboot_enabled = 0U;
+volatile GPIO_PinState dbg_pa4_state = GPIO_PIN_RESET;
+volatile uint32_t dbg_gps_rx_bytes = 0U;
+volatile uint32_t dbg_gps_rx_messages = 0U;
+volatile uint32_t dbg_gps_uart_errors = 0U;
+volatile uint32_t dbg_gps_last_rx_tick = 0U;
+/* 0=startup, 1=GPIO initialized, 2=SAFEBOOT applied, 3=reset released,
+ * 4=UART started, 5=GPS UART data received.  Stage 3 is unused because this
+ * board configuration has no MCU-controlled GPS reset pin. */
+volatile uint32_t dbg_gps_boot_stage = 0U;
+static uint8_t gps_uart_rx_byte;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static float nmea_coord_to_decimal(float nmea_coord)
+{
+  int degrees = (int)(nmea_coord / 100.0f);
+  float minutes = nmea_coord - ((float)degrees * 100.0f);
+
+  return (float)degrees + (minutes / 60.0f);
+}
+
+static char *find_gga_sentence(uint8_t *buffer, size_t len)
+{
+  const char gngga[] = "$GNGGA";
+  const char gpgga[] = "$GPGGA";
+  size_t sentence_id_len = sizeof(gngga) - 1;
+
+  if (len < sentence_id_len) return NULL;
+
+  for (size_t i = 0; i <= len - sentence_id_len; i++)
+  {
+    if (memcmp(&buffer[i], gngga, sentence_id_len) == 0 ||
+        memcmp(&buffer[i], gpgga, sentence_id_len) == 0)
+    {
+      return (char *)&buffer[i];
+    }
+  }
+
+  return NULL;
+}
+
+static uint8_t parse_gga_lat_lon(uint8_t *buffer, size_t len, float *latitude, float *longitude)
+{
+  char *gga = find_gga_sentence(buffer, len);
+  if (!gga) return 0;
+
+  char sentence[120];
+  char talker[8];
+  char utc_time[16];
+  char lat_raw_str[16];
+  char lon_raw_str[16];
+  char lat_side = '\0';
+  char lon_side = '\0';
+
+  size_t max_sentence_len = len - (size_t)(gga - (char *)buffer);
+  size_t sentence_len = 0;
+
+  while (sentence_len < max_sentence_len &&
+         sentence_len < sizeof(sentence) - 1 &&
+         gga[sentence_len] != '\r' &&
+         gga[sentence_len] != '\n' &&
+         gga[sentence_len] != '\0')
+  {
+    sentence_len++;
+  }
+
+  memcpy(sentence, gga, sentence_len);
+  sentence[sentence_len] = '\0';
+
+  int matched = sscanf(sentence, "$%7[^,],%15[^,],%15[^,],%c,%15[^,],%c",
+                       talker, utc_time, lat_raw_str, &lat_side, lon_raw_str, &lon_side);
+
+  if (matched != 6) return 0;
+
+  float lat_raw = strtof(lat_raw_str, NULL);
+  float lon_raw = strtof(lon_raw_str, NULL);
+
+  if (lat_raw == 0.0f || lon_raw == 0.0f) return 0;
+
+  float lat = nmea_coord_to_decimal(lat_raw);
+  float lon = nmea_coord_to_decimal(lon_raw);
+
+  if (lat_side == 'S') lat = -lat;
+  if (lon_side == 'W') lon = -lon;
+
+  *latitude = lat;
+  *longitude = lon;
+
+  return 1;
+}
 
 /* USER CODE END 0 */
 
@@ -90,9 +190,31 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  /* Debug breakpoint: PA4 has just been configured as an output. */
+  dbg_gps_boot_stage = 1U;
+  GPS_Safeboot_Set(dbg_gps_safeboot_enabled != 0U);
+  dbg_pa4_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4);
+  dbg_gps_boot_stage = 2U;
   MX_USART2_UART_Init();
+  if (HAL_UART_Receive_IT(&huart2, &gps_uart_rx_byte, 1U) == HAL_OK)
+  {
+    dbg_gps_boot_stage = 4U;
+  }
+  else
+  {
+    dbg_gps_uart_errors++;
+  }
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_Delay(5000);
+  i2c1_ready = gps_check_ready();
+  if (i2c1_ready == HAL_OK)
+  {
+    gps_config_status = gps_configure_nmea_250ms();
+    HAL_Delay(500);
+  }
+  i2c1_error = HAL_I2C_GetError(&hi2c1);
+  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, (i2c1_ready == HAL_OK) ? GPIO_PIN_SET : GPIO_PIN_RESET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -100,14 +222,38 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET); //on
-    HAL_Delay(1000);
 
-    HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET); //off
-
-    //HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-    HAL_Delay(1000);
     /* USER CODE BEGIN 3 */
+    GPS_Safeboot_Set(dbg_gps_safeboot_enabled != 0U);
+    dbg_pa4_state = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4);
+
+    memset(receive_buffer, 0, sizeof(receive_buffer));
+
+    i2c1_read_status = read_i2c_gps_module(receive_buffer);
+    receive_buffer[GPS_MESSAGE_LEN] = '\0';
+    i2c1_error = HAL_I2C_GetError(&hi2c1);
+    gps_dollar_count = 0;
+    for (size_t i = 0; i < GPS_MESSAGE_LEN; i++)
+    {
+      if (receive_buffer[i] == '$') gps_dollar_count++;
+    }
+    gps_gga_found = (find_gga_sentence(receive_buffer, GPS_MESSAGE_LEN) != NULL);
+
+    if (i2c1_read_status == HAL_OK) HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+    else HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+
+    if (i2c1_read_status == HAL_OK)
+    {
+      gps_parse_ok = parse_gga_lat_lon(receive_buffer, GPS_MESSAGE_LEN,
+                                       (float *)&gps_latitude,
+                                       (float *)&gps_longitude);
+    }
+    else
+    {
+      gps_parse_ok = 0;
+    }
+
+    HAL_Delay(250);
   }
   /* USER CODE END 3 */
 }
@@ -151,83 +297,35 @@ void SystemClock_Config(void)
   }
 }
 
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-  /* USER CODE BEGIN MX_GPIO_Init_1 */
-
-  /* USER CODE END MX_GPIO_Init_1 */
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
-  /* USER CODE BEGIN MX_GPIO_Init_2 */
-
-  /* USER CODE END MX_GPIO_Init_2 */
-}
-
 /* USER CODE BEGIN 4 */
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART2)
+  {
+    dbg_gps_rx_bytes++;
+    dbg_gps_last_rx_tick = HAL_GetTick();
+    dbg_gps_boot_stage = 5U;
+    if (gps_uart_rx_byte == '\n')
+    {
+      dbg_gps_rx_messages++;
+    }
+
+    if (HAL_UART_Receive_IT(huart, &gps_uart_rx_byte, 1U) != HAL_OK)
+    {
+      dbg_gps_uart_errors++;
+    }
+  }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART2)
+  {
+    dbg_gps_uart_errors++;
+    (void)HAL_UART_Receive_IT(huart, &gps_uart_rx_byte, 1U);
+  }
+}
 
 /* USER CODE END 4 */
 

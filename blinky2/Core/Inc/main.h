@@ -57,9 +57,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define B1_EXTI_IRQn EXTI15_10_IRQn
+#define button_Pin GPIO_PIN_13
+#define button_GPIO_Port GPIOC
+#define button_EXTI_IRQn EXTI15_10_IRQn
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
@@ -74,6 +74,14 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+
+/* GPS SAFEBOOT is connected to PA4.  Change only the active-state define if
+ * the GPS module uses the opposite polarity. */
+#define GPS_SAFEBOOT_GPIO_Port GPIOA
+#define GPS_SAFEBOOT_Pin       GPIO_PIN_4
+#ifndef GPS_SAFEBOOT_ACTIVE_STATE
+#define GPS_SAFEBOOT_ACTIVE_STATE GPIO_PIN_RESET
+#endif
 
 /* USER CODE END Private defines */
 
